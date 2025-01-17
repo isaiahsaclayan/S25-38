@@ -37,6 +37,10 @@ class GuiRoot(tk.Tk):
         self.startConvButton = tk.Button(self, text="Start Conversion")
         self.startConvButton.pack(anchor="center", padx=5, pady=5)
 
+        #Label for Status Text
+        self.statusTextArea = tk.Label(self, text="Status:")
+        self.statusTextArea.pack(anchor="w", padx=5, pady=5)
+
         #Status Text Area
         self.statusTextArea = tk.Text(self, wrap=tk.WORD)
-        self.statusTextArea.pack(side="bottom", padx=5, pady=5)
+        self.statusTextArea.pack(anchor="center", padx=5, pady=5)
