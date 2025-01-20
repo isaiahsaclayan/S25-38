@@ -51,8 +51,6 @@ class genericParser:
                     self.parsedCommands.append(self._speedCommand(command))
                 elif command[0] == UNIT_INFO:
                     pass
-                elif command[0] == ORIENTATION:
-                    pass
                 elif command[0] == TOOL_NUMBER:
                     pass
             else:
@@ -105,6 +103,7 @@ class genericParser:
                 elif i == 4:
                     self.coordinateSystem += "B"
     
+    # TODO: Fix this to return a string of the parsed commands
     def __str__(self):
         output = '\n'.join(self.parsedCommands)
         return output
