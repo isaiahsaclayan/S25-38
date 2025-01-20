@@ -6,6 +6,7 @@ Description: The root tkinter object for the GUI application
 '''
 
 import tkinter as tk
+from tkinter import filedialog
 import globalVariables as globals
 
 class GuiRoot(tk.Tk):
@@ -22,7 +23,7 @@ class GuiRoot(tk.Tk):
         self.testLabel.pack(anchor="center")
 
         #Import Button
-        self.importFileButton = tk.Button(self, text="Import File")
+        self.importFileButton = tk.Button(self, text="Import File", command=self.importButtonCallback)
         self.importFileButton.pack(anchor="w", padx=5, pady=5)
 
         #Set Export Destination Button
@@ -44,3 +45,8 @@ class GuiRoot(tk.Tk):
         #Status Text Area
         self.statusTextArea = tk.Text(self, wrap=tk.WORD)
         self.statusTextArea.pack(anchor="center", padx=5, pady=5)
+
+    def importButtonCallback(self):
+        filetypesList = (("Text Files", '*.txt'), ("All files", "*.*"))
+        filename = filedialog.askopenfilename(filetypes = filetypesList)
+        print(filename)
