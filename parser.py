@@ -12,9 +12,15 @@ UNIT_INFO = "UNITS"
 ORIENTATION = "CSYS"
 TOOL_NUMBER = "LOADTL"
 FEATURE_NUMBER = "FEATNO"
+MANUFACTURER_NUMBER = "MFGNO"
 PART_NUMBER = "PARTNO"
 MACHINE_TYPE = "MACHIN"
 INCHES_PER_MIN = "IPM"
+FINISH_FILE = "FINI"
+END_MOVEMENT = "END"
+TOOL_SIZE = "CUTTER"
+GEOMETRY_TYPE = "CUTCOM_GEOMETRY_TYPE"
+MAX_SPEED = "RAPID"
 
 class genericParser:
     def __init__(self, file_path):
@@ -23,6 +29,7 @@ class genericParser:
         self.coordinateSystem = ""
         self.coordinateSearch = False
         self.parsedCommands = []
+        self.unparsedCommands = []
 
     def parse_file(self, file_path):
         with open(file_path, 'r') as file:
@@ -32,8 +39,9 @@ class genericParser:
         for command in self.creoCommands:
             if len(command) == 0:
                     break
-            if command[0] != ' ':
+            if command[0] != ' ' and self.coordinateSearch:
                 self.coordinateSearch = False
+                self.parsedCommands.append({"coordinate_system":{"coordinate_system":self.coordinateSystem}})
             command = command.split()
             if not self.coordinateSearch:
                 if command[0] == TITLE_COMMENT:
@@ -42,7 +50,7 @@ class genericParser:
                 elif command[0] == INFO_COMMENT:
                     self._infoCommentCommand(command)
                 elif command[0] == SPINDLE_SPEED:
-                    pass
+                    self.parsedCommands.append(self._spindleSpeed(command))
                 elif command[0] == COOLANT:
                     self.parsedCommands.append(self._coolantCommand(command))
                 elif command[0] == MOVE:
@@ -50,22 +58,41 @@ class genericParser:
                 elif command[0] == MOVEMENT_SPEED:
                     self.parsedCommands.append(self._speedCommand(command))
                 elif command[0] == UNIT_INFO:
-                    pass
+                    self.parsedCommands.append({"units":{"units":command[2]}})
                 elif command[0] == TOOL_NUMBER:
-                    pass
+                    self.parsedCommands.append({"tool":{"tool":command[2]}})
+                elif command[0] == MACHINE_TYPE:
+                    self.parsedCommands.append({"machine_info":{"machine_type":command[2][:-1], "machine_number":command[3]}})
+                elif command[0] == PART_NUMBER:
+                    self.parsedCommands.append({"part_number":{"part_number":command[2]}})
+                elif command[0] == FINISH_FILE:
+                    self.parsedCommands.append({"finish_file":{"bool":True}})
+                elif command[0] == MAX_SPEED:
+                    self.parsedCommands.append({"max_speed":{"bool":True}})
+                else:
+                    self.unparsedCommands.append(command)
             else:
                 self._checkOrientationLine(command)
             
     def _movementCommand(self, command):
         command = command[2:]
         if len(command) == 3:
-            return {"move": {self.coordinateSystem[0]:command[0], self.coordinateSystem[1]:command[1], self.coordinateSystem[2]:command[2]}}
+            return {"move": {self.coordinateSystem[0]:float(command[0][:-1]), self.coordinateSystem[1]:float(command[1][:-1]), self.coordinateSystem[2]:float(command[2])}}
         elif len(command) == 4:
-            return {"move": {self.coordinateSystem[0]:command[0], self.coordinateSystem[1]:command[1], self.coordinateSystem[2]:command[2], self.coordinateSystem[3]:command[3]}}
+            return {"move": {self.coordinateSystem[0]:float(command[0][:-1]), self.coordinateSystem[1]:float(command[1][:-1]), self.coordinateSystem[2]:float(command[2][:-1]), self.coordinateSystem[3]:float(command[3])}}
         elif len(command) == 5:
-            return {"move": {self.coordinateSystem[0]:command[0], self.coordinateSystem[1]:command[1], self.coordinateSystem[2]:command[2], self.coordinateSystem[3]:command[3], self.coordinateSystem[4]:command[4]}}
+            return {"move": {self.coordinateSystem[0]:float(command[0][:-1]), self.coordinateSystem[1]:float(command[1][:-1]), self.coordinateSystem[2]:float(command[2][:-1]), self.coordinateSystem[3]:float(command[3][:-1]), self.coordinateSystem[4]:float(command[4])}}
         else:
             return "ERROR"
+    
+    def _spindleSpeed(self, command):
+        command = command[2:]
+        if len(command) == 1:
+            return {"spindle_speed":{"control":command[0]}}
+        elif len(command) == 2:
+            return {"spindle_speed":{"control":command[0], "speed":float(command[1])}}
+        elif len(command) == 3:
+            return {"spindle_speed":{"control":command[0], "speed":float(command[1][:-1]), "direction":command[2]}}
         
     def _coolantCommand(self, command):
         if command[2] == "ON":
@@ -76,10 +103,10 @@ class genericParser:
     def _speedCommand(self, command):
         command = command[2:]
         if command[1] == INCHES_PER_MIN:
-            return {"speed": {"speed":command[0]}}
+            return {"speed": {"speed":float(command[0][:-1])}}
         else:
-            # Convert to INCHES_PER_MIN based on the conversion, something we'll need to implement
-            return {"speed": {"speed":command[0]}}
+            # TODO: Convert to INCHES_PER_MIN based on the conversion, something we'll need to implement
+            return {"speed": {"speed":float(command[0][:-1])}}
     
     def _infoCommentCommand(self, command):
         command = command[1:]
@@ -88,27 +115,45 @@ class genericParser:
             self.coordinateSystem = ""
             command = command[2:]
             self._checkOrientationLine(command)
+        elif command[0] == FEATURE_NUMBER:
+            self.parsedCommands.append({"feature_number":{"feature_number":command[2]}})
+        elif command[0] == MANUFACTURER_NUMBER:
+            self.parsedCommands.append({"manufacturer_number":{"manufacturer_number":command[2]}})
+        elif command[0] == TOOL_SIZE:
+            self.parsedCommands.append({"tool_size":{"tool_size":command[2]}})
+        elif command[0] == END_MOVEMENT:
+            self.parsedCommands.append({"end_movement":{"bool":True}})
+        elif command [0] == GEOMETRY_TYPE:
+            self.parsedCommands.append({"geometry_type":{"geometry_type":command[2]}})
+        else:
+            self.unparsedCommands.append(command)
             
     def _checkOrientationLine(self, command):
         for i in range(len(command)):
             if command[i][0] == '1':
                 if i == 0:
-                    self.coordinateSystem += "X"
+                    self.coordinateSystem += "x"
                 elif i == 1:
-                    self.coordinateSystem += "Y"
+                    self.coordinateSystem += "y"
                 elif i == 2:
-                    self.coordinateSystem += "Z"
+                    self.coordinateSystem += "z"
                 elif i == 3:
-                    self.coordinateSystem += "A"
+                    self.coordinateSystem += "a"
                 elif i == 4:
-                    self.coordinateSystem += "B"
+                    self.coordinateSystem += "b"
     
-    # TODO: Fix this to return a string of the parsed commands
     def __str__(self):
-        output = '\n'.join(self.parsedCommands)
+        output = ""
+        for command in self.parsedCommands:
+            output += str(command) + "\n"
         return output
+    
+    def save(self,fileName):
+        with open(fileName, 'w') as file:
+            for command in self.parsedCommands:
+                file.write(str(command) + "\n")
 
 
 commands = genericParser(FILE)
 commands.conversion()
-print(commands.coordinateSystem)
+commands.save("output.txt")
