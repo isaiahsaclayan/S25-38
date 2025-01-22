@@ -22,13 +22,29 @@ class GuiRoot(tk.Tk):
         self.testLabel = tk.Label(self, text="S25-38 Machine Instruction Converter")
         self.testLabel.pack(anchor="center")
 
-        #Import Button
-        self.importFileButton = tk.Button(self, text="Import File", command=self.importButtonCallback)
-        self.importFileButton.pack(anchor="w", padx=5, pady=5)
+        
+        self.importFrame = tk.Frame(self)
 
-        #Set Export Destination Button
-        self.exportFileButton = tk.Button(self, text="Set Export Destination")
-        self.exportFileButton.pack(anchor="w", padx=5, pady=5)
+        #Import Button and Label
+        self.importFileButton = tk.Button(self.importFrame, text="Import File", command=self.importButtonCallback)
+        self.importFileButton.pack(side="left")
+
+        self.importFilepathLabel = tk.Label(self.importFrame)
+        self.importFilepathLabel.pack(side="left")
+
+        self.importFrame.pack(anchor="w", padx=5, pady=5)
+
+
+        self.exportFrame = tk.Frame(self)
+
+        #Set Export Destination Button and Label
+        self.exportFileButton = tk.Button(self.exportFrame, text="Set Export Destination", command=self.setExportDestinationButtonCallback)
+        self.exportFileButton.pack(side="left")
+
+        self.exportFilepathLabel = tk.Label(self.exportFrame)
+        self.exportFilepathLabel.pack(side="left")
+
+        self.exportFrame.pack(anchor="w", padx=5, pady=5)
 
         #Conversion Settings Button
         self.conversionSettings = tk.Button(self, text="Conversion Settings")
@@ -48,5 +64,14 @@ class GuiRoot(tk.Tk):
 
     def importButtonCallback(self):
         filetypesList = (("Text Files", '*.txt'), ("All files", "*.*"))
-        filename = filedialog.askopenfilename(filetypes = filetypesList)
-        print(filename)
+        importFilename = filedialog.askopenfilename(filetypes = filetypesList)
+        print(importFilename)
+
+        self.importFilepathLabel["text"] = importFilename
+
+    def setExportDestinationButtonCallback(self):
+        filetypesList = (("Text Files", '*.txt'), ("All files", "*.*"))
+        exportFilename = filedialog.asksaveasfilename(filetypes = filetypesList)
+        print(exportFilename)
+
+        self.exportFilepathLabel["text"] = exportFilename
