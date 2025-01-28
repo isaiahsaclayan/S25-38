@@ -8,6 +8,12 @@
 
 `python -m transpiler` to run main, must be in source directory.
 
+## Install Requirements
+Navigate to project root, then execute the following command.
+``` bash
+    pip install -r requirements.txt
+```
+
 ## To Implement Logger Into Your Subsystem
 1. Import logging to your python file.
 ``` python
