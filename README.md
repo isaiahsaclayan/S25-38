@@ -8,7 +8,7 @@
 
 `python -m transpiler` to run main, must be in source directory.
 
-## To Implement Logger
+## To Implement Logger Into Your Subsystem
 1. Import logging to your python file.
 ``` python
 import logging
