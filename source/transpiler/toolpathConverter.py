@@ -12,7 +12,7 @@ class ToolpathConverter:
         """
         Performs translation of a single command
         :param command: individual command to be translated
-        :return:
+        :return: string representation of the translated command
         """
         pass
 
@@ -20,6 +20,6 @@ class ToolpathConverter:
         """
         Translates generic toolpath to list of formatted commands
         :param parsed_commands: list of commands to be translated from generic parser
-        :return:
+        :return: list of strings that are translated commands
         """
         pass
