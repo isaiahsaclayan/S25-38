@@ -50,7 +50,7 @@ class GuiRoot(tk.Tk):
         self.conversionSettings = tk.Button(self, text="Conversion Settings")
         self.conversionSettings.pack(anchor="w", padx=5, pady=5)
 
-        #Start Conversion Process Button
+        #Start Conversion Button
         self.startConvButton = tk.Button(self, text="Start Conversion")
         self.startConvButton.pack(anchor="center", padx=5, pady=5)
 
@@ -75,3 +75,4 @@ class GuiRoot(tk.Tk):
         print(exportFilename)
 
         self.exportFilepathLabel["text"] = exportFilename
+
