@@ -12,6 +12,13 @@ WINDOW_TITLE = "S25-38" #TODO - Provide suitable titles
 MENU_TITLE = "S25-38 Machine Instruction Converter"
 GUI_WINDOW_SIZE = "500x300"
 
+#TODO - Change these to proper extensions
+CREO_FILE_TYPE = ("Creo Toolpath Files", '*.ncl.1')
+NSCRYPT_FILE_TYPE = ("nScrypt GCODE Files", '*.gcode')
+ACSPL_FILE_TYPE = ("ACSPL Files", '*.txt')
+IMPORT_FILE_TYPES_LIST = (CREO_FILE_TYPE, NSCRYPT_FILE_TYPE, ACSPL_FILE_TYPE, ("All files", "*.*"))
+EXPORT_FILE_TYPES_LIST = (NSCRYPT_FILE_TYPE, ACSPL_FILE_TYPE, ("All files", "*.*"))
+
 class GuiRoot(tk.Tk):
     def __init__(self):
         tk.Tk.__init__(self)
@@ -65,21 +72,33 @@ class GuiRoot(tk.Tk):
         #Status Text Area
         self.statusTextArea = tk.Text(self, wrap=tk.WORD)
         self.statusTextArea.pack(anchor="center", padx=5, pady=5)
+        self.statusTextArea.configure(state="disabled") #Prevent user from typing in text box
+
+    def writeStatus(self, text):
+        self.statusTextArea.configure(state="normal")   #Enable writing to text box
+        self.statusTextArea.delete("1.0", tk.END)       #Clear textbox
+        self.statusTextArea.insert(tk.END, text)        #Write new text
+        self.statusTextArea.configure(state="disabled") #Disable text box again
+
 
     def importButtonCallback(self):
-        filetypesList = (("Text Files", '*.txt'), ("All files", "*.*"))
-        importFilename = filedialog.askopenfilename(filetypes = filetypesList)
+        importFilename = filedialog.askopenfilename(filetypes = IMPORT_FILE_TYPES_LIST)
         self.importFilepathLabel["text"] = importFilename
+
+        self.writeStatus("Import Click")
         print("Import Click")
 
     def setExportDestinationButtonCallback(self):
-        filetypesList = (("Text Files", '*.txt'), ("All files", "*.*"))
-        exportFilename = filedialog.asksaveasfilename(filetypes = filetypesList)
+        exportFilename = filedialog.asksaveasfilename(filetypes = EXPORT_FILE_TYPES_LIST)
         self.exportFilepathLabel["text"] = exportFilename
+        
+        self.writeStatus("Export Click")
         print("Export Click")
 
     def startConversionButtonCallback(self):
+        self.writeStatus("Start Conversion Click")
         print("Start Conversion Click")
 
     def conversionSettingsButtonCallback(self):
+        self.writeStatus("Conversion Settings Click")
         print("Conversion Settings Click")
