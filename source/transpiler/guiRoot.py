@@ -1,28 +1,32 @@
 '''
 Author: Alvin Chung
-Creation Date: 01/17/24
+Created: 01/17/24
 File: guiRoot.py
 Description: The root tkinter object for the GUI application
 '''
 
 import tkinter as tk
 from tkinter import filedialog
-import globalVariables as globals
+
+WINDOW_TITLE = "S25-38" #TODO - Provide suitable titles
+MENU_TITLE = "S25-38 Machine Instruction Converter"
+GUI_WINDOW_SIZE = "500x300"
 
 class GuiRoot(tk.Tk):
     def __init__(self):
         tk.Tk.__init__(self)
         self.container = tk.Frame(self)
-        self.resizable(False, False)
+        self.resizable(False, False) #Resizing is disabled on both axes
         
         #Title of the window
-        self.title("S25-38") #TODO - Provide suitable title
-        self.geometry(globals.GUI_WINDOW_SIZE)
+        self.title(WINDOW_TITLE) 
+        self.geometry(GUI_WINDOW_SIZE)
 
-        self.testLabel = tk.Label(self, text="S25-38 Machine Instruction Converter")
+        #Title of Menu
+        self.testLabel = tk.Label(self, text = MENU_TITLE)
         self.testLabel.pack(anchor="center")
 
-        
+        #Import button + import filepath
         self.importFrame = tk.Frame(self)
 
         #Import Button and Label
@@ -34,7 +38,7 @@ class GuiRoot(tk.Tk):
 
         self.importFrame.pack(anchor="w", padx=5, pady=5)
 
-
+        #Export button + export filepath
         self.exportFrame = tk.Frame(self)
 
         #Set Export Destination Button and Label
