@@ -47,11 +47,11 @@ class GuiRoot(tk.Tk):
         self.exportFrame.pack(anchor="w", padx=5, pady=5)
 
         #Conversion Settings Button
-        self.conversionSettings = tk.Button(self, text="Conversion Settings")
+        self.conversionSettings = tk.Button(self, text="Conversion Settings", command=self.conversionSettingsButtonCallback)
         self.conversionSettings.pack(anchor="w", padx=5, pady=5)
 
         #Start Conversion Button
-        self.startConvButton = tk.Button(self, text="Start Conversion")
+        self.startConvButton = tk.Button(self, text="Start Conversion", command=self.startConversionButtonCallback)
         self.startConvButton.pack(anchor="center", padx=5, pady=5)
 
         #Label for Status Text
@@ -65,14 +65,17 @@ class GuiRoot(tk.Tk):
     def importButtonCallback(self):
         filetypesList = (("Text Files", '*.txt'), ("All files", "*.*"))
         importFilename = filedialog.askopenfilename(filetypes = filetypesList)
-        print(importFilename)
-
         self.importFilepathLabel["text"] = importFilename
+        print("Import Click")
 
     def setExportDestinationButtonCallback(self):
         filetypesList = (("Text Files", '*.txt'), ("All files", "*.*"))
         exportFilename = filedialog.asksaveasfilename(filetypes = filetypesList)
-        print(exportFilename)
-
         self.exportFilepathLabel["text"] = exportFilename
+        print("Export Click")
 
+    def startConversionButtonCallback(self):
+        print("Start Conversion Click")
+
+    def conversionSettingsButtonCallback(self):
+        print("Conversion Settings Click")
