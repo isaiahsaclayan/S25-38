@@ -1,7 +1,7 @@
 import os
+import logging
 
 FILE = 'op010.ncl.1'
-
 TITLE_COMMENT = "$$*"
 INFO_COMMENT = "$$->"
 SPINDLE_SPEED = "SPINDL"
@@ -22,6 +22,9 @@ TOOL_SIZE = "CUTTER"
 GEOMETRY_TYPE = "CUTCOM_GEOMETRY_TYPE"
 MAX_SPEED = "RAPID"
 
+logger = logging.getLogger("main")
+
+
 class genericParser:
     def __init__(self, file_path):
         self.file_path = file_path
@@ -31,11 +34,20 @@ class genericParser:
         self.parsedCommands = []
         self.unparsedCommands = []
 
+
+    def verify_file(self):
+        file_name, file_extension = os.path.splitext(self.file_path)
+        if file_extension.lower() != '.1':
+            logger.error("File type not supported")
+    
     def parse_file(self, file_path):
         with open(file_path, 'r') as file:
             return file.read().split('\n')
         
     def conversion(self):
+
+        self.verify_file()
+
         for command in self.creoCommands:
             if len(command) == 0:
                     break
