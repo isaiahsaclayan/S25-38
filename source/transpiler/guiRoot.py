@@ -66,6 +66,7 @@ class GuiRoot(tk.Tk):
 
         #Printer Parameters Button
         self.printParams = tk.Button(self, text="Printer Parameters", command=self.printParamsButtonCallback)
+        self.printParams.config(state=tk.DISABLED) #button can't be clicked until file has been imported
         self.printParams.pack(anchor="w", padx=5, pady=5)
 
         #Start Conversion Button
@@ -91,7 +92,9 @@ class GuiRoot(tk.Tk):
     def importButtonCallback(self):
         importFilename = filedialog.askopenfilename(filetypes = IMPORT_FILE_TYPES_LIST)
         self.importFilepathLabel["text"] = importFilename
+
         self.params = Parameters().params
+        self.printParams.config(state=tk.NORMAL) #enables printer parameter button and menu
 
         self.writeStatus("Import Click")
         print("Import Click")

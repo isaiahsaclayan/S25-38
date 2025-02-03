@@ -30,7 +30,6 @@ class ParameterGui(tk.Tk):
         tk.Tk.__init__(self)
         self.container = tk.Frame(self)
         self.resizable(False, False)
-        self.vals = np.zeros((2,16))
         self.gui = gui #allows for modification of the actual gui params from the overall system gui
 
         #Title of the window
@@ -42,19 +41,19 @@ class ParameterGui(tk.Tk):
         self.testLabel.grid(row=0, column=1)
 
         #parameter Controls
-        self.p1label = tk.Label(self, text="Parameter 1:")
+        self.p1label = tk.Label(self, text="Parameter 1: " + str(self.gui.params[0][0])) #shows current param val
         self.p1label.grid(row=1)
-        self.param1 = tk.Entry(self, textvariable=self.vals[0][0])
+        self.param1 = tk.Entry(self,)
         self.param1.grid(row=1, column=1)
 
-        self.p2label = tk.Label(self, text="Parameter 2:")
+        self.p2label = tk.Label(self, text="Parameter 2: " + str(self.gui.params[0][1]))
         self.p2label.grid(row=2)
-        self.param2 = tk.Entry(self, textvariable=self.vals[0][1])
+        self.param2 = tk.Entry(self)
         self.param2.grid(row=2, column=1)
 
-        self.p3label = tk.Label(self, text="Parameter 3:")
+        self.p3label = tk.Label(self, text="Parameter 3: " + str(self.gui.params[0][2]))
         self.p3label.grid(row=3)
-        self.param3 = tk.Entry(self, textvariable=self.vals[0][2])
+        self.param3 = tk.Entry(self)
         self.param3.grid(row=3, column=1)
 
         self.okButton =  tk.Button(self, text="OK", command=self.okButtonCallback)
