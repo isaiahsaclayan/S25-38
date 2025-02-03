@@ -1,3 +1,10 @@
+'''
+Author: Alvin Chung
+Created: 01/31/25
+File: guiRoot.py
+Description: Testing file for the GUI 
+'''
+
 import unittest
 from unittest import mock
 import sys
