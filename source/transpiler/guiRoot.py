@@ -121,10 +121,12 @@ class GuiRoot(tk.Tk):
         # convSettingsWindow.geometry(CONVERSION_SETTINGS_WINDOW_SIZE)
         convSettingsWindow.resizable(False, False)
 
-        settingsFrame = ConversionSettingsFrame(convSettingsWindow)
-        settingsFrame.pack()
+        convSettingsFrame = ConversionSettingsFrame(convSettingsWindow)
+        convSettingsFrame.pack()
 
         convSettingsWindow.wait_window()
+
+        #TODO - Prevent user from opening another window/interacting with main menu until conversion settings are closed
 
 class ConversionSettingsFrame(tk.Frame):
     def __init__(self, parent):
