@@ -8,6 +8,7 @@ Description: The root tkinter object for the GUI application
 import tkinter as tk
 from tkinter import filedialog
 from paramClass import Parameters
+from paramClass import ParameterGui
 
 WINDOW_TITLE = "S25-38" #TODO - Provide suitable titles
 MENU_TITLE = "S25-38 Machine Instruction Converter"
@@ -25,6 +26,7 @@ class GuiRoot(tk.Tk):
         tk.Tk.__init__(self)
         self.container = tk.Frame(self)
         self.resizable(False, False) #Resizing is disabled on both axes
+        self.params = []
         
         #Title of the window
         self.title(WINDOW_TITLE) 
@@ -89,7 +91,7 @@ class GuiRoot(tk.Tk):
     def importButtonCallback(self):
         importFilename = filedialog.askopenfilename(filetypes = IMPORT_FILE_TYPES_LIST)
         self.importFilepathLabel["text"] = importFilename
-        parameters = Parameters()
+        self.params = Parameters().params
 
         self.writeStatus("Import Click")
         print("Import Click")
@@ -112,3 +114,6 @@ class GuiRoot(tk.Tk):
     def printParamsButtonCallback(self):
         self.writeStatus("Printer Parameters Click")
         print("Printer Parameters Click")
+        print(self.params)
+        paramWindow = ParameterGui(self)
+        paramWindow.eval("tk::PlaceWindow . center")
