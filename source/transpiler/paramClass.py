@@ -1,4 +1,9 @@
-#this file is intended for the design and implementation of the class that holds the data structures for parameter inputs
+'''
+Author: Theo Barrett-Johnson
+Created: 02/03/25
+File: paramClass.py
+Description: The file for the design and implementation of the class that holds the data structures for parameter inputs
+'''
 import numpy as np
 class Parameters:
     def __init__(self):
