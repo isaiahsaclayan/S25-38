@@ -32,7 +32,7 @@ def configureAndStartLogger():
     # Print Header for Log File
     logger.info("===============TRANSPILER=====================")
     logger.info(f"File Name: transpiler-{time}.log")
-    logger.info(f"Start Time: {now.strftime("%c")}")
+    #logger.info(f"Start Time: {now.strftime("%c")}")
     logger.info("==============================================")
 
 # Main Entry Point

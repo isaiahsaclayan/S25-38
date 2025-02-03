@@ -61,6 +61,10 @@ class GuiRoot(tk.Tk):
         self.conversionSettings = tk.Button(self, text="Conversion Settings", command=self.conversionSettingsButtonCallback)
         self.conversionSettings.pack(anchor="w", padx=5, pady=5)
 
+        #Printer Parameters Button
+        self.printParams = tk.Button(self, text="Printer Parameters", command=self.printParamsButtonCallback)
+        self.printParams.pack(anchor="w", padx=5, pady=5)
+
         #Start Conversion Button
         self.startConvButton = tk.Button(self, text="Start Conversion", command=self.startConversionButtonCallback)
         self.startConvButton.pack(anchor="center", padx=5, pady=5)
@@ -102,3 +106,7 @@ class GuiRoot(tk.Tk):
     def conversionSettingsButtonCallback(self):
         self.writeStatus("Conversion Settings Click")
         print("Conversion Settings Click")
+
+    def printParamsButtonCallback(self):
+        self.writeStatus("Printer Parameters Click")
+        print("Printer Parameters Click")
