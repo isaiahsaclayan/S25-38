@@ -117,6 +117,5 @@ class GuiRoot(tk.Tk):
     def printParamsButtonCallback(self):
         self.writeStatus("Printer Parameters Click")
         print("Printer Parameters Click")
-        print(self.params)
         paramWindow = ParameterGui(self)
         paramWindow.eval("tk::PlaceWindow . center")

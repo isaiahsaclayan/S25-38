@@ -23,7 +23,7 @@ class Parameters:
 
 WINDOW_TITLE = "S25-38 Parameters" #TODO - Provide suitable titles
 MENU_TITLE = "S25-38 Machine Instruction Converter"
-GUI_WINDOW_SIZE = "400x200"
+GUI_WINDOW_SIZE = "500x250"
 
 class ParameterGui(tk.Tk):
     def __init__(self, gui):
@@ -56,13 +56,18 @@ class ParameterGui(tk.Tk):
         self.param3 = tk.Entry(self)
         self.param3.grid(row=3, column=1)
 
+        self.currlabel = tk.Label(self, text= "Current Parameters:")
+        self.currlabel.grid(row=4)
+        self.paramlabel = tk.Label(self, text= str(self.gui.params))
+        self.paramlabel.grid(row=4, column=1)
+        #Ok button closes menu and saves params
         self.okButton =  tk.Button(self, text="OK", command=self.okButtonCallback)
         self.okButton.grid(row=5, column=1)
+        #cancel button only closes menu with no save
         self.cancelButton =  tk.Button(self, text="Cancel", command=self.cancelButtonCallback)
         self.cancelButton.grid(row=5, column=2)
 
     def okButtonCallback(self): #updates params and closes window
-        #self.gui.params = self.vals
         self.gui.params[0][0] = self.param1.get() #must manually type out a get for each parameter
         self.gui.params[0][1] = self.param2.get()
         self.gui.params[0][2] = self.param3.get()
