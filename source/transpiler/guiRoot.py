@@ -7,6 +7,8 @@ Description: The root tkinter object for the GUI application
 
 import tkinter as tk
 from tkinter import filedialog
+from tkinter import ttk
+import applicationGlobals as globals
 
 WINDOW_TITLE = "S25-38" #TODO - Provide suitable titles
 MENU_TITLE = "S25-38 Machine Instruction Converter"
@@ -18,6 +20,8 @@ NSCRYPT_FILE_TYPE = ("nScrypt GCODE Files", '*.gcode')
 ACSPL_FILE_TYPE = ("ACSPL Files", '*.txt')
 IMPORT_FILE_TYPES_LIST = (CREO_FILE_TYPE, NSCRYPT_FILE_TYPE, ACSPL_FILE_TYPE, ("All files", "*.*"))
 EXPORT_FILE_TYPES_LIST = (NSCRYPT_FILE_TYPE, ACSPL_FILE_TYPE, ("All files", "*.*"))
+
+# CONVERSION_SETTINGS_WINDOW_SIZE = "500x300"
 
 class GuiRoot(tk.Tk):
     def __init__(self):
@@ -104,29 +108,50 @@ class GuiRoot(tk.Tk):
         print("Start Conversion Click")
 
     def conversionSettingsButtonCallback(self):
-
-        #Create new window
-        settingsWindow = tk.Toplevel()
-        self.eval("tk::PlaceWindow {} center".format(str(settingsWindow)))
-
-        settingsWindow.title("Conversion Settings")
-        # settingsWindow.geometry(SETTINGS_WINDOW_SIZE) #TODO set this size in the parameters module, imported
-        settingsWindow.resizable(False, False)
-
-        settingsFrame = ExampleFrame(settingsWindow) #TODO Replace with parameters frame, imported
-        settingsFrame.pack()
-
-        settingsWindow.wait_window()
-
+        
         #TODO - Remove, placeholders
         self.writeStatus("Conversion Settings Click")
         print("Conversion Settings Click")
 
-#Example for development
-#TODO - remove
-class ExampleFrame(tk.Frame):
+        #Create new window
+        convSettingsWindow = tk.Toplevel()
+        self.eval("tk::PlaceWindow {} center".format(str(convSettingsWindow)))
+
+        convSettingsWindow.title("Conversion Settings")
+        # convSettingsWindow.geometry(CONVERSION_SETTINGS_WINDOW_SIZE)
+        convSettingsWindow.resizable(False, False)
+
+        settingsFrame = ConversionSettingsFrame(convSettingsWindow)
+        settingsFrame.pack()
+
+        convSettingsWindow.wait_window()
+
+class ConversionSettingsFrame(tk.Frame):
     def __init__(self, parent):
         super().__init__(parent)
 
-        self.titleLabel = tk.Label(self, text= "Example Conversion Settings")
+        self.titleLabel = tk.Label(self, text= "Conversion Settings")
         self.titleLabel.pack(padx=10, pady=10)
+        
+        self.printerTypeSelectFrame = tk.Frame(self)
+
+        self.printTypeSelectLabel = tk.Label(self.printerTypeSelectFrame, text="Printer Type: ") 
+        self.printTypeSelectLabel.pack(side="left")
+
+        self.printerTypeCombobox = ttk.Combobox(self.printerTypeSelectFrame, values = globals.PRINTER_TYPES, state="readonly")
+        self.printerTypeCombobox.current(0)
+        self.printerTypeCombobox.pack(side="left")
+
+        self.printerTypeSelectFrame.pack(padx=10, pady=10)
+
+        self.saveButton = tk.Button(self, text="Save", command=self.saveButtonCallback)
+
+        self.saveButton.pack(padx=10, pady=10)
+
+    def saveButtonCallback(self):
+        globals.printerTypeSelected = self.printerTypeCombobox.current() #Set global value
+        selectedPrinter = globals.PRINTER_TYPES[globals.printerTypeSelected] #Get corresponding string 
+
+        self.master.master.writeStatus("Save Button Click " + selectedPrinter) #TODO - Replace with message queue system
+        #TODO - Close window after saving? - Change to "Save and Exit"
+        print("Save Button Click", selectedPrinter)
