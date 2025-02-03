@@ -99,12 +99,34 @@ class GuiRoot(tk.Tk):
 
     def startConversionButtonCallback(self):
 
-         #TODO - Remove, placeholders
+        #TODO - Remove, placeholders
         self.writeStatus("Start Conversion Click")
         print("Start Conversion Click")
 
     def conversionSettingsButtonCallback(self):
 
-         #TODO - Remove, placeholders
+        #Create new window
+        settingsWindow = tk.Toplevel()
+        self.eval("tk::PlaceWindow {} center".format(str(settingsWindow)))
+
+        settingsWindow.title("Conversion Settings")
+        # settingsWindow.geometry(SETTINGS_WINDOW_SIZE) #TODO set this size in the parameters module, imported
+        settingsWindow.resizable(False, False)
+
+        settingsFrame = ExampleFrame(settingsWindow) #TODO Replace with parameters frame, imported
+        settingsFrame.pack()
+
+        settingsWindow.wait_window()
+
+        #TODO - Remove, placeholders
         self.writeStatus("Conversion Settings Click")
         print("Conversion Settings Click")
+
+#Example for development
+#TODO - remove
+class ExampleFrame(tk.Frame):
+    def __init__(self, parent):
+        super().__init__(parent)
+
+        self.titleLabel = tk.Label(self, text= "Example Conversion Settings")
+        self.titleLabel.pack(padx=10, pady=10)
