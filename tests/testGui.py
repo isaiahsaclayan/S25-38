@@ -1,9 +1,17 @@
+'''
+Author: Alvin Chung
+Created: 01/31/25
+File: guiRoot.py
+Description: Testing file for the GUI 
+'''
+
 import unittest
 from unittest import mock
 import sys
 
 sys.path.append("../source/transpiler/")
 from guiRoot import GuiRoot
+import tkinter as tk
 
 class TestGuiButtons(unittest.TestCase):
     def setUp(self):
@@ -41,5 +49,15 @@ class TestGuiButtons(unittest.TestCase):
         
         startConvMock.assert_called()
     
+    def testWriteStatus(self):
+        self.guiRootObj.writeStatus("Alphabetical Characters")
+        assert self.guiRootObj.statusTextArea.get("1.0", tk.END) == "Alphabetical Characters\n"
+
+        self.guiRootObj.writeStatus("Numbers 0123456789")
+        assert self.guiRootObj.statusTextArea.get("1.0", tk.END) == "Numbers 0123456789\n"
+
+        self.guiRootObj.writeStatus("Special Characters `~!@#$%^&*()_+")
+        assert self.guiRootObj.statusTextArea.get("1.0", tk.END) == "Special Characters `~!@#$%^&*()_+\n"
+
 if __name__ == "__main__":
     unittest.main()
