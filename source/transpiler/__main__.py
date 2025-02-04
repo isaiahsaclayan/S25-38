@@ -3,6 +3,8 @@ import logging
 import os
 import datetime as dt
 
+from guiRoot import GuiRoot
+
 # Instantiate Logger
 logger = logging.getLogger("main")
 LOG_FORMAT = "[%(asctime)s] - [%(levelname)s] %(message)s" # Ex. [2025-03-04 01:23:45] - [INFO] Message ...
@@ -37,6 +39,11 @@ def configureAndStartLogger():
 def main():
     # Start Logger
     configureAndStartLogger()
+
+    #GUI Creation
+    root = GuiRoot()
+    root.eval("tk::PlaceWindow . center")
+    root.mainloop()
 
 
 if __name__ == "__main__":
