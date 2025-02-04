@@ -101,6 +101,9 @@ class GuiRoot(tk.Tk):
         self.writeStatus("Import Click")
         print("Import Click")
 
+        self.params = Parameters().params
+        self.printParams.config(state=tk.NORMAL) #enables printer parameter button and menu
+
     def setExportDestinationButtonCallback(self):
         exportFilename = filedialog.asksaveasfilename(filetypes = EXPORT_FILE_TYPES_LIST)
         self.exportFilepathLabel["text"] = exportFilename
@@ -121,12 +124,6 @@ class GuiRoot(tk.Tk):
         self.writeStatus("Conversion Settings Click")
         print("Conversion Settings Click")
 
-    def printParamsButtonCallback(self):
-        self.writeStatus("Printer Parameters Click")
-        print("Printer Parameters Click")
-        paramWindow = ParameterGui(self)
-        paramWindow.eval("tk::PlaceWindow . center")
-
         #Create new window
         convSettingsWindow = tk.Toplevel()
         self.eval("tk::PlaceWindow {} center".format(str(convSettingsWindow)))
@@ -141,6 +138,12 @@ class GuiRoot(tk.Tk):
         convSettingsWindow.wait_window()
 
         #TODO - Prevent user from opening another window/interacting with main menu until conversion settings are closed
+
+    def printParamsButtonCallback(self):
+        self.writeStatus("Printer Parameters Click")
+        print("Printer Parameters Click")
+        paramWindow = ParameterGui(self)
+        paramWindow.eval("tk::PlaceWindow . center")
 
 class ConversionSettingsFrame(tk.Frame):
     def __init__(self, parent):
