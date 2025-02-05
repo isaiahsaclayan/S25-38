@@ -1,5 +1,6 @@
 from toolpathConverter import ToolpathConverter
 from typing import List
+from enum import Enum
 
 # ACSPL Code Blocks, from gcodetoacspl repo provided
 MACHINE_SETUP = """
@@ -55,12 +56,24 @@ COMMAND_MAP: dict[str,str] = {
     "STOP": STOP,
     "CLOSE_INKJET": CLOSE_INKJET,
     "OPEN_INKJET": OPEN_INKJET,
-    "GOTO" : "PTP"
 }
+
+class Machine:
+    def __init__(self):
+        # If the machine is dispensing
+        self.is_printing = False
+
+        # Axis Registers
+        self.X: float = 0.0
+        self.Y: float = 0.0
+        self.Z: float = 0.0
+        self.A: float = 0.0
+        self.B: float = 0.0
 
 class AcsplConverter(ToolpathConverter):
     def __init__(self):
         super().__init__(COMMAND_MAP)
+        self.machine = Machine()
 
     def _get_command(self, command: dict[str, dict[str, str]]) -> str:
         """
@@ -80,12 +93,15 @@ class AcsplConverter(ToolpathConverter):
         # Stores the ACSPL Commands in a list of strings
         acspl = []
 
+        # Add comment to dictate start of toolpath.
+        acspl.append("! Start of Toolpath")
+
         # Iterate through each command
         for command in parsed_commands:
 
             # Check if the command is a valid command
             if command.keys not in COMMAND_MAP:
-                acspl.append(f"INVALID COMMAND: {command}")
+                acspl.append(f"!INVALID COMMAND: {command}")
                 continue
 
             # Get the ACSPL equivalent of the command
