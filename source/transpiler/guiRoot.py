@@ -7,6 +7,8 @@ Description: The root tkinter object for the GUI application
 
 import tkinter as tk
 from tkinter import filedialog
+from paramClass import Parameters
+from paramClass import ParameterGui
 from tkinter import ttk
 import applicationGlobals as globals
 
@@ -28,6 +30,7 @@ class GuiRoot(tk.Tk):
         tk.Tk.__init__(self)
         self.container = tk.Frame(self)
         self.resizable(False, False) #Resizing is disabled on both axes
+        self.params = []
         
         #Title of the window
         self.title(WINDOW_TITLE) 
@@ -65,6 +68,11 @@ class GuiRoot(tk.Tk):
         self.conversionSettings = tk.Button(self, text="Conversion Settings", command=self.conversionSettingsButtonCallback)
         self.conversionSettings.pack(anchor="w", padx=5, pady=5)
 
+        #Printer Parameters Button
+        self.printParams = tk.Button(self, text="Printer Parameters", command=self.printParamsButtonCallback)
+        self.printParams.config(state=tk.DISABLED) #button can't be clicked until file has been imported
+        self.printParams.pack(anchor="w", padx=5, pady=5)
+
         #Start Conversion Button
         self.startConvButton = tk.Button(self, text="Start Conversion", command=self.startConversionButtonCallback)
         self.startConvButton.pack(anchor="center", padx=5, pady=5)
@@ -92,6 +100,9 @@ class GuiRoot(tk.Tk):
          #TODO - Remove, placeholders
         self.writeStatus("Import Click")
         print("Import Click")
+
+        self.params = Parameters().params
+        self.printParams.config(state=tk.NORMAL) #enables printer parameter button and menu
 
     def setExportDestinationButtonCallback(self):
         exportFilename = filedialog.asksaveasfilename(filetypes = EXPORT_FILE_TYPES_LIST)
@@ -127,6 +138,12 @@ class GuiRoot(tk.Tk):
         convSettingsWindow.wait_window()
 
         #TODO - Prevent user from opening another window/interacting with main menu until conversion settings are closed
+
+    def printParamsButtonCallback(self):
+        self.writeStatus("Printer Parameters Click")
+        print("Printer Parameters Click")
+        paramWindow = ParameterGui(self)
+        paramWindow.eval("tk::PlaceWindow . center")
 
 class ConversionSettingsFrame(tk.Frame):
     def __init__(self, parent):
