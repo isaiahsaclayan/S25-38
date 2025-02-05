@@ -1,4 +1,4 @@
-from . import ToolpathConverter
+from toolpathConverter import ToolpathConverter
 from typing import List
 
 # ACSPL Code Blocks, from gcodetoacspl repo provided
