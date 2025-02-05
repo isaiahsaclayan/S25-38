@@ -30,5 +30,10 @@ class TestAcsplConverter(unittest.TestCase):
     def test_constructor(self):
         self.assertIsNotNone(self.acsplConverter)
 
+    def test_invalid_command(self):
+        result_error_str = self.acsplConverter.translate([INVALID_COMMAND])[0]
+        exp_error_str = "INVALID COMMAND: {'INVALID': {'X': '10', 'Y': '20', 'Z': '30', 'A': '40', 'B': '50'}}"
+        self.assertEqual(result_error_str, exp_error_str)
+
 if __name__ == "__main__":
     unittest.main()
