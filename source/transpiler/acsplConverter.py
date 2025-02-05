@@ -1,6 +1,11 @@
+from venv import logger
+
 from toolpathConverter import ToolpathConverter
 from typing import List
-from enum import Enum
+import logging
+
+# Get the logger instance
+logger = logging.getLogger(__name__)
 
 # ACSPL Code Blocks, from gcodetoacspl repo provided
 MACHINE_SETUP = """
@@ -61,19 +66,25 @@ COMMAND_MAP: dict[str,str] = {
 class Machine:
     def __init__(self):
         # If the machine is dispensing
-        self.is_printing = False
+        self.state: bool = False
 
         # Axis Registers
-        self.X: float = 0.0
-        self.Y: float = 0.0
-        self.Z: float = 0.0
-        self.A: float = 0.0
-        self.B: float = 0.0
+        self.X: any = None
+        self.Y: any = None
+        self.Z: any = None
+        self.A: any = None
+        self.B: any = None
 
 class AcsplConverter(ToolpathConverter):
     def __init__(self):
+        # Initialize Command Map
         super().__init__(COMMAND_MAP)
+
+        # Create an Instance of Machine
         self.machine = Machine()
+
+        # Log ACSPL Converter Instantiation
+        logger.info("ACSPL Converter Instantiated")
 
     def _get_command(self, command: dict[str, dict[str, str]]) -> str:
         """
@@ -102,6 +113,7 @@ class AcsplConverter(ToolpathConverter):
             # Check if the command is a valid command
             if command.keys not in COMMAND_MAP:
                 acspl.append(f"!INVALID COMMAND: {command}")
+                logger.info(f"Invalid command: {command}")
                 continue
 
             # Get the ACSPL equivalent of the command
