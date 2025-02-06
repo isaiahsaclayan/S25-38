@@ -106,12 +106,12 @@ class Machine:
     def print_started(self):
         return self._print_started
 
-    def set_axis_registers(self, x: any, y: any, z: any, a: any = None, b: any = None):
-        self._X = x
-        self._Y = y
-        self._Z = z
-        self._A = a
-        self._B = b
+    def set_axis_registers(self, x: any, y: any, z: any, a: any = 0.0, b: any = 0.0):
+        self._X = float(x)
+        self._Y = float(y)
+        self._Z = float(z)
+        self._A = float(a)
+        self._B = float(b)
 
     def get_location_and_switchval_str(self, switch: str):
         # TODO: Extend to support 5 axis
