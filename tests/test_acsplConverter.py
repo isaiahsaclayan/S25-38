@@ -40,7 +40,7 @@ PARSED_COMMAND_LIST = [
    ]
 
 MOVE_COMMAND = {
-        "MOVE": {
+        "move": {
             "X": "10",
             "Y": "20",
             "Z": "30",
@@ -70,6 +70,10 @@ class TestAcsplConverter(unittest.TestCase):
         result_error_str = self.acsplConverter.translate([INVALID_COMMAND])[1]
         exp_error_str = "!INVALID COMMAND: {'INVALID': {'X': '10', 'Y': '20', 'Z': '30', 'A': '40', 'B': '50'}}"
         self.assertEqual(result_error_str, exp_error_str)
+
+    def test_small_parsed_commands(self):
+        result_str = self.acsplConverter.translate(PARSED_COMMAND_LIST)
+
 
 if __name__ == "__main__":
     unittest.main()

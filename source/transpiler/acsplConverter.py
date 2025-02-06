@@ -8,8 +8,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 # ACSPL Code Blocks, from gcodetoacspl repo provided
-MACHINE_SETUP = """
-#0
+MACHINE_SETUP = """#0
 !Machine Type - Optomec 5-axis Aerosol Jet
 OpenDelay = 0
 CloseDelay = 0
@@ -35,25 +34,22 @@ MASTER MPOS(A) = APOS(14)*(1-ALPHA) + MPOS(A)*ALPHA
 MASTER MPOS(B) = APOS(15)*(1-ALPHA) + MPOS(B)*ALPHA
 SLAVE/p X; SLAVE/p Y; SLAVE/p Z; SLAVE/p A; SLAVE/p B
 
-CRangle=2*3.1416
-"""
+CRangle=2*3.1416"""
 
 STOP = """
 HALT ALL
-STOP
-"""
+STOP"""
 
-CLOSE_INKJET = """
-ENDS (10,11,12,14,15)
+CLOSE_INKJET = """ENDS (10,11,12,14,15)
 TILL (^AST(10).#MOVE) & (^AST(11).#MOVE) & (^AST(12).#MOVE) &(^AST(14).#MOVE) & (^AST(15).#MOVE)
 Start gIntSubBuffer,ShutterClose;TILL PST(gIntSubBuffer).#RUN = 0
 WAIT CloseDelay
 """
 
+
 OPEN_INKJET = """
 Start gIntSubBuffer,ShutterOpen;TILL PST(gIntSubBuffer).#RUN = 0
-WAIT OpenDelay
-"""
+WAIT OpenDelay"""
 
 # Dictionary mapping generic commands to ACSPL commands
 COMMAND_MAP: dict[str,str] = {
@@ -61,19 +57,87 @@ COMMAND_MAP: dict[str,str] = {
     "STOP": STOP,
     "CLOSE_INKJET": CLOSE_INKJET,
     "OPEN_INKJET": OPEN_INKJET,
+    "max_speed": "max_speed",
+    "speed": "speed",
+    "move": "move"
 }
 
 class Machine:
+
     def __init__(self):
         # If the machine is dispensing
-        self.state: bool = False
+        self._is_dispensing: bool = False
+
+        # If printing has occurred
+        self._print_started: bool = False
+
+        # If within printing segment
+        self._in_printing_segment: bool = False
 
         # Axis Registers
-        self.X: any = None
-        self.Y: any = None
-        self.Z: any = None
-        self.A: any = None
-        self.B: any = None
+        self._X: any = None
+        self._Y: any = None
+        self._Z: any = None
+        self._A: any = None
+        self._B: any = None
+
+    """
+    Getters and Setters for is_dispensing, in_printing_segment, and axis registers
+    """
+    @property
+    def is_dispensing(self):
+        return self._is_dispensing
+
+    @is_dispensing.setter
+    def is_dispensing(self, is_dispensing: bool):
+        # Set print started once dispensing starts
+        if not self._print_started and is_dispensing:
+            self._print_started = True
+
+        # Set the dispensing state
+        self._is_dispensing = is_dispensing
+
+    @property
+    def in_printing_segment(self):
+        return self._in_printing_segment
+
+    @in_printing_segment.setter
+    def in_printing_segment(self, in_printing_segment: bool):
+        self._in_printing_segment = in_printing_segment
+
+    @property
+    def print_started(self):
+        return self._print_started
+
+    def set_axis_registers(self, x: any, y: any, z: any, a: any = None, b: any = None):
+        self._X = x
+        self._Y = y
+        self._Z = z
+        self._A = a
+        self._B = b
+
+
+    def get_location_and_speed_str(self):
+        # TODO: Extend to support 5 axis
+        return f"(10,11,12), {self._X}, {self._Y}, {self._Z}, {self._get_speed()}"
+
+    def _get_speed(self):
+        """
+        Get the corresponding speed string based on the dispensing state
+        :return: string representation of the speed
+        """
+        # If the machine is not dispensing return rapid speed string
+        if not self._is_dispensing:
+            return "gDblRapidSpeed"
+        # If the machine is to dispense and not in printing segment,
+        # return the printing segment speed string
+        elif self._is_dispensing and not self.in_printing_segment:
+            return "CRangle"
+        # If the machine is dispensing return the process speed string
+        else:
+            return "gDblProcessSpeed"
+
+
 
 class AcsplConverter(ToolpathConverter):
     def __init__(self):
@@ -83,17 +147,81 @@ class AcsplConverter(ToolpathConverter):
         # Create an Instance of Machine
         self.machine = Machine()
 
+        # Stores list of instructions
+        self._acspl = []
+
         # Log ACSPL Converter Instantiation
         logger.info("ACSPL Converter Instantiated")
 
-    def _get_command(self, command: dict[str, dict[str, str]]) -> str:
+    def _process_command(self, command: str, params: dict[str, str]):
         """
-        Performs translation of a single command
+        Processes a single command
         :param command: individual command to be translated
         :return: string representation of the translated command
         """
-        # TODO: perform translation of single command
-        pass
+        if command == "max_speed":
+            # Check if machine is currently dispensing,
+            # or at thee
+            if self.machine.is_dispensing or self.machine.in_printing_segment or self.machine.print_started:
+                self.machine.is_dispensing = False
+                self.machine.in_printing_segment = False
+                self._acspl.append(CLOSE_INKJET)
+                return
+
+        elif command == "speed":
+            # If normal speed command, machine is going to start dispensing
+            self.machine.is_dispensing = True
+            # Open the inkjet
+            self._acspl.append(OPEN_INKJET)
+            return
+
+        # If the command is a move command
+        elif command == "move":
+            # TODO: Extend to support 5 axis
+
+            # Classify the type of move command
+            # If not dispensing, the ACSPL movement is "PTP"
+            if not self.machine.is_dispensing:
+                # Set the location registers for the machine to store desired location
+                self.machine.set_axis_registers(params["x"], params["y"], params["z"])
+                # Format and create the PTP command
+                move_command = "PTP"
+                move_switches = "EV"
+                move_location_and_speed = self.machine.get_location_and_speed_str()
+                acspl_command = f"{move_command}/{move_switches} {move_location_and_speed}"
+                self._acspl.append(acspl_command)
+            # If to dispense, and not in printing segment, format the printing segment
+            elif self.machine.is_dispensing and not self.machine.in_printing_segment:
+                # Set the machine to be in printing segment
+                self.machine.set_in_printing_segment = True
+                # Format and create the XSEG command
+                segment_command = "XSEG"
+                segment_switch = "A"
+                segment_location_and_speed = self.machine.get_location_and_speed_str()
+                acspl_command = f"{segment_command}/{segment_switch} {segment_location_and_speed}"
+                self._acspl.append(acspl_command)
+                # Set the location registers for the machine to store desired location
+                self.machine.set_axis_registers(params["x"], params["y"], params["z"])
+                # Format and create the LINE command
+                move_command = "LINE"
+                move_switches = "EV"
+                move_location_and_speed = self.machine.get_location_and_speed_str()
+                move_acspl_command = f"{move_command}/{move_switches} {move_location_and_speed}"
+                self._acspl.append(move_acspl_command)
+            # If dispensing, the ACSPL movement is "LINE"
+            elif self.machine.in_printing_segment:
+                # Set the location registers for the machine to store desired location
+                self.machine.set_axis_registers(params["x"], params["y"], params["z"])
+                # Format and create the LINE command
+                move_command = "LINE"
+                move_switches = "EV"
+                move_location_and_speed = self.machine.get_location_and_speed_str()
+                acspl_command = f"{move_command}/{move_switches} {move_location_and_speed}"
+                self._acspl.append(acspl_command)
+
+
+
+
 
     def translate(self, parsed_commands: List[dict[str, dict[str, str]]]) -> List[str]:
         """
@@ -101,22 +229,27 @@ class AcsplConverter(ToolpathConverter):
         :param parsed_commands: list of commands to be translated from generic parser
         :return: list of strings that are translated commands
         """
-        # Stores the ACSPL Commands in a list of strings
-        acspl = []
 
         # Add comment to dictate start of toolpath.
-        acspl.append("! Start of Toolpath")
+        self._acspl.append("! Start of Toolpath")
 
         # Iterate through each command
         for command in parsed_commands:
 
             # Check if the command is a valid command
-            if command.keys not in COMMAND_MAP:
-                acspl.append(f"!INVALID COMMAND: {command}")
+            parsed_command = list(command.keys())[0]
+            if parsed_command not in COMMAND_MAP:
+                self._acspl.append(f"!INVALID COMMAND: {command}")
                 logger.info(f"Invalid command: {command}")
                 continue
 
-            # Get the ACSPL equivalent of the command
-            acspl.append(self._get_command(command))
+            # Process the command
+            self._process_command(parsed_command, command[parsed_command])
 
-        return acspl
+        # Once commands are processed, append STOP ACSPL code block
+        self._acspl.append(STOP)
+
+        for acspl in self._acspl:
+            print(acspl)
+
+        return self._acspl
