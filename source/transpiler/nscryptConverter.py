@@ -1,21 +1,29 @@
-from . import ToolpathConverter
+"""
+Author: Andrew Viola
+Created:
+File: nscryptConverter.py
+Description:
+"""
+
+# Imports
+from . import ToolpathConverter # Parent Class
 from typing import List
 
-COMMAND_MAP: dict[str,str] = {
-    "GenericCommand" : "nScrypt Command"
-}
+SUPPORTED_COMMANDS: List[str] = [
+    "GenericCommand",
+    "GenericCommand2"
+]
 
 class NscryptConverter(ToolpathConverter):
     def __init__(self):
-        super().__init__(COMMAND_MAP)
+        super().__init__(SUPPORTED_COMMANDS)
 
-    def _get_command(self, command: dict[str, dict[str, str]]) -> str:
+    def _process_command(self, command: str, params: dict[str, str]):
         """
-        Performs translation of a single command
+        Processes a single command
         :param command: individual command to be translated
-        :return: string representation of the translated command
         """
-        # TODO: perform translation of single command
+        # TODO: perform processing of single command
         pass
 
     def translate(self, parsed_commands: List[dict[str, dict[str, str]]]) -> List[str]:
