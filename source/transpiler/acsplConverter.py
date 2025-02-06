@@ -52,16 +52,12 @@ OPEN_INKJET = """
 Start gIntSubBuffer,ShutterOpen;TILL PST(gIntSubBuffer).#RUN = 0
 WAIT OpenDelay"""
 
-# Dictionary mapping generic commands to ACSPL commands
-COMMAND_MAP: dict[str,str] = {
-    "MACHINE_SETUP": MACHINE_SETUP,
-    "STOP": STOP,
-    "CLOSE_INKJET": CLOSE_INKJET,
-    "OPEN_INKJET": OPEN_INKJET,
-    "max_speed": "max_speed",
-    "speed": "speed",
-    "move": "move"
-}
+# List of supported commands
+SUPPORTED_COMMANDS: List[str] = [
+    "max_speed",
+    "speed",
+    "move"
+]
 
 class Machine:
 
@@ -140,13 +136,10 @@ class Machine:
 class AcsplConverter(ToolpathConverter):
     def __init__(self):
         # Initialize Command Map
-        super().__init__(COMMAND_MAP)
+        super().__init__(SUPPORTED_COMMANDS)
 
         # Create an Instance of Machine
         self.machine = Machine()
-
-        # Stores list of instructions
-        self._acspl = []
 
         # Log ACSPL Converter Instantiation
         logger.info("ACSPL Converter Instantiated")
@@ -155,15 +148,15 @@ class AcsplConverter(ToolpathConverter):
         """
         Processes a single command
         :param command: individual command to be translated
-        :return: string representation of the translated command
         """
+
         # If the command is a max speed command
         if command == "max_speed":
             # Check if machine is currently dispensing
             if self.machine.is_dispensing or self.machine.in_printing_segment:
                 self.machine.is_dispensing = False
                 self.machine.in_printing_segment = False
-                self._acspl.append(CLOSE_INKJET)
+                self._translated_commands.append(CLOSE_INKJET)
                 return
 
         # If the command is a speed command
@@ -171,7 +164,7 @@ class AcsplConverter(ToolpathConverter):
             # If normal speed command, machine is going to start dispensing
             self.machine.is_dispensing = True
             # Open the inkjet
-            self._acspl.append(OPEN_INKJET)
+            self._translated_commands.append(OPEN_INKJET)
             return
 
         # If the command is a move command
@@ -189,7 +182,7 @@ class AcsplConverter(ToolpathConverter):
                 move_switches = "EV"
                 move_location_and_speed = self.machine.get_location_and_speed_str(move_switches)
                 acspl_command = f"{move_command}/{move_switches} {move_location_and_speed}"
-                self._acspl.append(acspl_command)
+                self._translated_commands.append(acspl_command)
 
             # If to dispense, and not in printing segment, format the printing segment
             elif self.machine.is_dispensing and not self.machine.in_printing_segment:
@@ -199,7 +192,7 @@ class AcsplConverter(ToolpathConverter):
                 segment_switch = "A" # Switch to
                 segment_location_and_speed = self.machine.get_location_and_speed_str(segment_switch)
                 acspl_command = f"{segment_command}/{segment_switch} {segment_location_and_speed}"
-                self._acspl.append(acspl_command)
+                self._translated_commands.append(acspl_command)
 
                 # Set the machine to be in printing segment
                 self.machine.in_printing_segment = True
@@ -211,7 +204,7 @@ class AcsplConverter(ToolpathConverter):
                 move_switches = "EV"
                 move_location_and_speed = self.machine.get_location_and_speed_str(move_switches)
                 move_acspl_command = f"{move_command}/{move_switches} {move_location_and_speed}"
-                self._acspl.append(move_acspl_command)
+                self._translated_commands.append(move_acspl_command)
 
             # If dispensing, the ACSPL movement is "LINE"
             elif self.machine.in_printing_segment:
@@ -222,7 +215,7 @@ class AcsplConverter(ToolpathConverter):
                 move_switches = "EV"
                 move_location_and_speed = self.machine.get_location_and_speed_str(move_switches)
                 acspl_command = f"{move_command}/{move_switches} {move_location_and_speed}"
-                self._acspl.append(acspl_command)
+                self._translated_commands.append(acspl_command)
 
 
     def translate(self, parsed_commands: List[dict[str, dict[str, str]]]) -> List[str]:
@@ -233,7 +226,7 @@ class AcsplConverter(ToolpathConverter):
         """
 
         # Add comment to dictate start of toolpath.
-        self._acspl.append("! Start of Toolpath")
+        self._translated_commands.append("! Start of Toolpath")
 
         # Iterate through each command
         for command in parsed_commands:
@@ -241,7 +234,7 @@ class AcsplConverter(ToolpathConverter):
             # Check if the command is a valid command
             parsed_command = list(command.keys())[0]
             if parsed_command not in COMMAND_MAP:
-                self._acspl.append(f"!INVALID COMMAND: {command}")
+                self._translated_commands.append(f"!INVALID COMMAND: {command}")
                 logger.info(f"Invalid command: {command}")
                 continue
 
@@ -249,9 +242,9 @@ class AcsplConverter(ToolpathConverter):
             self._process_command(parsed_command, command[parsed_command])
 
         # Once commands are processed, append STOP ACSPL code block
-        self._acspl.append(STOP)
+        self._translated_commands.append(STOP)
 
-        for acspl in self._acspl:
+        for acspl in self._translated_commands:
             print(acspl)
 
-        return self._acspl
+        return self._translated_commands
