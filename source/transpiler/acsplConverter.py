@@ -233,7 +233,7 @@ class AcsplConverter(ToolpathConverter):
 
             # Check if the command is a valid command
             parsed_command = list(command.keys())[0]
-            if parsed_command not in COMMAND_MAP:
+            if parsed_command not in SUPPORTED_COMMANDS:
                 self._translated_commands.append(f"!INVALID COMMAND: {command}")
                 logger.info(f"Invalid command: {command}")
                 continue
