@@ -1,22 +1,32 @@
+"""
+Author: Isaiah Amir Saclayan
+Created: 1/29/25
+File: toolpathConverter.py
+Description: Parent class for toolpath conversion
+"""
+# Imports
 from typing import List
 
 # Parent Class for Generic to Language Specific Conversion
 class ToolpathConverter:
 
-    def __init__(self, command_map: dict[str,str]):
+    def __init__(self, supported_commands: list[str]):
         """
-        :param command_map: Dictionary of generic command to language specific command
+        :param supported_commands: Dictionary of generic command to language specific command
         """
 
         # Stores the mapping from the generic command to desired machine's command
-        self._command_map: dict[str, str] = command_map
+        self._supported_commands: list[str] = supported_commands
 
-    def _get_command(self, command: dict[str, dict[str,str]]) -> str:
+        # Stores the list of translated commands
+        self._translated_commands: list[str] = []
+
+    def _process_command(self, command:str, params:dict[str, str]):
         """
-        Performs translation of a single command
+        Processes a single command
         To be overwritten in inherited classes
-        :param command: individual command to be translated
-        :return: string representation of the translated command
+        :param command: string representation of the generic command
+        :param params: dictionary of parameters to format command
         """
         pass
 
