@@ -2,6 +2,7 @@ import unittest
 import sys
 sys.path.append("../source/transpiler/")
 from acsplConverter import AcsplConverter
+from acsplConverter import MACHINE_SETUP, STOP, CLOSE_INKJET, OPEN_INKJET
 
 PARSED_COMMAND_LIST = [
     {'coolant': {'bool': True}},
