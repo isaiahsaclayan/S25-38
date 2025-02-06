@@ -160,9 +160,8 @@ class AcsplConverter(ToolpathConverter):
         :return: string representation of the translated command
         """
         if command == "max_speed":
-            # Check if machine is currently dispensing,
-            # or at thee
-            if self.machine.is_dispensing or self.machine.in_printing_segment or self.machine.print_started:
+            # Check if machine is currently dispensing
+            if self.machine.is_dispensing or self.machine.in_printing_segment:
                 self.machine.is_dispensing = False
                 self.machine.in_printing_segment = False
                 self._acspl.append(CLOSE_INKJET)
