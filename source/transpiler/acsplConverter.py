@@ -126,7 +126,7 @@ class Machine:
         if not self._is_dispensing and "V" in switch.upper():
             return "gDblRapidSpeed"
         # If the machine is dispensing return the process speed string
-        elif "V" in switch.upper():
+        elif "V" in switch.upper() and self._is_dispensing:
             return "gDblProcessSpeed"
         # If the machine is to dispense and not in printing segment and angle switch
         # return the printing segment speed string
@@ -201,7 +201,7 @@ class AcsplConverter(ToolpathConverter):
                 self.machine.set_axis_registers(params["x"], params["y"], params["z"])
                 # Format and create the LINE command
                 move_command = "LINE"
-                move_switches = "EV"
+                move_switches = "V"
                 move_location_and_speed = self.machine.get_location_and_speed_str(move_switches)
                 move_acspl_command = f"{move_command}/{move_switches} {move_location_and_speed}"
                 self._translated_commands.append(move_acspl_command)
@@ -212,7 +212,7 @@ class AcsplConverter(ToolpathConverter):
                 self.machine.set_axis_registers(params["x"], params["y"], params["z"])
                 # Format and create the LINE command
                 move_command = "LINE"
-                move_switches = "EV"
+                move_switches = "V"
                 move_location_and_speed = self.machine.get_location_and_speed_str(move_switches)
                 acspl_command = f"{move_command}/{move_switches} {move_location_and_speed}"
                 self._translated_commands.append(acspl_command)
