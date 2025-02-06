@@ -4,6 +4,42 @@ sys.path.append("../source/transpiler/")
 from acsplConverter import AcsplConverter
 from acsplConverter import MACHINE_SETUP, STOP, CLOSE_INKJET, OPEN_INKJET, START_COMMENT
 
+PARSED_COMMANDS = [
+    {'coolant': {'bool': True}},
+    {'max_speed': {'bool': True}},
+    {'move': {'x': -0.35, 'y': 5.0107142857, 'z': 1.225}},
+    {'speed': {'speed': 10.0}},
+    {'move': {'x': -0.35, 'y': 5.0107142857, 'z': 1.1}},
+    {'move': {'x': 3.35, 'y': 5.0107142857, 'z': 1.1}},
+    {'move': {'x': 3.35, 'y': 5.0107142857, 'z': 1.2}},
+    {'max_speed': {'bool': True}},
+    {'move': {'x': 3.35, 'y': 5.0107142857, 'z': 1.225}},
+    {'max_speed': {'bool': True}},
+    {'move': {'x': -0.35, 'y': 4.7714285714, 'z': 1.225}},
+    {'speed': {'speed': 10.0}},
+    {'move': {'x': -0.35, 'y': 4.7714285714, 'z': 1.1}},
+    {'move': {'x': 3.35, 'y': 4.7714285714, 'z': 1.1}},
+    {'move': {'x': 3.35, 'y': 4.7714285714, 'z': 1.2}},
+    {'max_speed': {'bool': True}},
+    {'move': {'x': 3.35, 'y': 4.7714285714, 'z': 1.225}},
+    {'max_speed': {'bool': True}},
+    {'move': {'x': -0.35, 'y': 4.5321428571, 'z': 1.225}},
+    {'speed': {'speed': 10.0}},
+    {'move': {'x': -0.35, 'y': 4.5321428571, 'z': 1.1}},
+    {'move': {'x': 3.35, 'y': 4.5321428571, 'z': 1.1}},
+    {'move': {'x': 3.35, 'y': 4.5321428571, 'z': 1.2}},
+    {'max_speed': {'bool': True}},
+    {'move': {'x': 3.35, 'y': 4.5321428571, 'z': 1.225}},
+    {'max_speed': {'bool': True}},
+    {'move': {'x': -0.35, 'y': 4.2928571429, 'z': 1.225}},
+    {'speed': {'speed': 10.0}},
+    {'move': {'x': -0.35, 'y': 4.2928571429, 'z': 1.1}},
+    {'move': {'x': 3.35, 'y': 4.2928571429, 'z': 1.1}},
+    {'move': {'x': 3.35, 'y': 4.2928571429, 'z': 1.2}},
+    {'max_speed': {'bool': True}},
+    {'move': {'x': 3.35, 'y': 4.2928571429, 'z': 1.225}}
+   ]
+
 class TestAcsplConverter(unittest.TestCase):
     def setUp(self):
         self.acsplConverter = AcsplConverter()
