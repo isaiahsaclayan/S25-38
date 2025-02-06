@@ -255,12 +255,11 @@ class AcsplConverter(ToolpathConverter):
         :param parsed_commands: list of commands to be translated from generic parser
         :return: list of strings that are translated commands
         """
+        # Append the machine setup code block
+        self._translated_commands.append(MACHINE_SETUP)
 
         # Add comment to dictate start of toolpath.
         self._translated_commands.append("! Start of Toolpath")
-
-        # Append the machine setup code block
-        self._translated_commands.append(MACHINE_SETUP)
 
         # Iterate through each command
         for command in parsed_commands:
@@ -274,6 +273,10 @@ class AcsplConverter(ToolpathConverter):
 
             # Process the command
             self._process_command(parsed_command, command[parsed_command])
+
+        # If the machine is dispensing, close the inkjet
+        if self.machine.is_dispensing:
+            self._translated_commands.append(CLOSE_INKJET)
 
         # Once commands are processed, append STOP ACSPL code block
         self._translated_commands.append(STOP)
