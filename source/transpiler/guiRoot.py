@@ -16,6 +16,8 @@ WINDOW_TITLE = "S25-38" #TODO - Provide suitable titles
 MENU_TITLE = "S25-38 Machine Instruction Converter"
 GUI_WINDOW_SIZE = "500x300"
 
+# CONVERSION_SETTINGS_WINDOW_SIZE = "500x300"
+
 #TODO - Change these to proper extensions
 CREO_FILE_TYPE = ("Creo Toolpath Files", '*.ncl.1')
 NSCRYPT_FILE_TYPE = ("nScrypt GCODE Files", '*.gcode')
@@ -23,7 +25,7 @@ ACSPL_FILE_TYPE = ("ACSPL Files", '*.txt')
 IMPORT_FILE_TYPES_LIST = (CREO_FILE_TYPE, NSCRYPT_FILE_TYPE, ACSPL_FILE_TYPE, ("All files", "*.*"))
 EXPORT_FILE_TYPES_LIST = (NSCRYPT_FILE_TYPE, ACSPL_FILE_TYPE, ("All files", "*.*"))
 
-# CONVERSION_SETTINGS_WINDOW_SIZE = "500x300"
+QUEUE_LOOP_RATE = 100
 
 class GuiRoot(tk.Tk):
     def __init__(self):
@@ -37,8 +39,8 @@ class GuiRoot(tk.Tk):
         self.geometry(GUI_WINDOW_SIZE)
 
         #Title of Menu
-        self.testLabel = tk.Label(self, text = MENU_TITLE)
-        self.testLabel.pack(anchor="center")
+        self.menuTitleLabel = tk.Label(self, text = MENU_TITLE)
+        self.menuTitleLabel.pack(anchor="center")
 
         #Import button + import filepath
         self.importFrame = tk.Frame(self)
@@ -179,6 +181,18 @@ class ConversionSettingsFrame(tk.Frame):
         globals.printerTypeSelected = self.printerTypeCombobox.current() #Set global value
         selectedPrinter = globals.PRINTER_TYPES[globals.printerTypeSelected] #Get corresponding string 
 
-        self.master.master.writeStatus("Save Button Click " + selectedPrinter) #TODO - Replace with message queue system
+        globals.writeStatusQueue("Save Button Click " + selectedPrinter) #TODO - Replace with message queue system
         #TODO - Close window after saving? - Change to "Save and Exit"
         print("Save Button Click", selectedPrinter)
+
+def queueLoop(rootObject):
+    # Loop through all available messages until queue is empty
+    while(True):
+        try:
+            message = globals.statusQueue.get(block=False)
+            rootObject.writeStatus(message)
+        except globals.queue.Empty:
+            break
+
+    # Follow the underlying loop of the GUI
+    rootObject.after(QUEUE_LOOP_RATE, queueLoop, rootObject)
