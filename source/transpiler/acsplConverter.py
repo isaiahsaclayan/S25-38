@@ -7,7 +7,9 @@ import logging
 # Get the logger instance
 logger = logging.getLogger(__name__)
 
-# ACSPL Code Blocks, from gcodetoacspl repo provided
+"""
+ACSPL Code Blocks
+"""
 MACHINE_SETUP = """#0
 !Machine Type - Optomec 5-axis Aerosol Jet
 OpenDelay = 0
@@ -45,7 +47,6 @@ TILL (^AST(10).#MOVE) & (^AST(11).#MOVE) & (^AST(12).#MOVE) &(^AST(14).#MOVE) & 
 Start gIntSubBuffer,ShutterClose;TILL PST(gIntSubBuffer).#RUN = 0
 WAIT CloseDelay
 """
-
 
 OPEN_INKJET = """
 Start gIntSubBuffer,ShutterOpen;TILL PST(gIntSubBuffer).#RUN = 0
@@ -116,28 +117,25 @@ class Machine:
         self._A = a
         self._B = b
 
-
-    def get_location_and_speed_str(self):
+    def get_location_and_speed_str(self, switch: str):
         # TODO: Extend to support 5 axis
-        return f"(10,11,12), {self._X}, {self._Y}, {self._Z}, {self._get_speed()}"
+        return f"(10,11,12), {self._X}, {self._Y}, {self._Z}, {self._get_switch_value(switch)}"
 
-    def _get_speed(self):
+    def _get_switch_value(self, switch: str):
         """
-        Get the corresponding speed string based on the dispensing state
-        :return: string representation of the speed
+        Get the corresponding switch value depending on switch type and state of machine
+        :return: string representation of switch value
         """
-        # If the machine is not dispensing return rapid speed string
-        if not self._is_dispensing:
+        # If the machine is not dispensing and velocity switch, return the rapid speed string
+        if not self._is_dispensing and "V" in switch.upper():
             return "gDblRapidSpeed"
-        # If the machine is to dispense and not in printing segment,
-        # return the printing segment speed string
-        elif self._is_dispensing and not self.in_printing_segment:
-            return "CRangle"
         # If the machine is dispensing return the process speed string
-        else:
+        elif "V" in switch.upper():
             return "gDblProcessSpeed"
-
-
+        # If the machine is to dispense and not in printing segment and angle switch
+        # return the printing segment speed string
+        elif self._is_dispensing and not self.in_printing_segment and "A" in switch.upper():
+            return "CRangle"
 
 class AcsplConverter(ToolpathConverter):
     def __init__(self):
@@ -159,6 +157,7 @@ class AcsplConverter(ToolpathConverter):
         :param command: individual command to be translated
         :return: string representation of the translated command
         """
+        # If the command is a max speed command
         if command == "max_speed":
             # Check if machine is currently dispensing
             if self.machine.is_dispensing or self.machine.in_printing_segment:
@@ -167,6 +166,7 @@ class AcsplConverter(ToolpathConverter):
                 self._acspl.append(CLOSE_INKJET)
                 return
 
+        # If the command is a speed command
         elif command == "speed":
             # If normal speed command, machine is going to start dispensing
             self.machine.is_dispensing = True
@@ -181,32 +181,38 @@ class AcsplConverter(ToolpathConverter):
             # Classify the type of move command
             # If not dispensing, the ACSPL movement is "PTP"
             if not self.machine.is_dispensing:
+
                 # Set the location registers for the machine to store desired location
                 self.machine.set_axis_registers(params["x"], params["y"], params["z"])
                 # Format and create the PTP command
                 move_command = "PTP"
                 move_switches = "EV"
-                move_location_and_speed = self.machine.get_location_and_speed_str()
+                move_location_and_speed = self.machine.get_location_and_speed_str(move_switches)
                 acspl_command = f"{move_command}/{move_switches} {move_location_and_speed}"
                 self._acspl.append(acspl_command)
+
             # If to dispense, and not in printing segment, format the printing segment
             elif self.machine.is_dispensing and not self.machine.in_printing_segment:
-                # Set the machine to be in printing segment
-                self.machine.in_printing_segment = True
-                # Format and create the XSEG command
-                segment_command = "XSEG"
-                segment_switch = "A"
-                segment_location_and_speed = self.machine.get_location_and_speed_str()
+
+                # Format and create the XSEG command to dictate the start of the printing segment
+                segment_command = "XSEG" # XSEG command
+                segment_switch = "A" # Switch to
+                segment_location_and_speed = self.machine.get_location_and_speed_str(segment_switch)
                 acspl_command = f"{segment_command}/{segment_switch} {segment_location_and_speed}"
                 self._acspl.append(acspl_command)
+
+                # Set the machine to be in printing segment
+                self.machine.in_printing_segment = True
+
                 # Set the location registers for the machine to store desired location
                 self.machine.set_axis_registers(params["x"], params["y"], params["z"])
                 # Format and create the LINE command
                 move_command = "LINE"
                 move_switches = "EV"
-                move_location_and_speed = self.machine.get_location_and_speed_str()
+                move_location_and_speed = self.machine.get_location_and_speed_str(move_switches)
                 move_acspl_command = f"{move_command}/{move_switches} {move_location_and_speed}"
                 self._acspl.append(move_acspl_command)
+
             # If dispensing, the ACSPL movement is "LINE"
             elif self.machine.in_printing_segment:
                 # Set the location registers for the machine to store desired location
@@ -214,12 +220,9 @@ class AcsplConverter(ToolpathConverter):
                 # Format and create the LINE command
                 move_command = "LINE"
                 move_switches = "EV"
-                move_location_and_speed = self.machine.get_location_and_speed_str()
+                move_location_and_speed = self.machine.get_location_and_speed_str(move_switches)
                 acspl_command = f"{move_command}/{move_switches} {move_location_and_speed}"
                 self._acspl.append(acspl_command)
-
-
-
 
 
     def translate(self, parsed_commands: List[dict[str, dict[str, str]]]) -> List[str]:
