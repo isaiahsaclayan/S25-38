@@ -55,8 +55,8 @@ class TestAcsplConverter(unittest.TestCase):
         INVALID_COMMAND = {
             "INVALID": {}
         }
-        exp_result = [START_COMMENT,
-                      MACHINE_SETUP,
+        exp_result = [MACHINE_SETUP,
+                      START_COMMENT,
                       "!INVALID COMMAND: {'INVALID': {}}",
                       STOP
         ]
@@ -71,8 +71,8 @@ class TestAcsplConverter(unittest.TestCase):
             {"max_speed": {"bool": "True"}},
             {"move": {"x": "10.0", "y": "20.0", "z": "30.0"}}
         ]
-        exp_result = [START_COMMENT,
-                      MACHINE_SETUP,
+        exp_result = [MACHINE_SETUP,
+                      START_COMMENT,
                       "PTP/EV (10,11,12), 10.0, 20.0, 30.0, gDblRapidSpeed",
                       STOP
         ]
@@ -93,12 +93,33 @@ class TestAcsplConverter(unittest.TestCase):
         # Assert
         self.assertIn(exp_result, result)
 
-    def test_xseg_command(self):
-        pass
+    def test_ptp_xseg_line_command(self):
+        # Arrange
+        XSEG_COMMAND = [
+            {"max_speed": {"bool": "True"}},
+            {"move": {"x": "10.0", "y": "20.0", "z": "30.0"}},
+            {"speed": {"speed": "10.0"}},
+            {"move": {"x": "40.0", "y": "50.0", "z": "60.0"}},
+            {"max_speed": {"bool": "True"}}
+        ]
+        exp_result = [MACHINE_SETUP,
+                      START_COMMENT,
+                      "PTP/EV (10,11,12), 10.0, 20.0, 30.0, gDblRapidSpeed",
+                      OPEN_INKJET,
+                      "XSEG/A (10,11,12), 10.0, 20.0, 30.0, CRangle",
+                      "LINE/V (10,11,12), 40.0, 50.0, 60.0, gDblProcessSpeed",
+                      CLOSE_INKJET,
+                      STOP
+        ]
+        # Act
+        result = self.acsplConverter.translate(XSEG_COMMAND)
+        # Assert
+        self.assertEqual(result, exp_result)
 
     def test_small_parsed_commands(self):
         results = self.acsplConverter.translate(SMALL_PARSED_COMMANDS)
-
+        for result in results:
+            print(result)
 
 if __name__ == "__main__":
     unittest.main()
