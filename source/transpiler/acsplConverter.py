@@ -63,13 +63,13 @@ SUPPORTED_COMMANDS: List[str] = [
 class Machine:
 
     def __init__(self):
-        # If the machine is dispensing
+        # Flag if the machine is dispensing
         self._is_dispensing: bool = False
 
-        # If printing has occurred
+        # Flag if printing has occurred
         self._print_started: bool = False
 
-        # If within printing segment
+        # Flag if within printing segment
         self._in_printing_segment: bool = False
 
         # Axis Registers
@@ -84,10 +84,19 @@ class Machine:
     """
     @property
     def is_dispensing(self):
+        """
+        Getter for _is_dispensing
+        :return: value of _is_dispensing
+        """
         return self._is_dispensing
 
     @is_dispensing.setter
     def is_dispensing(self, is_dispensing: bool):
+        """
+        Setter for _is_dispensing
+        :param is_dispensing: value to be set
+        :return: none
+        """
         # Set print started once dispensing starts
         if not self._print_started and is_dispensing:
             self._print_started = True
@@ -97,24 +106,51 @@ class Machine:
 
     @property
     def in_printing_segment(self):
+        """
+        Getter for _in_printing_segment
+        :return: value of _in_printing_segment
+        """
         return self._in_printing_segment
 
     @in_printing_segment.setter
     def in_printing_segment(self, in_printing_segment: bool):
+        """
+        Setter for _in_printing_segment
+        :param in_printing_segment: value to be set
+        :return: none
+        """
         self._in_printing_segment = in_printing_segment
 
     @property
     def print_started(self):
+        """
+        Getter for _print_started
+        :return: value of _print_started
+        """
         return self._print_started
 
     def set_axis_registers(self, x: any, y: any, z: any, a: any = 0.0, b: any = 0.0):
+        """
+        Set the axis registers for the machine
+        :param x: desired location for x-axis
+        :param y: desired location for y-axis
+        :param z: desired location for z-axis
+        :param a: desired location for a-axis
+        :param b: desired location for b-axis
+        :return: none
+        """
         self._X = float(x)
         self._Y = float(y)
         self._Z = float(z)
         self._A = float(a)
         self._B = float(b)
 
-    def get_location_and_switchval_str(self, switch: str):
+    def get_location_and_switchval_str(self, switch: str) -> str:
+        """
+        Formats the location and switch value for ACSPL command
+        :param switch: switch type ex. "A", "V"
+        :return: formatted string of location and switch value for command
+        """
         # TODO: Extend to support 5 axis
         return f"(10,11,12), {self._X}, {self._Y}, {self._Z}, {self._get_switch_value(switch)}"
 
@@ -127,7 +163,7 @@ class Machine:
         if not self._is_dispensing and "V" in switch.upper():
             return "gDblRapidSpeed"
         # If the machine is dispensing return the process speed string
-        elif "V" in switch.upper() and self._is_dispensing:
+        elif self._is_dispensing and "V" in switch.upper():
             return "gDblProcessSpeed"
         # If the machine is to dispense and not in printing segment and angle switch
         # return the printing segment speed string
