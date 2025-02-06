@@ -113,7 +113,7 @@ class Machine:
         self._A = a
         self._B = b
 
-    def get_location_and_speed_str(self, switch: str):
+    def get_location_and_switchval_str(self, switch: str):
         # TODO: Extend to support 5 axis
         return f"(10,11,12), {self._X}, {self._Y}, {self._Z}, {self._get_switch_value(switch)}"
 
@@ -144,16 +144,26 @@ class AcsplConverter(ToolpathConverter):
         # Log ACSPL Converter Instantiation
         logger.info("ACSPL Converter Instantiated")
 
+    def _format_and_append_command(self, command: str, switch: str):
+        """
+        Formats the command with the switch
+        :param command: command to be formatted
+        :param switch: switch to be added to the command
+        :return: formatted command
+        """
+        acspl_instr = f"{command}/{switch} {self.machine.get_location_and_switchval_str(switch)}"
+        self._translated_commands.append(acspl_instr)
+
     def _process_command(self, command: str, params: dict[str, str]):
         """
         Processes a single command
         :param command: individual command to be translated
         """
-
         # If the command is a max speed command
         if command == "max_speed":
-            # Check if machine is currently dispensing
+            # Check if machine is currently dispensing or in a printing segment
             if self.machine.is_dispensing or self.machine.in_printing_segment:
+                # If so, close the inkjet, and end the printing segment and dispensing
                 self.machine.is_dispensing = False
                 self.machine.in_printing_segment = False
                 self._translated_commands.append(CLOSE_INKJET)
@@ -177,46 +187,29 @@ class AcsplConverter(ToolpathConverter):
 
                 # Set the location registers for the machine to store desired location
                 self.machine.set_axis_registers(params["x"], params["y"], params["z"])
-                # Format and create the PTP command
-                move_command = "PTP"
-                move_switches = "EV"
-                move_location_and_speed = self.machine.get_location_and_speed_str(move_switches)
-                acspl_command = f"{move_command}/{move_switches} {move_location_and_speed}"
-                self._translated_commands.append(acspl_command)
+                # Format and append the PTP command
+                self._format_and_append_command("PTP", "EV")
 
-            # If to dispense, and not in printing segment, format the printing segment
+            # If to dispense, and not in printing segment, ACSPL command is going to be XSEG...LINE
             elif self.machine.is_dispensing and not self.machine.in_printing_segment:
 
-                # Format and create the XSEG command to dictate the start of the printing segment
-                segment_command = "XSEG" # XSEG command
-                segment_switch = "A" # Switch to
-                segment_location_and_speed = self.machine.get_location_and_speed_str(segment_switch)
-                acspl_command = f"{segment_command}/{segment_switch} {segment_location_and_speed}"
-                self._translated_commands.append(acspl_command)
+                # Format and append the XSEG command to dictate the start of the printing segment
+                self._format_and_append_command("XSEG", "A")
 
                 # Set the machine to be in printing segment
                 self.machine.in_printing_segment = True
 
                 # Set the location registers for the machine to store desired location
                 self.machine.set_axis_registers(params["x"], params["y"], params["z"])
-                # Format and create the LINE command
-                move_command = "LINE"
-                move_switches = "V"
-                move_location_and_speed = self.machine.get_location_and_speed_str(move_switches)
-                move_acspl_command = f"{move_command}/{move_switches} {move_location_and_speed}"
-                self._translated_commands.append(move_acspl_command)
+                # Format and append the LINE command
+                self._format_and_append_command("LINE", "V")
 
             # If dispensing, the ACSPL movement is "LINE"
             elif self.machine.in_printing_segment:
                 # Set the location registers for the machine to store desired location
                 self.machine.set_axis_registers(params["x"], params["y"], params["z"])
-                # Format and create the LINE command
-                move_command = "LINE"
-                move_switches = "V"
-                move_location_and_speed = self.machine.get_location_and_speed_str(move_switches)
-                acspl_command = f"{move_command}/{move_switches} {move_location_and_speed}"
-                self._translated_commands.append(acspl_command)
-
+                # Format and append the LINE command
+                self._format_and_append_command("LINE", "V")
 
     def translate(self, parsed_commands: List[dict[str, dict[str, str]]]) -> List[str]:
         """
@@ -243,8 +236,5 @@ class AcsplConverter(ToolpathConverter):
 
         # Once commands are processed, append STOP ACSPL code block
         self._translated_commands.append(STOP)
-
-        for acspl in self._translated_commands:
-            print(acspl)
 
         return self._translated_commands
