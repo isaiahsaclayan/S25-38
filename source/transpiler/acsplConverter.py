@@ -193,7 +193,7 @@ class AcsplConverter(ToolpathConverter):
             # If to dispense, and not in printing segment, format the printing segment
             elif self.machine.is_dispensing and not self.machine.in_printing_segment:
                 # Set the machine to be in printing segment
-                self.machine.set_in_printing_segment = True
+                self.machine.in_printing_segment = True
                 # Format and create the XSEG command
                 segment_command = "XSEG"
                 segment_switch = "A"
