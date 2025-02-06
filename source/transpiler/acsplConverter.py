@@ -135,7 +135,7 @@ class Machine:
 
 class AcsplConverter(ToolpathConverter):
     def __init__(self):
-        # Initialize Command Map
+        # Initialize Supported Commands List
         super().__init__(SUPPORTED_COMMANDS)
 
         # Create an Instance of Machine
