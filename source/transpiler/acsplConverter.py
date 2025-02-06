@@ -129,7 +129,7 @@ class Machine:
         """
         return self._print_started
 
-    def set_axis_registers(self, x: any, y: any, z: any, a: any = 0.0, b: any = 0.0):
+    def set_axis_registers(self, x: any, y: any, z: any, a: any = 0.0, b: any = 0.0) -> None:
         """
         Set the axis registers for the machine
         :param x: desired location for x-axis
@@ -154,7 +154,7 @@ class Machine:
         # TODO: Extend to support 5 axis
         return f"(10,11,12), {self._X}, {self._Y}, {self._Z}, {self._get_switch_value(switch)}"
 
-    def _get_switch_value(self, switch: str):
+    def _get_switch_value(self, switch: str) -> str:
         """
         Get the corresponding switch value depending on switch type and state of machine
         :return: string representation of switch value
@@ -170,7 +170,9 @@ class Machine:
         elif self._is_dispensing and not self.in_printing_segment and "A" in switch.upper():
             return "CRangle"
 
+# Derived Class for ACSPL Conversion
 class AcsplConverter(ToolpathConverter):
+
     def __init__(self):
         # Initialize Supported Commands List
         super().__init__(SUPPORTED_COMMANDS)
@@ -181,20 +183,20 @@ class AcsplConverter(ToolpathConverter):
         # Log ACSPL Converter Instantiation
         logger.info("ACSPL Converter Instantiated")
 
-    def _format_and_append_command(self, command: str, switch: str):
+    def _format_and_append_command(self, command: str, switch: str) -> None:
         """
-        Formats the command with the switch
-        :param command: command to be formatted
+        Formats the command and appends to the translated commands list
+        :param command: ACSPL command
         :param switch: switch to be added to the command
-        :return: formatted command
+        :return: None
         """
         acspl_instr = f"{command}/{switch} {self.machine.get_location_and_switchval_str(switch)}"
         self._translated_commands.append(acspl_instr)
 
-    def _process_command(self, command: str, params: dict[str, str]):
+    def _process_command(self, command: str, params: dict[str, str]) -> None:
         """
         Processes a single command
-        :param command: individual command to be translated
+        :param command: individual command to be processed
         """
         # If the command is a max speed command
         if command == "max_speed":
@@ -221,25 +223,23 @@ class AcsplConverter(ToolpathConverter):
             # Classify the type of move command
             # If not dispensing, the ACSPL movement is "PTP"
             if not self.machine.is_dispensing:
-
                 # Set the location registers for the machine to store desired location
                 self.machine.set_axis_registers(params["x"], params["y"], params["z"])
                 # Format and append the PTP command
                 self._format_and_append_command("PTP", "EV")
+                return
 
             # If to dispense, and not in printing segment, ACSPL command is going to be XSEG...LINE
             elif self.machine.is_dispensing and not self.machine.in_printing_segment:
-
                 # Format and append the XSEG command to dictate the start of the printing segment
                 self._format_and_append_command("XSEG", "A")
-
                 # Set the machine to be in printing segment
                 self.machine.in_printing_segment = True
-
                 # Set the location registers for the machine to store desired location
                 self.machine.set_axis_registers(params["x"], params["y"], params["z"])
                 # Format and append the LINE command
                 self._format_and_append_command("LINE", "V")
+                return
 
             # If dispensing, the ACSPL movement is "LINE"
             elif self.machine.in_printing_segment:
@@ -247,6 +247,7 @@ class AcsplConverter(ToolpathConverter):
                 self.machine.set_axis_registers(params["x"], params["y"], params["z"])
                 # Format and append the LINE command
                 self._format_and_append_command("LINE", "V")
+                return
 
     def translate(self, parsed_commands: List[dict[str, dict[str, str]]]) -> List[str]:
         """
