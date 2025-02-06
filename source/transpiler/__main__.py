@@ -3,7 +3,7 @@ import logging
 import os
 import datetime as dt
 
-from guiRoot import GuiRoot
+import guiRoot
 
 # Instantiate Logger
 logger = logging.getLogger("main")
@@ -42,8 +42,9 @@ def main():
     configureAndStartLogger()
 
     #GUI Creation
-    root = GuiRoot()
+    root = guiRoot.GuiRoot()
     root.eval("tk::PlaceWindow . center")
+    guiRoot.queueLoop(root)
     root.mainloop()
 
 
