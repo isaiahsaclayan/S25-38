@@ -1,5 +1,3 @@
-from venv import logger
-
 from toolpathConverter import ToolpathConverter
 from typing import List
 import logging
@@ -10,6 +8,9 @@ logger = logging.getLogger(__name__)
 """
 ACSPL Code Blocks
 """
+
+START_COMMENT = "! Start of Toolpath"
+
 MACHINE_SETUP = """#0
 !Machine Type - Optomec 5-axis Aerosol Jet
 OpenDelay = 0
@@ -220,6 +221,9 @@ class AcsplConverter(ToolpathConverter):
 
         # Add comment to dictate start of toolpath.
         self._translated_commands.append("! Start of Toolpath")
+
+        # Append the machine setup code block
+        self._translated_commands.append(MACHINE_SETUP)
 
         # Iterate through each command
         for command in parsed_commands:
