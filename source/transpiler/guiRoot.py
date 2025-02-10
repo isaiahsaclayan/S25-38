@@ -23,7 +23,7 @@ GUI_WINDOW_SIZE = "500x300"
 CREO_FILE_TYPE = ("Creo Toolpath Files", '*.ncl.1')
 NSCRYPT_FILE_TYPE = ("nScrypt GCODE Files", '*.gcode')
 ACSPL_FILE_TYPE = ("ACSPL Files", '*.txt')
-IMPORT_FILE_TYPES_LIST = (CREO_FILE_TYPE, NSCRYPT_FILE_TYPE, ACSPL_FILE_TYPE, ("All files", "*.*"))
+IMPORT_FILE_TYPES_LIST = (CREO_FILE_TYPE, NSCRYPT_FILE_TYPE, ACSPL_FILE_TYPE, ("All files", "*.*")) 
 EXPORT_FILE_TYPES_LIST = (NSCRYPT_FILE_TYPE, ACSPL_FILE_TYPE, ("All files", "*.*"))
 
 class GuiRoot(tk.Tk):
