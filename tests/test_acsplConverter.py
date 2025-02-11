@@ -114,5 +114,10 @@ class TestAcsplConverter(unittest.TestCase):
         # Assert
         self.assertEqual(result, exp_result)
 
+    def test_print(self):
+        results = self.acsplConverter.translate(PARSED_COMMANDS)
+        for result in results:
+            print(result)
+
 if __name__ == "__main__":
     unittest.main()
