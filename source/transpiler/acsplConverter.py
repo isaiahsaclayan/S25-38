@@ -57,7 +57,8 @@ WAIT OpenDelay"""
 SUPPORTED_COMMANDS: List[str] = [
     "max_speed",
     "speed",
-    "move"
+    "move",
+    "feature_number"
 ]
 
 class Machine:
