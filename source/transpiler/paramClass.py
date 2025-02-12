@@ -30,35 +30,33 @@ class OptomecParameters:
 MENU_TITLE = "S25-38 Machine Instruction Converter"
 GUI_WINDOW_SIZE = "500x250"
 
-class NscryptParameterGui(tk.Tk):
-    def __init__(self, gui):
-        tk.Tk.__init__(self)
+class NscryptParameterGui(tk.Frame):
+    def __init__(self, parent, gui):
+        super().__init__(parent)
         self.container = tk.Frame(self)
-        self.resizable(False, False)
         self.gui = gui #allows for modification of the actual gui params from the overall system gui
-
-        #Title of the window
-        self.title("nScrypt Parameters") 
-        self.geometry(GUI_WINDOW_SIZE)
 
         #Title of Menu
         self.testLabel = tk.Label(self, text = MENU_TITLE)
         self.testLabel.grid(row=0, column=1)
 
         #parameter Controls
-        self.p1label = tk.Label(self, text="Parameter 1: " + str(gui.params.params[0])) #shows current param val
+        self.p1label = tk.Label(self, text="Parameter 1: ")
         self.p1label.grid(row=1)
         self.param1 = tk.Entry(self)
+        self.param1.insert(0,str(gui.params.params[0]))
         self.param1.grid(row=1, column=1)
 
-        self.p2label = tk.Label(self, text="Parameter 2: " + str(gui.params.params[1]))
+        self.p2label = tk.Label(self, text="Parameter 2: ")
         self.p2label.grid(row=2)
         self.param2 = tk.Entry(self)
+        self.param2.insert(0,str(gui.params.params[1]))
         self.param2.grid(row=2, column=1)
 
-        self.p3label = tk.Label(self, text="Parameter 3: " + str(gui.params.params[2]))
+        self.p3label = tk.Label(self, text="Parameter 3: ")
         self.p3label.grid(row=3)
         self.param3 = tk.Entry(self)
+        self.param3.insert(0,str(gui.params.params[2]))
         self.param3.grid(row=3, column=1)
 
         self.currlabel = tk.Label(self, text= "Current Parameters:")
@@ -73,43 +71,56 @@ class NscryptParameterGui(tk.Tk):
         self.cancelButton.grid(row=5, column=2)
 
     def okButtonCallback(self): #updates params and closes window
-        self.gui.params.params[0] = self.param1.get() #must manually type out a get for each parameter
-        self.gui.params.params[1] = self.param2.get()
-        self.gui.params.params[2] = self.param3.get()
-        self.destroy()
+        temp1 = self.param1.get() #must manually type out a get for each parameter
+        temp2 = self.param2.get()
+        temp3 = self.param3.get()
+
+        if int(temp1) >= 100:
+            #create an error message telling them to go below allowed limit
+            self.gui.writeStatus("Parameter out of bounds")
+            print("Parameter 1 too high!")
+        elif int(temp2) >= 100:
+            self.gui.writeStatus("Parameter out of bounds")
+            print("Parameter 2 too high!")
+        elif int(temp3) >= 100:
+            self.gui.writeStatus("Parameter out of bounds")
+            print("Parameter 3 too high!")
+        else:
+            self.gui.params.params[0] = temp1
+            self.gui.params.params[1] = temp2
+            self.gui.params.params[2] = temp3
+            self.master.destroy()
 
     def cancelButtonCallback(self): #closes window and doesnt update params
-        self.destroy()
+        self.master.destroy()
 
-class OptomecParameterGui(tk.Tk):
-    def __init__(self, gui):
-        tk.Tk.__init__(self)
+class OptomecParameterGui(tk.Frame):
+    def __init__(self, parent, gui):
+        super().__init__(parent)
         self.container = tk.Frame(self)
-        self.resizable(False, False)
         self.gui = gui #allows for modification of the actual gui params from the overall system gui
-
-        #Title of the window
-        self.title("Optomec Parameters") 
-        self.geometry(GUI_WINDOW_SIZE)
 
         #Title of Menu
         self.testLabel = tk.Label(self, text = MENU_TITLE)
         self.testLabel.grid(row=0, column=1)
 
         #parameter Controls
-        self.p1label = tk.Label(self, text="Parameter 1: " + str(gui.params.params[0])) #shows current param val
+        self.p1label = tk.Label(self, text="Parameter 1: ")
         self.p1label.grid(row=1)
         self.param1 = tk.Entry(self)
+        self.param1.insert(0,str(gui.params.params[0]))
         self.param1.grid(row=1, column=1)
 
-        self.p2label = tk.Label(self, text="Parameter 2: " + str(gui.params.params[1]))
+        self.p2label = tk.Label(self, text="Parameter 2: ")
         self.p2label.grid(row=2)
         self.param2 = tk.Entry(self)
+        self.param2.insert(0,str(gui.params.params[1]))
         self.param2.grid(row=2, column=1)
 
-        self.p3label = tk.Label(self, text="Parameter 3: " + str(gui.params.params[2]))
+        self.p3label = tk.Label(self, text="Parameter 3: ")
         self.p3label.grid(row=3)
         self.param3 = tk.Entry(self)
+        self.param3.insert(0,str(gui.params.params[2]))
         self.param3.grid(row=3, column=1)
 
         self.currlabel = tk.Label(self, text= "Current Parameters:")
@@ -124,10 +135,25 @@ class OptomecParameterGui(tk.Tk):
         self.cancelButton.grid(row=5, column=2)
 
     def okButtonCallback(self): #updates params and closes window
-        self.gui.params.params[0] = self.param1.get() #must manually type out a get for each parameter
-        self.gui.params.params[1] = self.param2.get()
-        self.gui.params.params[2] = self.param3.get()
-        self.destroy()
+        temp1 = self.param1.get() #must manually type out a get for each parameter
+        temp2 = self.param2.get()
+        temp3 = self.param3.get()
+
+        if int(temp1) >= 100:
+            #create an error message telling them to go below allowed limit
+            self.gui.writeStatus("Parameter out of bounds")
+            print("Parameter 1 too high!")
+        elif int(temp2) >= 100:
+            self.gui.writeStatus("Parameter out of bounds")
+            print("Parameter 2 too high!")
+        elif int(temp3) >= 100:
+            self.gui.writeStatus("Parameter out of bounds")
+            print("Parameter 3 too high!")
+        else:
+            self.gui.params.params[0] = temp1
+            self.gui.params.params[1] = temp2
+            self.gui.params.params[2] = temp3
+            self.master.destroy()
 
     def cancelButtonCallback(self): #closes window and doesnt update params
-        self.destroy()
+        self.master.destroy()
