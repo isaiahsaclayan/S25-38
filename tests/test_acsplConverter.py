@@ -71,7 +71,7 @@ class TestAcsplConverter(unittest.TestCase):
         ]
         exp_result = [MACHINE_SETUP,
                       START_COMMENT,
-                      "PTP/EV (10,11,12), 10.0, 20.0, 30.0, gDblRapidSpeed",
+                      "PTP/EV (10,11,12,14,15), 10.0, 20.0, 30.0, 0.0, 0.0, gDblRapidSpeed",
                       STOP
         ]
         # Act
@@ -85,7 +85,7 @@ class TestAcsplConverter(unittest.TestCase):
             {"speed": {"speed": "10.0"}},
             {"move": {"x": "10.0", "y": "20.0", "z": "30.0"}}
         ]
-        exp_result = "LINE/V (10,11,12), 10.0, 20.0, 30.0, gDblProcessSpeed"
+        exp_result = "LINE/V (10,11,12,14,15), 10.0, 20.0, 30.0, 0.0, 0.0, gDblProcessSpeed"
         # Act
         result = self.acsplConverter.translate(LINE_COMMAND)
         # Assert
@@ -102,10 +102,10 @@ class TestAcsplConverter(unittest.TestCase):
         ]
         exp_result = [MACHINE_SETUP,
                       START_COMMENT,
-                      "PTP/EV (10,11,12), 10.0, 20.0, 30.0, gDblRapidSpeed",
+                      "PTP/EV (10,11,12,14,15), 10.0, 20.0, 30.0, 0.0, 0.0, gDblRapidSpeed",
                       OPEN_INKJET,
-                      "XSEG/A (10,11,12), 10.0, 20.0, 30.0, CRangle",
-                      "LINE/V (10,11,12), 40.0, 50.0, 60.0, gDblProcessSpeed",
+                      "XSEG/A (10,11,12,14,15), 10.0, 20.0, 30.0, 0.0, 0.0, CRangle",
+                      "LINE/V (10,11,12,14,15), 40.0, 50.0, 60.0, 0.0, 0.0, gDblProcessSpeed",
                       CLOSE_INKJET,
                       STOP
         ]
