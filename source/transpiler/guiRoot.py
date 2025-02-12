@@ -148,10 +148,29 @@ class GuiRoot(tk.Tk):
         self.writeStatus("Printer Parameters Click")
         print("Printer Parameters Click")
         if globals.printerTypeSelected == 0:
-            paramWindow = NscryptParameterGui(self)
+            paramWindow = tk.Toplevel()
+            self.eval("tk::PlaceWindow {} center".format(str(paramWindow)))
+
+            paramWindow.title("nScrypt Parameters")
+            paramWindow.geometry("500x250")
+            paramWindow.resizable(False, False)
+
+            paramFrame = NscryptParameterGui(paramWindow, self)
+            paramFrame.grid()
+
+            paramWindow.wait_window()
         else:
-            paramWindow = OptomecParameterGui(self)
-        paramWindow.eval("tk::PlaceWindow . center")
+            paramWindow = tk.Toplevel()
+            self.eval("tk::PlaceWindow {} center".format(str(paramWindow)))
+
+            paramWindow.title("Optomec Parameters")
+            paramWindow.geometry("500x250")
+            paramWindow.resizable(False, False)
+
+            paramFrame = NscryptParameterGui(paramWindow, self)
+            paramFrame.grid()
+
+            paramWindow.wait_window()
 
 class ConversionSettingsFrame(tk.Frame):
     def __init__(self, parent):
