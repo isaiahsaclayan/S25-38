@@ -71,10 +71,25 @@ class NscryptParameterGui(tk.Frame):
         self.cancelButton.grid(row=5, column=2)
 
     def okButtonCallback(self): #updates params and closes window
-        self.gui.params.params[0] = self.param1.get() #must manually type out a get for each parameter
-        self.gui.params.params[1] = self.param2.get()
-        self.gui.params.params[2] = self.param3.get()
-        self.master.destroy()
+        temp1 = self.param1.get() #must manually type out a get for each parameter
+        temp2 = self.param2.get()
+        temp3 = self.param3.get()
+
+        if int(temp1) >= 100:
+            #create an error message telling them to go below allowed limit
+            self.gui.writeStatus("Parameter out of bounds")
+            print("Parameter 1 too high!")
+        elif int(temp2) >= 100:
+            self.gui.writeStatus("Parameter out of bounds")
+            print("Parameter 2 too high!")
+        elif int(temp3) >= 100:
+            self.gui.writeStatus("Parameter out of bounds")
+            print("Parameter 3 too high!")
+        else:
+            self.gui.params.params[0] = temp1
+            self.gui.params.params[1] = temp2
+            self.gui.params.params[2] = temp3
+            self.master.destroy()
 
     def cancelButtonCallback(self): #closes window and doesnt update params
         self.master.destroy()
@@ -120,10 +135,25 @@ class OptomecParameterGui(tk.Frame):
         self.cancelButton.grid(row=5, column=2)
 
     def okButtonCallback(self): #updates params and closes window
-        self.gui.params.params[0] = self.param1.get() #must manually type out a get for each parameter
-        self.gui.params.params[1] = self.param2.get()
-        self.gui.params.params[2] = self.param3.get()
-        self.master.destroy()
+        temp1 = self.param1.get() #must manually type out a get for each parameter
+        temp2 = self.param2.get()
+        temp3 = self.param3.get()
+
+        if int(temp1) >= 100:
+            #create an error message telling them to go below allowed limit
+            self.gui.writeStatus("Parameter out of bounds")
+            print("Parameter 1 too high!")
+        elif int(temp2) >= 100:
+            self.gui.writeStatus("Parameter out of bounds")
+            print("Parameter 2 too high!")
+        elif int(temp3) >= 100:
+            self.gui.writeStatus("Parameter out of bounds")
+            print("Parameter 3 too high!")
+        else:
+            self.gui.params.params[0] = temp1
+            self.gui.params.params[1] = temp2
+            self.gui.params.params[2] = temp3
+            self.master.destroy()
 
     def cancelButtonCallback(self): #closes window and doesnt update params
         self.master.destroy()
