@@ -25,7 +25,7 @@ MAX_SPEED = "RAPID"
 logger = logging.getLogger("main")
 
 
-class genericParser:
+class GenericParser:
     def __init__(self, file_path):
         self.file_path = file_path
         self.creoCommands = self.parse_file(self.file_path)
@@ -166,6 +166,6 @@ class genericParser:
                 file.write(str(command) + "\n")
 
 
-commands = genericParser(FILE)
+commands = GenericParser(FILE)
 commands.conversion()
 commands.save("output.txt")
