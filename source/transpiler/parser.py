@@ -1,7 +1,7 @@
 import os
 import logging
 
-FILE = 'op010.ncl.1'
+FILE = '../../tests/resources/op010.ncl.1'
 TITLE_COMMENT = "$$*"
 INFO_COMMENT = "$$->"
 SPINDLE_SPEED = "SPINDL"
