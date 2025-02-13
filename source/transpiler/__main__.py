@@ -3,6 +3,8 @@ import logging
 import os
 import datetime as dt
 
+from guiRoot import GuiRoot
+
 # Instantiate Logger
 logger = logging.getLogger("main")
 LOG_FORMAT = "[%(asctime)s] - [%(levelname)s] %(message)s" # Ex. [2025-03-04 01:23:45] - [INFO] Message ...
@@ -28,15 +30,21 @@ def configureAndStartLogger():
     logger.addHandler(logHandler)
 
     # Print Header for Log File
+    formatted_time = now.strftime("%c")
     logger.info("===============TRANSPILER=====================")
     logger.info(f"File Name: transpiler-{time}.log")
-    logger.info(f"Start Time: {now.strftime("%c")}")
+    logger.info(f"Start Time: {formatted_time}")
     logger.info("==============================================")
 
 # Main Entry Point
 def main():
     # Start Logger
     configureAndStartLogger()
+
+    #GUI Creation
+    root = GuiRoot()
+    root.eval("tk::PlaceWindow . center")
+    root.mainloop()
 
 
 if __name__ == "__main__":
