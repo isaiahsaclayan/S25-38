@@ -1,5 +1,6 @@
 import os
 import logging
+from typing import List
 
 FILE = '../../tests/resources/op010.ncl.1'
 TITLE_COMMENT = "$$*"
@@ -165,7 +166,11 @@ class GenericParser:
             for command in self.parsedCommands:
                 file.write(str(command) + "\n")
 
+    def parse_commands(self):
+        # Perform Conversion
+        self.conversion()
+        # Return Parsed Commands
+        return self.parsedCommands
 
-commands = GenericParser(FILE)
-commands.conversion()
-commands.save("output.txt")
+
+
