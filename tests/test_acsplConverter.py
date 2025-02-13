@@ -126,7 +126,7 @@ class TestAcsplConverter(unittest.TestCase):
         # Assert
         self.assertIn(exp_result, result)
 
-    def print_parsed_commands(self):
+    def test_print_parsed_commands(self):
         results = self.acsplConverter.translate(PARSED_COMMANDS)
         self._print(results)
 

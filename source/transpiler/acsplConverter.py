@@ -252,7 +252,9 @@ class AcsplConverter(ToolpathConverter):
 
         # If the command is a feature number command
         elif command == "feature_number":
+            # Parse the feature number
             feature_number = params["feature_number"]
+            # Append the feature number
             self._translated_commands.append(f"! Feature Number: {feature_number}")
 
     def translate(self, parsed_commands: List[dict[str, dict[str, str]]]) -> List[str]:
