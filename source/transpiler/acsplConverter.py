@@ -250,6 +250,11 @@ class AcsplConverter(ToolpathConverter):
                 self._format_and_append_command("LINE", "V")
                 return
 
+        # If the command is a feature number command
+        elif command == "feature_number":
+            feature_number = params["feature_number"]
+            self._translated_commands.append(f"! Feature Number: {feature_number}")
+
     def translate(self, parsed_commands: List[dict[str, dict[str, str]]]) -> List[str]:
         """
         Translates generic toolpath to list of formatted commands

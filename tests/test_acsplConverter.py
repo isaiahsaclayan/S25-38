@@ -114,8 +114,23 @@ class TestAcsplConverter(unittest.TestCase):
         # Assert
         self.assertEqual(result, exp_result)
 
-    def test_print(self):
+    def test_feature_number(self):
+        # Arrange
+        FEATURE_NUMBER = [
+            {"feature_number": {"feature_number": "1234"}}
+        ]
+        exp_result = "! Feature Number: 1234"
+        # Act
+        result = self.acsplConverter.translate(FEATURE_NUMBER)
+        self._print(result)
+        # Assert
+        self.assertIn(exp_result, result)
+
+    def print_parsed_commands(self):
         results = self.acsplConverter.translate(PARSED_COMMANDS)
+        self._print(results)
+
+    def _print(self, results):
         for result in results:
             print(result)
 
