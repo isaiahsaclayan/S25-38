@@ -40,6 +40,12 @@ PARSED_COMMANDS = [
     {'move': {'x': 3.35, 'y': 4.2928571429, 'z': 1.225}}
    ]
 
+
+def _print(results):
+    for result in results:
+        print(result)
+
+
 class TestAcsplConverter(unittest.TestCase):
     def setUp(self):
         self.acsplConverter = AcsplConverter()
@@ -122,17 +128,14 @@ class TestAcsplConverter(unittest.TestCase):
         exp_result = "! Feature Number: 1234"
         # Act
         result = self.acsplConverter.translate(FEATURE_NUMBER)
-        self._print(result)
+        _print(result)
         # Assert
         self.assertIn(exp_result, result)
 
     def test_print_parsed_commands(self):
         results = self.acsplConverter.translate(PARSED_COMMANDS)
-        self._print(results)
+        _print(results)
 
-    def _print(self, results):
-        for result in results:
-            print(result)
 
 if __name__ == "__main__":
     unittest.main()
