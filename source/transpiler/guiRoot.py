@@ -11,6 +11,7 @@ from paramClass import NscryptParameters, OptomecParameters
 from paramClass import NscryptParameterGui, OptomecParameterGui
 from tkinter import ttk
 import applicationGlobals as globals
+import time
 from toolpathExporter import ToolpathExporter  # Import ToolpathExporter
 import json
 
@@ -99,7 +100,15 @@ class GuiRoot(tk.Tk):
     def writeStatus(self, text):
         self.statusTextArea.configure(state="normal")   # Enable writing to text box
         self.statusTextArea.delete("1.0", tk.END)       # Clear textbox
-        self.statusTextArea.insert(tk.END, text)        # Write new text
+
+        # Adding timestamp to status message
+        currentTime = time.localtime()
+        
+        timeString = "[{}:{}:{}]".format(currentTime.tm_hour, currentTime.tm_min, currentTime.tm_sec)
+
+        fullText = timeString + " " + text
+
+        self.statusTextArea.insert(tk.END, fullText)        # Write new text
         self.statusTextArea.configure(state="disabled") # Disable text box again
 
     '''
@@ -123,7 +132,7 @@ class GuiRoot(tk.Tk):
             # for redundancy, check if the file can be opened
 
             try:     
-                file = open(file = filepath, mode="r")
+                open(file = filepath, mode="r")
                 self.writeStatus("File Import Selection Successful")
                 globals.setImportFilepath(filepath)
 
