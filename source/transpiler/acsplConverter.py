@@ -1,4 +1,7 @@
+from os import write
+
 from toolpathConverter import ToolpathConverter
+from applicationGlobals import writeStatusQueue
 from typing import List
 import logging
 
@@ -263,6 +266,10 @@ class AcsplConverter(ToolpathConverter):
         :param parsed_commands: list of commands to be translated from generic parser
         :return: list of strings that are translated commands
         """
+
+        # Notify user of start of transpiling
+        writeStatusQueue("Transpiling to ACSPL...")
+
         # Append the machine setup code block
         self._translated_commands.append(MACHINE_SETUP)
 
@@ -277,6 +284,8 @@ class AcsplConverter(ToolpathConverter):
             if parsed_command not in SUPPORTED_COMMANDS:
                 self._translated_commands.append(f"!INVALID COMMAND: {command}")
                 logger.info(f"Invalid command: {command}")
+                # Notify user of invalid command
+                writeStatusQueue(f"{parsed_command} not supported")
                 continue
 
             # Process the command
@@ -288,5 +297,8 @@ class AcsplConverter(ToolpathConverter):
 
         # Once commands are processed, append STOP ACSPL code block
         self._translated_commands.append(STOP)
+
+        # Notify user of completion
+        writeStatusQueue("Finished transpiling to ACSPL")
 
         return self._translated_commands
