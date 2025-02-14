@@ -131,6 +131,17 @@ class TestAcsplConverter(unittest.TestCase):
         # Assert
         self.assertIn(exp_result, result)
 
+    def test_manufacturer_number(self):
+        # Arrange
+        MANUFACTURER_NUMBER = [
+            {"manufacturer_number": {"manufacturer_number": "5678"}}
+        ]
+        exp_result = "! Manufacturer Number: 5678"
+        # Act
+        result = self.acsplConverter.translate(MANUFACTURER_NUMBER)
+        # Assert
+        self.assertIn(exp_result, result)
+
     def test_print_parsed_commands(self):
         results = self.acsplConverter.translate(PARSED_COMMANDS)
         #_print(results)

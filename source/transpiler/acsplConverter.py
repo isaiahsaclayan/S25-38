@@ -61,7 +61,8 @@ SUPPORTED_COMMANDS: List[str] = [
     "max_speed",
     "speed",
     "move",
-    "feature_number"
+    "feature_number",
+    "manufacturer_number"
 ]
 
 class Machine:
@@ -259,6 +260,14 @@ class AcsplConverter(ToolpathConverter):
             # Append the feature number
             self._translated_commands.append(f"! Feature Number: {feature_number}")
 
+        # If the command is a manufacturer number command
+        elif command == "manufacturer_number":
+            # Parse the manufacturer number
+            manufacturer_number = params["manufacturer_number"]
+            # Append the manufacturer number
+            self._translated_commands.append(f"! Manufacturer Number: {manufacturer_number}")
+
+
     def translate(self, parsed_commands: List[dict[str, dict[str, str]]]) -> List[str]:
         """
         Translates generic toolpath to list of formatted commands
@@ -281,7 +290,9 @@ class AcsplConverter(ToolpathConverter):
             # Check if the command is a valid command
             parsed_command = list(command.keys())[0]
             if parsed_command not in SUPPORTED_COMMANDS:
+                # Append the invalid command
                 self._translated_commands.append(f"!INVALID COMMAND: {command}")
+                # Log the invalid command
                 logger.info(f"Invalid command: {command}")
                 # Notify user of invalid command
                 writeStatusQueue(f"{parsed_command} not supported")
