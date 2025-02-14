@@ -128,13 +128,12 @@ class TestAcsplConverter(unittest.TestCase):
         exp_result = "! Feature Number: 1234"
         # Act
         result = self.acsplConverter.translate(FEATURE_NUMBER)
-        _print(result)
         # Assert
         self.assertIn(exp_result, result)
 
     def test_print_parsed_commands(self):
         results = self.acsplConverter.translate(PARSED_COMMANDS)
-        _print(results)
+        #_print(results)
 
 
 if __name__ == "__main__":
