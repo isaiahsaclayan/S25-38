@@ -155,7 +155,6 @@ class Machine:
         :param switch: switch type ex. "A", "V"
         :return: formatted string of location and switch value for command
         """
-        # TODO: Extend to support 5 axis
         return f"(10,11,12,14,15), {self._X}, {self._Y}, {self._Z}, {self._A}, {self._B}, {self._get_switch_value(switch)}"
 
     def _get_switch_value(self, switch: str) -> str:
