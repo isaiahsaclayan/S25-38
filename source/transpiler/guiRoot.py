@@ -54,7 +54,7 @@ class GuiRoot(tk.Tk):
         self.importFrame = tk.Frame(self)
 
         # Import Button and Label
-        self.importFileButton = tk.Button(self.importFrame, text="Import File", command=self.importButtonCallback)
+        self.importFileButton = tk.Button(self.importFrame, text="Select Import File", command=self.importButtonCallback)
         self.importFileButton.pack(side="left")
 
         self.importFilepathLabel = tk.Label(self.importFrame)
@@ -97,25 +97,39 @@ class GuiRoot(tk.Tk):
         self.statusTextArea.configure(state="disabled")  # Prevent user from typing in text box
 
     def writeStatus(self, text):
-        self.statusTextArea.configure(state="normal")  # Enable writing to text box
-        self.statusTextArea.delete("1.0", tk.END)  # Clear textbox
-        self.statusTextArea.insert(tk.END, text)  # Write new text
-        self.statusTextArea.configure(state="disabled")  # Disable text box again
+        self.statusTextArea.configure(state="normal")   # Enable writing to text box
+        self.statusTextArea.delete("1.0", tk.END)       # Clear textbox
+        self.statusTextArea.insert(tk.END, text)        # Write new text
+        self.statusTextArea.configure(state="disabled") # Disable text box again
 
+    '''
+    Function that is called when the "Select Import File" button is clicked
+    '''
     def importButtonCallback(self):
-        importFilename = filedialog.askopenfilename(filetypes=IMPORT_FILE_TYPES_LIST)
-        self.importFilepathLabel["text"] = importFilename
-        self.importFilename = importFilename
 
+        # Opens a dialog for user to select a file to import
+        filepath = filedialog.askopenfilename(filetypes = IMPORT_FILE_TYPES_LIST)
 
-        if importFilename:
-            try:
-                with open(importFilename, "r", encoding="utf-8") as file:
-                    self.toolpath_data = file.readlines()
-                self.writeStatus(f"Imported: {importFilename}")
-            except Exception as e:
-                messagebox.showerror("Error", f"Failed to import file: {str(e)}")
-                self.writeStatus("Import Failed")
+        # User Cancels File Selection
+        # If the user clicks the cancel button, an empty string is returned
+        if(len(filepath) == 0): 
+            self.writeStatus("Import File Selection Cancelled")
+            self.importFilepathLabel["text"] = ""
+
+        # A file is selected successfully in the file dialog
+        else:
+            
+            # The file dialog already handles when the user tries to input an invalid file name
+            # for redundancy, check if the file can be opened
+
+            try:     
+                file = open(file = filepath, mode="r")
+                self.writeStatus("File Import Selection Successful")
+                globals.setImportFilepath(filepath)
+
+            except:
+                self.writeStatus("File Import Selection Error: Unable to Open File")
+                self.importFilepathLabel["text"] = filepath
 
         #first try to open param file, if fail then create the settings file and begin append
         try:
