@@ -61,7 +61,8 @@ SUPPORTED_COMMANDS: List[str] = [
     "max_speed",
     "speed",
     "move",
-    "feature_number"
+    "feature_number",
+    "manufacturer_number"
 ]
 
 class Machine:
