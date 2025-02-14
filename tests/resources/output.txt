@@ -1,0 +1,282 @@
+{'title': {'type': 'Pro/CLfile', 'version': '11.0 - 11.0.0.0'}}
+{'manufacturer_number': {'manufacturer_number': 'MFG0006'}}
+{'part_number': {'part_number': 'MFG0006'}}
+{'feature_number': {'feature_number': '402'}}
+{'machine_info': {'machine_type': 'UNCX01', 'machine_number': '1'}}
+{'geometry_type': {'geometry_type': 'OUTPUT_ON_CENTER'}}
+{'units': {'units': 'INCHES'}}
+{'tool': {'tool': '1'}}
+{'tool_size': {'tool_size': '0.500000'}}
+{'coordinate_system': {'coordinate_system': 'xyz'}}
+{'spindle_speed': {'control': 'RPM,', 'speed': 1000.0, 'direction': 'CLW'}}
+{'coolant': {'bool': True}}
+{'max_speed': {'bool': True}}
+{'move': {'x': -0.35, 'y': 5.0107142857, 'z': 1.225}}
+{'speed': {'speed': 10.0}}
+{'move': {'x': -0.35, 'y': 5.0107142857, 'z': 1.1}}
+{'move': {'x': 3.35, 'y': 5.0107142857, 'z': 1.1}}
+{'move': {'x': 3.35, 'y': 5.0107142857, 'z': 1.2}}
+{'max_speed': {'bool': True}}
+{'move': {'x': 3.35, 'y': 5.0107142857, 'z': 1.225}}
+{'max_speed': {'bool': True}}
+{'move': {'x': -0.35, 'y': 4.7714285714, 'z': 1.225}}
+{'speed': {'speed': 10.0}}
+{'move': {'x': -0.35, 'y': 4.7714285714, 'z': 1.1}}
+{'move': {'x': 3.35, 'y': 4.7714285714, 'z': 1.1}}
+{'move': {'x': 3.35, 'y': 4.7714285714, 'z': 1.2}}
+{'max_speed': {'bool': True}}
+{'move': {'x': 3.35, 'y': 4.7714285714, 'z': 1.225}}
+{'max_speed': {'bool': True}}
+{'move': {'x': -0.35, 'y': 4.5321428571, 'z': 1.225}}
+{'speed': {'speed': 10.0}}
+{'move': {'x': -0.35, 'y': 4.5321428571, 'z': 1.1}}
+{'move': {'x': 3.35, 'y': 4.5321428571, 'z': 1.1}}
+{'move': {'x': 3.35, 'y': 4.5321428571, 'z': 1.2}}
+{'max_speed': {'bool': True}}
+{'move': {'x': 3.35, 'y': 4.5321428571, 'z': 1.225}}
+{'max_speed': {'bool': True}}
+{'move': {'x': -0.35, 'y': 4.2928571429, 'z': 1.225}}
+{'speed': {'speed': 10.0}}
+{'move': {'x': -0.35, 'y': 4.2928571429, 'z': 1.1}}
+{'move': {'x': 3.35, 'y': 4.2928571429, 'z': 1.1}}
+{'move': {'x': 3.35, 'y': 4.2928571429, 'z': 1.2}}
+{'max_speed': {'bool': True}}
+{'move': {'x': 3.35, 'y': 4.2928571429, 'z': 1.225}}
+{'max_speed': {'bool': True}}
+{'move': {'x': -0.35, 'y': 4.0535714286, 'z': 1.225}}
+{'speed': {'speed': 10.0}}
+{'move': {'x': -0.35, 'y': 4.0535714286, 'z': 1.1}}
+{'move': {'x': 3.35, 'y': 4.0535714286, 'z': 1.1}}
+{'move': {'x': 3.35, 'y': 4.0535714286, 'z': 1.2}}
+{'max_speed': {'bool': True}}
+{'move': {'x': 3.35, 'y': 4.0535714286, 'z': 1.225}}
+{'max_speed': {'bool': True}}
+{'move': {'x': -0.35, 'y': 3.8142857143, 'z': 1.225}}
+{'speed': {'speed': 10.0}}
+{'move': {'x': -0.35, 'y': 3.8142857143, 'z': 1.1}}
+{'move': {'x': 3.35, 'y': 3.8142857143, 'z': 1.1}}
+{'move': {'x': 3.35, 'y': 3.8142857143, 'z': 1.2}}
+{'max_speed': {'bool': True}}
+{'move': {'x': 3.35, 'y': 3.8142857143, 'z': 1.225}}
+{'max_speed': {'bool': True}}
+{'move': {'x': -0.35, 'y': 3.575, 'z': 1.225}}
+{'speed': {'speed': 10.0}}
+{'move': {'x': -0.35, 'y': 3.575, 'z': 1.1}}
+{'move': {'x': 3.35, 'y': 3.575, 'z': 1.1}}
+{'move': {'x': 3.35, 'y': 3.575, 'z': 1.2}}
+{'max_speed': {'bool': True}}
+{'move': {'x': 3.35, 'y': 3.575, 'z': 1.225}}
+{'max_speed': {'bool': True}}
+{'move': {'x': -0.35, 'y': 3.3357142857, 'z': 1.225}}
+{'speed': {'speed': 10.0}}
+{'move': {'x': -0.35, 'y': 3.3357142857, 'z': 1.1}}
+{'move': {'x': 3.35, 'y': 3.3357142857, 'z': 1.1}}
+{'move': {'x': 3.35, 'y': 3.3357142857, 'z': 1.2}}
+{'max_speed': {'bool': True}}
+{'move': {'x': 3.35, 'y': 3.3357142857, 'z': 1.225}}
+{'max_speed': {'bool': True}}
+{'move': {'x': -0.35, 'y': 3.0964285714, 'z': 1.225}}
+{'speed': {'speed': 10.0}}
+{'move': {'x': -0.35, 'y': 3.0964285714, 'z': 1.1}}
+{'move': {'x': 3.35, 'y': 3.0964285714, 'z': 1.1}}
+{'move': {'x': 3.35, 'y': 3.0964285714, 'z': 1.2}}
+{'max_speed': {'bool': True}}
+{'move': {'x': 3.35, 'y': 3.0964285714, 'z': 1.225}}
+{'max_speed': {'bool': True}}
+{'move': {'x': -0.35, 'y': 2.8571428571, 'z': 1.225}}
+{'speed': {'speed': 10.0}}
+{'move': {'x': -0.35, 'y': 2.8571428571, 'z': 1.1}}
+{'move': {'x': 3.35, 'y': 2.8571428571, 'z': 1.1}}
+{'move': {'x': 3.35, 'y': 2.8571428571, 'z': 1.2}}
+{'max_speed': {'bool': True}}
+{'move': {'x': 3.35, 'y': 2.8571428571, 'z': 1.225}}
+{'max_speed': {'bool': True}}
+{'move': {'x': -0.35, 'y': 2.6178571429, 'z': 1.225}}
+{'speed': {'speed': 10.0}}
+{'move': {'x': -0.35, 'y': 2.6178571429, 'z': 1.1}}
+{'move': {'x': 3.35, 'y': 2.6178571429, 'z': 1.1}}
+{'move': {'x': 3.35, 'y': 2.6178571429, 'z': 1.2}}
+{'max_speed': {'bool': True}}
+{'move': {'x': 3.35, 'y': 2.6178571429, 'z': 1.225}}
+{'max_speed': {'bool': True}}
+{'move': {'x': -0.35, 'y': 2.3785714286, 'z': 1.225}}
+{'speed': {'speed': 10.0}}
+{'move': {'x': -0.35, 'y': 2.3785714286, 'z': 1.1}}
+{'move': {'x': 3.35, 'y': 2.3785714286, 'z': 1.1}}
+{'move': {'x': 3.35, 'y': 2.3785714286, 'z': 1.2}}
+{'max_speed': {'bool': True}}
+{'move': {'x': 3.35, 'y': 2.3785714286, 'z': 1.225}}
+{'max_speed': {'bool': True}}
+{'move': {'x': -0.35, 'y': 2.1392857143, 'z': 1.225}}
+{'speed': {'speed': 10.0}}
+{'move': {'x': -0.35, 'y': 2.1392857143, 'z': 1.1}}
+{'move': {'x': 3.35, 'y': 2.1392857143, 'z': 1.1}}
+{'move': {'x': 3.35, 'y': 2.1392857143, 'z': 1.2}}
+{'max_speed': {'bool': True}}
+{'move': {'x': 3.35, 'y': 2.1392857143, 'z': 1.225}}
+{'max_speed': {'bool': True}}
+{'move': {'x': -0.35, 'y': 1.9, 'z': 1.225}}
+{'speed': {'speed': 10.0}}
+{'move': {'x': -0.35, 'y': 1.9, 'z': 1.1}}
+{'move': {'x': 3.35, 'y': 1.9, 'z': 1.1}}
+{'move': {'x': 3.35, 'y': 1.9, 'z': 1.2}}
+{'max_speed': {'bool': True}}
+{'move': {'x': 3.35, 'y': 1.9, 'z': 1.225}}
+{'max_speed': {'bool': True}}
+{'move': {'x': -0.35, 'y': 1.6607142857, 'z': 1.225}}
+{'speed': {'speed': 10.0}}
+{'move': {'x': -0.35, 'y': 1.6607142857, 'z': 1.1}}
+{'move': {'x': 3.35, 'y': 1.6607142857, 'z': 1.1}}
+{'move': {'x': 3.35, 'y': 1.6607142857, 'z': 1.2}}
+{'max_speed': {'bool': True}}
+{'move': {'x': 3.35, 'y': 1.6607142857, 'z': 1.225}}
+{'max_speed': {'bool': True}}
+{'move': {'x': -0.35, 'y': 1.4214285714, 'z': 1.225}}
+{'speed': {'speed': 10.0}}
+{'move': {'x': -0.35, 'y': 1.4214285714, 'z': 1.1}}
+{'move': {'x': 3.35, 'y': 1.4214285714, 'z': 1.1}}
+{'move': {'x': 3.35, 'y': 1.4214285714, 'z': 1.2}}
+{'max_speed': {'bool': True}}
+{'move': {'x': 3.35, 'y': 1.4214285714, 'z': 1.225}}
+{'max_speed': {'bool': True}}
+{'move': {'x': -0.35, 'y': 1.1821428571, 'z': 1.225}}
+{'speed': {'speed': 10.0}}
+{'move': {'x': -0.35, 'y': 1.1821428571, 'z': 1.1}}
+{'move': {'x': 3.35, 'y': 1.1821428571, 'z': 1.1}}
+{'move': {'x': 3.35, 'y': 1.1821428571, 'z': 1.2}}
+{'max_speed': {'bool': True}}
+{'move': {'x': 3.35, 'y': 1.1821428571, 'z': 1.225}}
+{'max_speed': {'bool': True}}
+{'move': {'x': -0.35, 'y': 0.9428571429, 'z': 1.225}}
+{'speed': {'speed': 10.0}}
+{'move': {'x': -0.35, 'y': 0.9428571429, 'z': 1.1}}
+{'move': {'x': 3.35, 'y': 0.9428571429, 'z': 1.1}}
+{'move': {'x': 3.35, 'y': 0.9428571429, 'z': 1.2}}
+{'max_speed': {'bool': True}}
+{'move': {'x': 3.35, 'y': 0.9428571429, 'z': 1.225}}
+{'max_speed': {'bool': True}}
+{'move': {'x': -0.35, 'y': 0.7035714286, 'z': 1.225}}
+{'speed': {'speed': 10.0}}
+{'move': {'x': -0.35, 'y': 0.7035714286, 'z': 1.1}}
+{'move': {'x': 3.35, 'y': 0.7035714286, 'z': 1.1}}
+{'move': {'x': 3.35, 'y': 0.7035714286, 'z': 1.2}}
+{'max_speed': {'bool': True}}
+{'move': {'x': 3.35, 'y': 0.7035714286, 'z': 1.225}}
+{'max_speed': {'bool': True}}
+{'move': {'x': -0.35, 'y': 0.4642857143, 'z': 1.225}}
+{'speed': {'speed': 10.0}}
+{'move': {'x': -0.35, 'y': 0.4642857143, 'z': 1.1}}
+{'move': {'x': 3.35, 'y': 0.4642857143, 'z': 1.1}}
+{'move': {'x': 3.35, 'y': 0.4642857143, 'z': 1.2}}
+{'max_speed': {'bool': True}}
+{'move': {'x': 3.35, 'y': 0.4642857143, 'z': 1.225}}
+{'max_speed': {'bool': True}}
+{'move': {'x': -0.35, 'y': 0.225, 'z': 1.225}}
+{'speed': {'speed': 10.0}}
+{'move': {'x': -0.35, 'y': 0.225, 'z': 1.1}}
+{'move': {'x': 3.35, 'y': 0.225, 'z': 1.1}}
+{'move': {'x': 3.35, 'y': 0.225, 'z': 1.2}}
+{'max_speed': {'bool': True}}
+{'move': {'x': 3.35, 'y': 0.225, 'z': 1.225}}
+{'coolant': {'bool': False}}
+{'spindle_speed': {'control': 'OFF'}}
+{'end_movement': {'bool': True}}
+{'feature_number': {'feature_number': '556'}}
+{'tool': {'tool': '2'}}
+{'tool_size': {'tool_size': '2.000000'}}
+{'coordinate_system': {'coordinate_system': 'xyz'}}
+{'spindle_speed': {'control': 'RPM,', 'speed': 1000.0, 'direction': 'CLW'}}
+{'coolant': {'bool': True}}
+{'max_speed': {'bool': True}}
+{'move': {'x': 3.0, 'y': 4.6, 'z': 1.2}}
+{'max_speed': {'bool': True}}
+{'move': {'x': 3.0, 'y': 4.6, 'z': 0.2414213562}}
+{'speed': {'speed': 10.0}}
+{'move': {'x': 3.0, 'y': 4.6, 'z': 0.1414213562}}
+{'move': {'x': 3.0, 'y': 0.4, 'z': 0.1414213562}}
+{'move': {'x': 3.0, 'y': 0.4, 'z': 0.2414213562}}
+{'max_speed': {'bool': True}}
+{'move': {'x': 3.0, 'y': 0.4, 'z': 1.2}}
+{'max_speed': {'bool': True}}
+{'move': {'x': 3.1414213562, 'y': 4.6, 'z': 1.2}}
+{'max_speed': {'bool': True}}
+{'move': {'x': 3.1414213562, 'y': 4.6, 'z': 1.1}}
+{'speed': {'speed': 10.0}}
+{'move': {'x': 3.1414213562, 'y': 4.6, 'z': 0.0}}
+{'move': {'x': 3.1414213562, 'y': 0.4, 'z': 0.0}}
+{'move': {'x': 3.1414213562, 'y': 0.4, 'z': 0.1}}
+{'max_speed': {'bool': True}}
+{'move': {'x': 3.1414213562, 'y': 0.4, 'z': 1.2}}
+{'end_movement': {'bool': True}}
+{'feature_number': {'feature_number': '1111'}}
+{'coordinate_system': {'coordinate_system': 'xyz'}}
+{'max_speed': {'bool': True}}
+{'move': {'x': 2.6, 'y': 0.0, 'z': 1.2}}
+{'max_speed': {'bool': True}}
+{'move': {'x': 2.6, 'y': 0.0, 'z': 0.2414213562}}
+{'speed': {'speed': 10.0}}
+{'move': {'x': 2.6, 'y': 0.0, 'z': 0.1414213562}}
+{'move': {'x': 0.4, 'y': 0.0, 'z': 0.1414213562}}
+{'move': {'x': 0.4, 'y': 0.0, 'z': 0.2414213562}}
+{'max_speed': {'bool': True}}
+{'move': {'x': 0.4, 'y': 0.0, 'z': 1.2}}
+{'max_speed': {'bool': True}}
+{'move': {'x': 2.6, 'y': -0.1414213562, 'z': 1.2}}
+{'max_speed': {'bool': True}}
+{'move': {'x': 2.6, 'y': -0.1414213562, 'z': 1.1}}
+{'speed': {'speed': 10.0}}
+{'move': {'x': 2.6, 'y': -0.1414213562, 'z': 0.0}}
+{'move': {'x': 0.4, 'y': -0.1414213562, 'z': 0.0}}
+{'move': {'x': 0.4, 'y': -0.1414213562, 'z': 0.1}}
+{'max_speed': {'bool': True}}
+{'move': {'x': 0.4, 'y': -0.1414213562, 'z': 1.2}}
+{'end_movement': {'bool': True}}
+{'feature_number': {'feature_number': '1219'}}
+{'coordinate_system': {'coordinate_system': 'xyz'}}
+{'max_speed': {'bool': True}}
+{'move': {'x': 0.0, 'y': 0.4, 'z': 1.2}}
+{'max_speed': {'bool': True}}
+{'move': {'x': 0.0, 'y': 0.4, 'z': 0.2414213562}}
+{'speed': {'speed': 10.0}}
+{'move': {'x': 0.0, 'y': 0.4, 'z': 0.1414213562}}
+{'move': {'x': 0.0, 'y': 4.6, 'z': 0.1414213562}}
+{'move': {'x': 0.0, 'y': 4.6, 'z': 0.2414213562}}
+{'max_speed': {'bool': True}}
+{'move': {'x': 0.0, 'y': 4.6, 'z': 1.2}}
+{'max_speed': {'bool': True}}
+{'move': {'x': -0.1414213562, 'y': 0.4, 'z': 1.2}}
+{'max_speed': {'bool': True}}
+{'move': {'x': -0.1414213562, 'y': 0.4, 'z': 1.1}}
+{'speed': {'speed': 10.0}}
+{'move': {'x': -0.1414213562, 'y': 0.4, 'z': 0.0}}
+{'move': {'x': -0.1414213562, 'y': 4.6, 'z': 0.0}}
+{'move': {'x': -0.1414213562, 'y': 4.6, 'z': 0.1}}
+{'max_speed': {'bool': True}}
+{'move': {'x': -0.1414213562, 'y': 4.6, 'z': 1.2}}
+{'end_movement': {'bool': True}}
+{'feature_number': {'feature_number': '1327'}}
+{'coordinate_system': {'coordinate_system': 'xyz'}}
+{'max_speed': {'bool': True}}
+{'move': {'x': 0.4, 'y': 5.0, 'z': 1.2}}
+{'max_speed': {'bool': True}}
+{'move': {'x': 0.4, 'y': 5.0, 'z': 0.2414213562}}
+{'speed': {'speed': 10.0}}
+{'move': {'x': 0.4, 'y': 5.0, 'z': 0.1414213562}}
+{'move': {'x': 2.6, 'y': 5.0, 'z': 0.1414213562}}
+{'move': {'x': 2.6, 'y': 5.0, 'z': 0.2414213562}}
+{'max_speed': {'bool': True}}
+{'move': {'x': 2.6, 'y': 5.0, 'z': 1.2}}
+{'max_speed': {'bool': True}}
+{'move': {'x': 0.4, 'y': 5.1414213562, 'z': 1.2}}
+{'max_speed': {'bool': True}}
+{'move': {'x': 0.4, 'y': 5.1414213562, 'z': 1.1}}
+{'speed': {'speed': 10.0}}
+{'move': {'x': 0.4, 'y': 5.1414213562, 'z': 0.0}}
+{'move': {'x': 2.6, 'y': 5.1414213562, 'z': 0.0}}
+{'move': {'x': 2.6, 'y': 5.1414213562, 'z': 0.1}}
+{'max_speed': {'bool': True}}
+{'move': {'x': 2.6, 'y': 5.1414213562, 'z': 1.2}}
+{'coolant': {'bool': False}}
+{'spindle_speed': {'control': 'OFF'}}
+{'end_movement': {'bool': True}}
+{'finish_file': {'bool': True}}

@@ -7,14 +7,16 @@ Description: The root tkinter object for the GUI application
 
 import tkinter as tk
 from tkinter import filedialog
-from paramClass import Parameters
-from paramClass import ParameterGui
+from paramClass import NscryptParameters, OptomecParameters
+from paramClass import NscryptParameterGui, OptomecParameterGui
 from tkinter import ttk
 import applicationGlobals as globals
 
 WINDOW_TITLE = "S25-38" #TODO - Provide suitable titles
 MENU_TITLE = "S25-38 Machine Instruction Converter"
 GUI_WINDOW_SIZE = "500x300"
+
+# CONVERSION_SETTINGS_WINDOW_SIZE = "500x300"
 
 #TODO - Change these to proper extensions
 CREO_FILE_TYPE = ("Creo Toolpath Files", '*.ncl.1')
@@ -23,7 +25,7 @@ ACSPL_FILE_TYPE = ("ACSPL Files", '*.txt')
 IMPORT_FILE_TYPES_LIST = (CREO_FILE_TYPE, NSCRYPT_FILE_TYPE, ACSPL_FILE_TYPE, ("All files", "*.*"))
 EXPORT_FILE_TYPES_LIST = (NSCRYPT_FILE_TYPE, ACSPL_FILE_TYPE, ("All files", "*.*"))
 
-# CONVERSION_SETTINGS_WINDOW_SIZE = "500x300"
+QUEUE_LOOP_RATE = 100
 
 class GuiRoot(tk.Tk):
     def __init__(self):
@@ -37,8 +39,8 @@ class GuiRoot(tk.Tk):
         self.geometry(GUI_WINDOW_SIZE)
 
         #Title of Menu
-        self.testLabel = tk.Label(self, text = MENU_TITLE)
-        self.testLabel.pack(anchor="center")
+        self.menuTitleLabel = tk.Label(self, text = MENU_TITLE)
+        self.menuTitleLabel.pack(anchor="center")
 
         #Import button + import filepath
         self.importFrame = tk.Frame(self)
@@ -101,8 +103,6 @@ class GuiRoot(tk.Tk):
         self.writeStatus("Import Click")
         print("Import Click")
 
-        self.params = Parameters().params
-        self.printParams.config(state=tk.NORMAL) #enables printer parameter button and menu
 
     def setExportDestinationButtonCallback(self):
         exportFilename = filedialog.asksaveasfilename(filetypes = EXPORT_FILE_TYPES_LIST)
@@ -137,13 +137,42 @@ class GuiRoot(tk.Tk):
 
         convSettingsWindow.wait_window()
 
+        #save/set which parameter type after window is closed
+        if globals.printerTypeSelected == 0:
+            self.params = NscryptParameters()
+        else:
+            self.params = OptomecParameters()
+        self.printParams.config(state=tk.NORMAL) #enables printer parameter button and menu
+
         #TODO - Prevent user from opening another window/interacting with main menu until conversion settings are closed
 
     def printParamsButtonCallback(self):
         self.writeStatus("Printer Parameters Click")
         print("Printer Parameters Click")
-        paramWindow = ParameterGui(self)
-        paramWindow.eval("tk::PlaceWindow . center")
+        if globals.printerTypeSelected == 0:
+            paramWindow = tk.Toplevel()
+            self.eval("tk::PlaceWindow {} center".format(str(paramWindow)))
+
+            paramWindow.title("nScrypt Parameters")
+            paramWindow.geometry("500x250")
+            paramWindow.resizable(False, False)
+
+            paramFrame = NscryptParameterGui(paramWindow, self)
+            paramFrame.grid()
+
+            paramWindow.wait_window()
+        else:
+            paramWindow = tk.Toplevel()
+            self.eval("tk::PlaceWindow {} center".format(str(paramWindow)))
+
+            paramWindow.title("Optomec Parameters")
+            paramWindow.geometry("500x250")
+            paramWindow.resizable(False, False)
+
+            paramFrame = NscryptParameterGui(paramWindow, self)
+            paramFrame.grid()
+
+            paramWindow.wait_window()
 
 class ConversionSettingsFrame(tk.Frame):
     def __init__(self, parent):
@@ -171,6 +200,18 @@ class ConversionSettingsFrame(tk.Frame):
         globals.printerTypeSelected = self.printerTypeCombobox.current() #Set global value
         selectedPrinter = globals.PRINTER_TYPES[globals.printerTypeSelected] #Get corresponding string 
 
-        self.master.master.writeStatus("Save Button Click " + selectedPrinter) #TODO - Replace with message queue system
+        globals.writeStatusQueue("Save Button Click " + selectedPrinter) #TODO - Replace with message queue system
         #TODO - Close window after saving? - Change to "Save and Exit"
         print("Save Button Click", selectedPrinter)
+
+def queueLoop(rootObject):
+    # Loop through all available messages until queue is empty
+    while(True):
+        try:
+            message = globals.statusQueue.get(block=False)
+            rootObject.writeStatus(message)
+        except globals.queue.Empty:
+            break
+
+    # Follow the underlying loop of the GUI
+    rootObject.after(QUEUE_LOOP_RATE, queueLoop, rootObject)
