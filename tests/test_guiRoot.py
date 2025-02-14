@@ -10,12 +10,14 @@ from unittest import mock
 import sys
 
 sys.path.append("../source/transpiler/")
-from guiRoot import GuiRoot
+import guiRoot
+
 import tkinter as tk
+import applicationGlobals as globals
 
 class TestGuiButtons(unittest.TestCase):
     def setUp(self):
-        self.guiRootObj = GuiRoot()
+        self.guiRootObj = guiRoot.GuiRoot()
 
     def testImport(self):
         importMock = mock.Mock()
@@ -57,6 +59,27 @@ class TestGuiButtons(unittest.TestCase):
         assert self.guiRootObj.statusTextArea.get("1.0", tk.END) == "Numbers 0123456789\n"
 
         self.guiRootObj.writeStatus("Special Characters `~!@#$%^&*()_+")
+        assert self.guiRootObj.statusTextArea.get("1.0", tk.END) == "Special Characters `~!@#$%^&*()_+\n"
+
+    def testStatusQueue(self):
+        globals.writeStatusQueue("TEST1")
+        guiRoot.queueLoop(self.guiRootObj) # Have to "artificially" loop through queue 
+        assert self.guiRootObj.statusTextArea.get("1.0", tk.END) == "TEST1\n"
+
+        globals.writeStatusQueue("TEST2")
+        guiRoot.queueLoop(self.guiRootObj)
+        assert self.guiRootObj.statusTextArea.get("1.0", tk.END) == "TEST2\n"
+
+        globals.writeStatusQueue("Alphabetical Characters")
+        guiRoot.queueLoop(self.guiRootObj)
+        assert self.guiRootObj.statusTextArea.get("1.0", tk.END) == "Alphabetical Characters\n"
+
+        globals.writeStatusQueue("Numbers 0123456789")
+        guiRoot.queueLoop(self.guiRootObj)
+        assert self.guiRootObj.statusTextArea.get("1.0", tk.END) == "Numbers 0123456789\n"
+
+        globals.writeStatusQueue("Special Characters `~!@#$%^&*()_+")
+        guiRoot.queueLoop(self.guiRootObj)
         assert self.guiRootObj.statusTextArea.get("1.0", tk.END) == "Special Characters `~!@#$%^&*()_+\n"
 
 if __name__ == "__main__":
