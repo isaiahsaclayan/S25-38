@@ -61,7 +61,8 @@ SUPPORTED_COMMANDS: List[str] = [
     "max_speed",
     "speed",
     "move",
-    "feature_number"
+    "feature_number",
+    "manufacturer_number"
 ]
 
 class Machine:
@@ -258,6 +259,12 @@ class AcsplConverter(ToolpathConverter):
             feature_number = params["feature_number"]
             # Append the feature number
             self._translated_commands.append(f"! Feature Number: {feature_number}")
+
+        elif command == "manufacturer_number":
+            # Parse the manufacturer number
+            manufacturer_number = params["manufacturer_number"]
+            # Append the manufacturer number
+            self._translated_commands.append(f"! Manufacturer Number: {manufacturer_number}")
 
     def translate(self, parsed_commands: List[dict[str, dict[str, str]]]) -> List[str]:
         """
