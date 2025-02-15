@@ -1,5 +1,3 @@
-from os import write
-
 from toolpathConverter import ToolpathConverter
 from applicationGlobals import writeStatusQueue
 from typing import List
@@ -62,8 +60,23 @@ SUPPORTED_COMMANDS: List[str] = [
     "speed",
     "move",
     "feature_number",
-    "manufacturer_number"
+    "manufacturer_number",
+    "part_number"
+    #"arc"
 ]
+
+# List of ignored commands
+IGNORED_COMMANDS: List[str] = [
+    "tool",
+    "tool_size",
+    "coordinate_system",
+    "spindle_speed",
+    "coolant",
+    "title",
+    "machine_info",
+    "geometry_type",
+    "units"
+    ]
 
 class Machine:
 
@@ -150,13 +163,20 @@ class Machine:
         self._A = float(a)
         self._B = float(b)
 
-    def get_location_and_switchval_str(self, switch: str) -> str:
+    def get_location_and_switchval_str(self, switch: str = "") -> str:
         """
         Formats the location and switch value for ACSPL command
         :param switch: switch type ex. "A", "V"
         :return: formatted string of location and switch value for command
         """
-        return f"(10,11,12,14,15), {self._X}, {self._Y}, {self._Z}, {self._A}, {self._B}, {self._get_switch_value(switch)}"
+        # If switch is not provided
+        if switch == "":
+            # Format location string with no switch value
+            return f"(10,11,12,14,15), {self._X}, {self._Y}, {self._Z}, {self._A}, {self._B}"
+        # If switch is not provided
+        else:
+            # Format location string with switch value
+            return f"(10,11,12,14,15), {self._X}, {self._Y}, {self._Z}, {self._A}, {self._B}, {self._get_switch_value(switch)}"
 
     def _get_switch_value(self, switch: str) -> str:
         """
@@ -187,14 +207,22 @@ class AcsplConverter(ToolpathConverter):
         # Log ACSPL Converter Instantiation
         logger.info("ACSPL Converter Instantiated")
 
-    def _format_and_append_command(self, command: str, switch: str) -> None:
+    def _format_and_append_command(self, command: str, switch: str = "") -> None:
         """
         Formats the command and appends to the translated commands list
         :param command: ACSPL command
         :param switch: switch to be added to the command
         :return: None
         """
-        acspl_instr = f"{command}/{switch} {self.machine.get_location_and_switchval_str(switch)}"
+        # If no switch was provided
+        if switch == "":
+            # Format the command with no switch
+            acspl_instr = f"{command} {self.machine.get_location_and_switchval_str()}"
+        # If a switch was provided
+        else:
+            # Format the command with switch and switch value
+            acspl_instr = f"{command}/{switch} {self.machine.get_location_and_switchval_str(switch)}"
+        # Append the command to the translated commands list
         self._translated_commands.append(acspl_instr)
 
     def _process_command(self, command: str, params: dict[str, str]) -> None:
@@ -260,6 +288,27 @@ class AcsplConverter(ToolpathConverter):
             # Append the feature number
             self._translated_commands.append(f"! Feature Number: {feature_number}")
 
+        # If the command is a manufacturer number command
+        elif command == "manufacturer_number":
+            # Parse the manufacturer number
+            manufacturer_number = params["manufacturer_number"]
+            # Append the manufacturer number
+            self._translated_commands.append(f"! Manufacturer Number: {manufacturer_number}")
+
+        # If the command is a part number command
+        elif command == "part_number":
+            # Parse the part number
+            part_number = params["part_number"]
+            # Append the part number
+            self._translated_commands.append(f"! Part Number: {part_number}")
+
+        # If the command is an arc command
+        elif command == "arc":
+            # Set the location registers for the machine to store desired location
+            self.machine.set_axis_registers(params["x"], params["y"], params["z"])
+            # Format and append the ARC command
+            self._format_and_append_command("ARC")
+
     def translate(self, parsed_commands: List[dict[str, dict[str, str]]]) -> List[str]:
         """
         Translates generic toolpath to list of formatted commands
@@ -279,8 +328,14 @@ class AcsplConverter(ToolpathConverter):
         # Iterate through each command
         for command in parsed_commands:
 
-            # Check if the command is a valid command
+            # Parse the command
             parsed_command = list(command.keys())[0]
+
+            # If the command is to be ignored, skip
+            if parsed_command in IGNORED_COMMANDS:
+                continue
+
+            # If not a supported command
             if parsed_command not in SUPPORTED_COMMANDS:
                 self._translated_commands.append(f"!INVALID COMMAND: {command}")
                 logger.info(f"Invalid command: {command}")

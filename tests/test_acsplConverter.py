@@ -142,6 +142,17 @@ class TestAcsplConverter(unittest.TestCase):
         # Assert
         self.assertIn(exp_result, result)
 
+    def test_part_number(self):
+        # Arrange
+        PART_NUMBER = [
+            {"part_number": {"part_number": "9012"}}
+        ]
+        exp_result = "! Part Number: 9012"
+        # Act
+        result = self.acsplConverter.translate(PART_NUMBER)
+        # Assert
+        self.assertIn(exp_result, result)
+
     def test_print_parsed_commands(self):
         results = self.acsplConverter.translate(PARSED_COMMANDS)
         #_print(results)
