@@ -92,6 +92,9 @@ class Machine:
         # Flag if within printing segment
         self._in_printing_segment: bool = False
 
+        # Flag if done with processing toolpath
+        self._done: bool = False
+
         # Axis Registers
         self._X: any = None
         self._Y: any = None
@@ -148,6 +151,23 @@ class Machine:
         :return: value of _print_started
         """
         return self._print_started
+
+    @property
+    def done(self):
+        """
+        Getter for _done
+        :return: value of _done
+        """
+        return self._done
+
+    @done.setter
+    def done(self, done: bool):
+        """
+        Setter for _done
+        :param done: value to be set
+        :return: none
+        """
+        self._done = done
 
     def set_axis_registers(self, x: any, y: any, z: any, a: any = 0.0, b: any = 0.0) -> None:
         """
@@ -329,6 +349,20 @@ class AcsplConverter(ToolpathConverter):
                     # Set the machine to not be dispensing
                     self.machine.is_dispensing = False
 
+        # If the command is a finish file command
+        elif command == "finish_file":
+            # If the finish file command is true
+            if params["bool"] == "True":
+                # If the machine is dispensing, close the inkjet
+                if self.machine.is_dispensing:
+                    # Append the close inkjet command
+                    self._translated_commands.append(CLOSE_INKJET)
+                    # Set the machine to not be dispensing
+                    self.machine.is_dispensing = False
+                # Set the machine to be done
+                self.machine.done = True
+            # If false, return
+
     def translate(self, parsed_commands: List[dict[str, dict[str, str]]]) -> List[str]:
         """
         Translates generic toolpath to list of formatted commands
@@ -348,13 +382,17 @@ class AcsplConverter(ToolpathConverter):
         # Iterate through each command
         for command in parsed_commands:
 
+            # If done, break
+            if self.machine.done:
+                break
+
             # Parse the command
             parsed_command = list(command.keys())[0]
 
+            # Do not process cases
             # If the command is to be ignored, skip
             if parsed_command in IGNORED_COMMANDS:
                 continue
-
             # If the command is not supported command
             if parsed_command not in SUPPORTED_COMMANDS:
                 self._translated_commands.append(f"!INVALID COMMAND: {command}")
@@ -367,6 +405,7 @@ class AcsplConverter(ToolpathConverter):
             self._process_command(parsed_command, command[parsed_command])
 
         # If the machine is dispensing, close the inkjet
+        # Only invoked if parsed toolpath does not end properly by providing end movement or finish file command
         if self.machine.is_dispensing:
             self._translated_commands.append(CLOSE_INKJET)
 
