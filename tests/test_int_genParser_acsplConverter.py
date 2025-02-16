@@ -19,6 +19,18 @@ class TestIntegrationParserToACSPL(unittest.TestCase):
         except Exception as e:
             self.fail(f"Exception raised during translation: {e}")
 
+    def test_conversion_to_translation_noInvalidCommands(self):
+        # Arrange
+        parsed_commands = self.genericParser.parse_commands()
+
+        # Act
+        translated_commands = self.acsplConverter.translate(parsed_commands)
+
+        # Assert
+        for command in translated_commands:
+            self.assertNotIn("INVALID", command)
+
+    # TODO remove this test before delivery
     def test_print(self):
         # Arrange
         parsed_commands = self.genericParser.parse_commands()
