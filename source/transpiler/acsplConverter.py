@@ -1,3 +1,5 @@
+from os import write
+
 from toolpathConverter import ToolpathConverter
 from applicationGlobals import writeStatusQueue
 from typing import List
@@ -254,6 +256,38 @@ class AcsplConverter(ToolpathConverter):
         # Append the command to the translated commands list
         self._translated_commands.append(acspl_instr)
 
+    def _validate_translate_arg(self, args: any) -> bool:
+        """
+        Validates the arguments provided to translate function
+        :param args: arguments provided to translate function
+        :return: None
+        """
+        # Type check, must be type List[Dict[str,Dict[str,str]]
+        type_err = "Invalid argument type provided to translate function - must be type List[Dict[str,Dict[str,str]]"
+        if not isinstance(args, list):
+            logger.info(type_err)
+            return False
+        for item in args:
+            if not isinstance(item, dict):
+                logger.info(type_err)
+                return False
+            for key, value in item.items():
+                if not isinstance(key, str) or not isinstance(value, dict):
+                    logger.info(type_err)
+                    return False
+                for sub_key, sub_value in value.items():
+                    if not isinstance(sub_key, str) or not isinstance(sub_value, str):
+                        logger.info(type_err)
+                        return False
+
+        # Check if list is empty
+        if len(args) == 0:
+            writeStatusQueue("No commands provided to ACSPL translate function")
+            return False
+
+        # If all checks pass
+        return True
+
     def _process_command(self, command: str, params: dict[str, str]) -> None:
         """
         Processes a single command
@@ -379,12 +413,10 @@ class AcsplConverter(ToolpathConverter):
         # Add comment to dictate start of toolpath.
         self._translated_commands.append(START_COMMENT)
 
-        # Edge case: If no commands, return empty list
-        if not parsed_commands:
-            # Log error and return info to user
-            logger.info("No commands to process")
-            writeStatusQueue("No commands to process")
-            return self._translated_commands
+        # Check if the provided parameter is valid
+        if not self._validate_translate_arg(parsed_commands):
+            writeStatusQueue("Invalid argument provided to ACSPL translate function")
+            return []
 
         # Iterate through each command
         for command in parsed_commands:

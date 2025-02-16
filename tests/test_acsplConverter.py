@@ -195,6 +195,12 @@ class TestAcsplConverter(unittest.TestCase):
         # Assert
         self.assertNotIn(CLOSE_INKJET, result)
 
+    def test_proper_endfile(self):
+        # Arrange
+        commands = [MACHINE_SETUP,
+                    START_COMMENT,
+                   STOP]
+
     def test_print_parsed_commands(self):
         results = self.acsplConverter.translate(PARSED_COMMANDS)
         #_print(results)
