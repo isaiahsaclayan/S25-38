@@ -205,9 +205,11 @@ class TestAcsplConverter(unittest.TestCase):
         res_str = self.acsplConverter.translate("1")
         # None
         res_none = self.acsplConverter.translate(None)
+        # Dict
+        res_dict = self.acsplConverter.translate({})
 
         # Assert
-        self.assertTrue(all(res == [] for res in [res_int, res_float, res_str, res_none]))
+        self.assertTrue(all(res == [] for res in [res_int, res_float, res_str, res_none, res_dict]))
 
     def test_print_parsed_commands(self):
         results = self.acsplConverter.translate(PARSED_COMMANDS)
