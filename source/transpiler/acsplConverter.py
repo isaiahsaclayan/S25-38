@@ -61,7 +61,9 @@ SUPPORTED_COMMANDS: List[str] = [
     "move",
     "feature_number",
     "manufacturer_number",
-    "part_number"
+    "part_number",
+    "end_movement",
+    "finish_file"
     #"arc"
 ]
 
@@ -162,6 +164,13 @@ class Machine:
         self._Z = float(z)
         self._A = float(a)
         self._B = float(b)
+
+    def get_axis_registers(self) -> tuple[float, float, float, float, float]:
+        """
+        Get the axis registers for the machine
+        :return: tuple of axis registers
+        """
+        return self._X, self._Y, self._Z, self._A, self._B
 
     def get_location_and_switchval_str(self, switch: str = "") -> str:
         """
@@ -309,6 +318,17 @@ class AcsplConverter(ToolpathConverter):
             # Format and append the ARC command
             self._format_and_append_command("ARC")
 
+        # If the command is an end movement command
+        elif command == "end_movement":
+            # If the end movement command is true
+            if params["bool"] == "True":
+                # If the machine is dispensing, close the inkjet
+                if self.machine.is_dispensing:
+                    # Append the close inkjet command
+                    self._translated_commands.append(CLOSE_INKJET)
+                    # Set the machine to not be dispensing
+                    self.machine.is_dispensing = False
+
     def translate(self, parsed_commands: List[dict[str, dict[str, str]]]) -> List[str]:
         """
         Translates generic toolpath to list of formatted commands
@@ -335,7 +355,7 @@ class AcsplConverter(ToolpathConverter):
             if parsed_command in IGNORED_COMMANDS:
                 continue
 
-            # If not a supported command
+            # If the command is not supported command
             if parsed_command not in SUPPORTED_COMMANDS:
                 self._translated_commands.append(f"!INVALID COMMAND: {command}")
                 logger.info(f"Invalid command: {command}")

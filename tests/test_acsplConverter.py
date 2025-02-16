@@ -153,6 +153,17 @@ class TestAcsplConverter(unittest.TestCase):
         # Assert
         self.assertIn(exp_result, result)
 
+    def test_end_movement_whileDispensing(self):
+        # Arrange
+        END_MOVEMENT = [
+            {"end_movement": {"bool": "True"}}
+        ]
+        self.acsplConverter.machine.is_dispensing = True
+        # Act
+        result = self.acsplConverter.translate(END_MOVEMENT)
+        # Assert
+        self.assertIn(CLOSE_INKJET, result)
+
     def test_print_parsed_commands(self):
         results = self.acsplConverter.translate(PARSED_COMMANDS)
         #_print(results)
