@@ -377,7 +377,14 @@ class AcsplConverter(ToolpathConverter):
         self._translated_commands.append(MACHINE_SETUP)
 
         # Add comment to dictate start of toolpath.
-        self._translated_commands.append("! Start of Toolpath")
+        self._translated_commands.append(START_COMMENT)
+
+        # Edge case: If no commands, return empty list
+        if not parsed_commands:
+            # Log error and return info to user
+            logger.info("No commands to process")
+            writeStatusQueue("No commands to process")
+            return self._translated_commands
 
         # Iterate through each command
         for command in parsed_commands:
