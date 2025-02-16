@@ -195,11 +195,19 @@ class TestAcsplConverter(unittest.TestCase):
         # Assert
         self.assertNotIn(CLOSE_INKJET, result)
 
-    def test_proper_endfile(self):
-        # Arrange
-        commands = [MACHINE_SETUP,
-                    START_COMMENT,
-                   STOP]
+    def test_translate_invalidType(self):
+        # Act
+        # Int
+        res_int = self.acsplConverter.translate(1)
+        # Float
+        res_float = self.acsplConverter.translate(1.0)
+        # Str
+        res_str = self.acsplConverter.translate("1")
+        # None
+        res_none = self.acsplConverter.translate(None)
+
+        # Assert
+        self.assertTrue(all(res == [] for res in [res_int, res_float, res_str, res_none]))
 
     def test_print_parsed_commands(self):
         results = self.acsplConverter.translate(PARSED_COMMANDS)
