@@ -80,7 +80,7 @@ IGNORED_COMMANDS: List[str] = [
     "machine_info",
     "geometry_type",
     "units"
-    ]
+]
 
 class Machine:
 
