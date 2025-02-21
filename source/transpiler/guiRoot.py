@@ -51,30 +51,6 @@ class GuiRoot(tk.Tk):
         self.menuTitleLabel = tk.Label(self, text=MENU_TITLE)
         self.menuTitleLabel.pack(anchor="center")
 
-        # Import button + import filepath
-        self.importFrame = tk.Frame(self)
-
-        # Import Button and Label
-        self.importFileButton = tk.Button(self.importFrame, text="Select Import File", command=self.importButtonCallback)
-        self.importFileButton.pack(side="left")
-
-        self.importFilepathLabel = tk.Label(self.importFrame)
-        self.importFilepathLabel.pack(side="left")
-
-        self.importFrame.pack(anchor="w", padx=5, pady=5)
-
-        # Export button + export filepath
-        self.exportFrame = tk.Frame(self)
-
-        # Set Export Destination Button and Label
-        self.exportFileButton = tk.Button(self.exportFrame, text="Set Export Destination", command=self.setExportDestinationButtonCallback)
-        self.exportFileButton.pack(side="left")
-
-        self.exportFilepathLabel = tk.Label(self.exportFrame)
-        self.exportFilepathLabel.pack(side="left")
-
-        self.exportFrame.pack(anchor="w", padx=5, pady=5)
-
         # Conversion Settings Button
         self.conversionSettings = tk.Button(self, text="Conversion Settings", command=self.conversionSettingsButtonCallback)
         self.conversionSettings.pack(anchor="w", padx=5, pady=5)
@@ -83,6 +59,34 @@ class GuiRoot(tk.Tk):
         self.printParams = tk.Button(self, text="Printer Parameters", command=self.printParamsButtonCallback)
         self.printParams.config(state=tk.DISABLED)  # button can't be clicked until file has been imported
         self.printParams.pack(anchor="w", padx=5, pady=5)
+
+        # Import button + import filepath
+        self.importFrame = tk.Frame(self)
+
+        # Import Button and Entry
+        self.importFileButton = tk.Button(self.importFrame, text="Select Import File", command=self.importButtonCallback)
+        self.importFileButton.pack(side="left")
+
+        self.importFilepathEntry = tk.Entry(self.importFrame, relief="sunken")
+        self.importFilepathEntry.pack(side="left", padx=5, fill="x", expand=True)
+        self.importFilepathEntry.insert(tk.END, "Import filepath will be displayed here")
+        self.importFilepathEntry.configure(state="readonly")
+
+        self.importFrame.pack(anchor="w", padx=5, pady=5, fill="x", expand=True)
+
+        # Export button + export filepath
+        self.exportFrame = tk.Frame(self)
+
+        # Set Export Destination Button and Entry
+        self.exportFileButton = tk.Button(self.exportFrame, text="Set Export Destination", command=self.setExportDestinationButtonCallback)
+        self.exportFileButton.pack(side="left")
+
+        self.exportFilepathEntry = tk.Entry(self.exportFrame, relief="sunken")
+        self.exportFilepathEntry.pack(side="left", padx=5, fill="x", expand=True)
+        self.exportFilepathEntry.insert(tk.END, "Export filepath will be displayed here")
+        self.exportFilepathEntry.configure(state="readonly")
+
+        self.exportFrame.pack(anchor="w", padx=5, pady=5, fill="x", expand=True)
 
         # Start Conversion Button
         self.startConvButton = tk.Button(self, text="Start Conversion", command=self.startConversionButtonCallback)
@@ -134,15 +138,18 @@ class GuiRoot(tk.Tk):
                 openedFile = open(file = filepath, mode="r")
                 openedFile.close()
 
-                self.writeStatus("Select Import File Successful")
                 globals.setImportFilepath(filepath) # Store import filepath
-                self.importFilepathLabel["text"] = filepath
-                
+
+                self.importFilepathEntry.configure(state="normal")
+                self.importFilepathEntry.delete(0, tk.END)
+                self.importFilepathEntry.insert(tk.END, filepath)
+                self.importFilepathEntry.configure(state="readonly")
+
+                self.writeStatus("Select Import File Successful")
 
             except:
-                self.writeStatus("Select Import File Error: Unable to Open File")
-                self.importFilepathLabel["text"] = filepath
-
+                self.writeStatus("Select Import File Error")
+        
         #first try to open param file, if fail then create the settings file and begin append
         try:
             settingsData = json.loads(open("parameters.json").read())
@@ -180,7 +187,6 @@ class GuiRoot(tk.Tk):
 
         # Opens a dialog for user to set a filename and path for export
         filepath = filedialog.asksaveasfilename(filetypes = EXPORT_FILE_TYPES_LIST, defaultextension = EXPORT_FILE_TYPES_LIST[0])
-        self.exportFilepathLabel["text"] = filepath
 
         # User cancels setting export destination
         # If the user clicks the cancel button, an empty string is returned
@@ -190,7 +196,14 @@ class GuiRoot(tk.Tk):
         # User sets export filepath
         else:
             globals.setExportFilepath(filepath) # Store export filepath
+
+            self.exportFilepathEntry.configure(state="normal")
+            self.exportFilepathEntry.delete(0, tk.END)
+            self.exportFilepathEntry.insert(tk.END, filepath)
+            self.exportFilepathEntry.configure(state="readonly")
+
             self.writeStatus("Set Export Destination Successful")
+
 
     def startConversionButtonCallback(self):
         if not self.toolpath_data:
