@@ -275,10 +275,6 @@ class AcsplConverter(ToolpathConverter):
                 if not isinstance(key, str) or not isinstance(value, dict):
                     logger.info(type_err)
                     return False
-                for sub_key, sub_value in value.items():
-                    if not isinstance(sub_key, str) or not isinstance(sub_value, str):
-                        logger.info(type_err)
-                        return False
 
         # Check if list is empty
         if len(args) == 0:
