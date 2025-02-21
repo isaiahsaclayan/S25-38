@@ -25,8 +25,8 @@ QUEUE_LOOP_RATE = 100
 CREO_FILE_TYPE = ("Creo Toolpath Files", '*.ncl.1')
 NSCRYPT_FILE_TYPE = ("nScrypt GCODE Files", '*.gcode')
 ACSPL_FILE_TYPE = ("ACSPL Files", '*.txt')
-IMPORT_FILE_TYPES_LIST = (CREO_FILE_TYPE, NSCRYPT_FILE_TYPE, ACSPL_FILE_TYPE, ("All files", "*.*"))
-EXPORT_FILE_TYPES_LIST = (NSCRYPT_FILE_TYPE, ACSPL_FILE_TYPE, ("All files", "*.*"))
+IMPORT_FILE_TYPES_LIST = [CREO_FILE_TYPE, NSCRYPT_FILE_TYPE, ACSPL_FILE_TYPE, ("All files", "*.*")]
+EXPORT_FILE_TYPES_LIST = [NSCRYPT_FILE_TYPE, ACSPL_FILE_TYPE, ("All files", "*.*")]
 
 
 class GuiRoot(tk.Tk):
@@ -117,7 +117,7 @@ class GuiRoot(tk.Tk):
     def importButtonCallback(self):
 
         # Opens a dialog for user to select a file to import
-        filepath = filedialog.askopenfilename(filetypes = IMPORT_FILE_TYPES_LIST)
+        filepath = filedialog.askopenfilename(filetypes = IMPORT_FILE_TYPES_LIST, defaultextension = IMPORT_FILE_TYPES_LIST[0])
 
         # User Cancels File Selection
         # If the user clicks the cancel button, an empty string is returned
@@ -135,6 +135,7 @@ class GuiRoot(tk.Tk):
                 open(file = filepath, mode="r")
                 self.writeStatus("File Import Selection Successful")
                 globals.setImportFilepath(filepath)
+                self.importFilepathLabel["text"] = filepath
 
             except:
                 self.writeStatus("File Import Selection Error: Unable to Open File")
@@ -172,7 +173,7 @@ class GuiRoot(tk.Tk):
 
 
     def setExportDestinationButtonCallback(self):
-        exportFilename = filedialog.askdirectory()
+        exportFilename = filedialog.asksaveasfilename(filetypes = EXPORT_FILE_TYPES_LIST, defaultextension = EXPORT_FILE_TYPES_LIST[0])
         self.exportFilepathLabel["text"] = exportFilename
         self.export_path = exportFilename
 
