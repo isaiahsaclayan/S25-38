@@ -25,8 +25,8 @@ QUEUE_LOOP_RATE = 100
 CREO_FILE_TYPE = ("Creo Toolpath Files", '*.ncl.1')
 NSCRYPT_FILE_TYPE = ("nScrypt GCODE Files", '*.gcode')
 ACSPL_FILE_TYPE = ("ACSPL Files", '*.txt')
-IMPORT_FILE_TYPES_LIST = [CREO_FILE_TYPE, NSCRYPT_FILE_TYPE, ACSPL_FILE_TYPE, ("All files", "*.*")]
-EXPORT_FILE_TYPES_LIST = [NSCRYPT_FILE_TYPE, ACSPL_FILE_TYPE, ("All files", "*.*")]
+IMPORT_FILE_TYPES_LIST = [CREO_FILE_TYPE, ("All files", "*.*")]
+EXPORT_FILE_TYPES_LIST = [("All files", "*.*")]
 
 
 class GuiRoot(tk.Tk):
@@ -122,8 +122,7 @@ class GuiRoot(tk.Tk):
         # User Cancels File Selection
         # If the user clicks the cancel button, an empty string is returned
         if(len(filepath) == 0): 
-            self.writeStatus("Import File Selection Cancelled")
-            self.importFilepathLabel["text"] = ""
+            self.writeStatus("Select Import File Cancelled")
 
         # A file is selected successfully in the file dialog
         else:
@@ -132,13 +131,16 @@ class GuiRoot(tk.Tk):
             # for redundancy, check if the file can be opened
 
             try:     
-                open(file = filepath, mode="r")
-                self.writeStatus("File Import Selection Successful")
-                globals.setImportFilepath(filepath)
+                openedFile = open(file = filepath, mode="r")
+                openedFile.close()
+
+                self.writeStatus("Select Import File Successful")
+                globals.setImportFilepath(filepath) # Store import filepath
                 self.importFilepathLabel["text"] = filepath
+                
 
             except:
-                self.writeStatus("File Import Selection Error: Unable to Open File")
+                self.writeStatus("Select Import File Error: Unable to Open File")
                 self.importFilepathLabel["text"] = filepath
 
         #first try to open param file, if fail then create the settings file and begin append
@@ -171,14 +173,24 @@ class GuiRoot(tk.Tk):
         self.writeStatus("Import Click")
         print("Import Click")
 
-
+    '''
+    Function that is called when the "Set Export Destination" button is clicked
+    '''
     def setExportDestinationButtonCallback(self):
-        exportFilename = filedialog.asksaveasfilename(filetypes = EXPORT_FILE_TYPES_LIST, defaultextension = EXPORT_FILE_TYPES_LIST[0])
-        self.exportFilepathLabel["text"] = exportFilename
-        self.export_path = exportFilename
 
-        if self.export_path:
-            self.writeStatus(f"Export Path Set: {self.export_path}")
+        # Opens a dialog for user to set a filename and path for export
+        filepath = filedialog.asksaveasfilename(filetypes = EXPORT_FILE_TYPES_LIST, defaultextension = EXPORT_FILE_TYPES_LIST[0])
+        self.exportFilepathLabel["text"] = filepath
+
+        # User cancels setting export destination
+        # If the user clicks the cancel button, an empty string is returned
+        if(len(filepath) == 0): 
+            self.writeStatus("Set Export Destination Cancelled")
+
+        # User sets export filepath
+        else:
+            globals.setExportFilepath(filepath) # Store export filepath
+            self.writeStatus("Set Export Destination Successful")
 
     def startConversionButtonCallback(self):
         if not self.toolpath_data:
@@ -287,6 +299,7 @@ class GuiRoot(tk.Tk):
 
 
 class ConversionSettingsFrame(tk.Frame):
+
     def __init__(self, parent):
         super().__init__(parent)
 
