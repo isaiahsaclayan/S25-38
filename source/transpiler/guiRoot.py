@@ -66,6 +66,7 @@ class GuiRoot(tk.Tk):
         # Import Button and Entry
         self.importFileButton = tk.Button(self.importFrame, text="Select Import File", command=self.importButtonCallback)
         self.importFileButton.pack(side="left")
+        self.importFileButton.configure(state="disabled")
 
         self.importFilepathEntry = tk.Entry(self.importFrame, relief="sunken")
         self.importFilepathEntry.pack(side="left", padx=5, fill="x", expand=True)
@@ -80,6 +81,7 @@ class GuiRoot(tk.Tk):
         # Set Export Destination Button and Entry
         self.exportFileButton = tk.Button(self.exportFrame, text="Set Export Destination", command=self.setExportDestinationButtonCallback)
         self.exportFileButton.pack(side="left")
+        self.exportFileButton.configure(state="disabled")
 
         self.exportFilepathEntry = tk.Entry(self.exportFrame, relief="sunken")
         self.exportFilepathEntry.pack(side="left", padx=5, fill="x", expand=True)
@@ -112,8 +114,8 @@ class GuiRoot(tk.Tk):
 
         fullText = timeString + " " + text
 
-        self.statusTextArea.insert(tk.END, fullText)        # Write new text
-        self.statusTextArea.configure(state="disabled") # Disable text box again
+        self.statusTextArea.insert(tk.END, fullText)        #Write new text
+        self.statusTextArea.configure(state="disabled")     #Disable text box again
 
     '''
     Function that is called when the "Select Import File" button is clicked
@@ -230,20 +232,24 @@ class GuiRoot(tk.Tk):
         self.writeStatus(result)
 
     def conversionSettingsButtonCallback(self):
-        self.writeStatus("Conversion Settings Click")
-        print("Conversion Settings Click")
 
         # Create new window
         convSettingsWindow = tk.Toplevel()
+        convSettingsWindow.grab_set() # Prevents inputs into main menu while this window is open
+
         self.eval("tk::PlaceWindow {} center".format(str(convSettingsWindow)))
 
         convSettingsWindow.title("Conversion Settings")
+    
         convSettingsWindow.resizable(False, False)
 
         convSettingsFrame = ConversionSettingsFrame(convSettingsWindow)
         convSettingsFrame.pack()
 
         convSettingsWindow.wait_window()
+        convSettingsWindow.grab_release() # Re-enables inputs into main menu while this window is open
+
+        if(convSettingsFrame.saveSuccess): # Check if the save button was actually pressed
 
         #save/set which parameter type after window is closed
         if globals.printerTypeSelected == 0 and self.hasProfile == False: #this way if someone already has a param profile
@@ -253,12 +259,20 @@ class GuiRoot(tk.Tk):
                 #then they are intending to discard their old profile
             self.params = OptomecParameters()
         self.printParams.config(state=tk.NORMAL)  # enables printer parameter button and menu
+        self.importFileButton.config(state="normal")
+        self.exportFileButton.config(state="normal")
 
+    '''
+    Function that is called when the "Printer Parameter" button is clicked
+    '''
     def printParamsButtonCallback(self):
         self.writeStatus("Printer Parameters Click")
         print("Printer Parameters Click")
-        paramWindow = tk.Toplevel()
-        self.eval("tk::PlaceWindow {} center".format(str(paramWindow)))
+        if globals.printerTypeSelected == 0:
+            paramWindow = tk.Toplevel()
+            paramWindow.grab_set()
+
+            self.eval("tk::PlaceWindow {} center".format(str(paramWindow)))
 
         paramWindow.geometry("500x250")
         paramWindow.resizable(False, False)
@@ -266,7 +280,17 @@ class GuiRoot(tk.Tk):
         if globals.printerTypeSelected == 0:
             paramWindow.title("nScrypt Parameters")
             paramFrame = NscryptParameterGui(paramWindow, self)
+            paramFrame.grid()
+
+            paramWindow.wait_window()
+            paramWindow.grab_release()
+
         else:
+            paramWindow = tk.Toplevel()
+            paramWindow.grab_set()
+
+            self.eval("tk::PlaceWindow {} center".format(str(paramWindow)))
+
             paramWindow.title("Optomec Parameters")
             paramFrame = OptomecParameterGui(paramWindow, self)
 
@@ -274,6 +298,8 @@ class GuiRoot(tk.Tk):
         
         paramFrame.grid()
         paramWindow.wait_window()
+        paramWindow.grab_release()
+
         #after wait window close need to save new params to file, or need to modify old saved params
         if self.hasProfile == False:
             try:
@@ -315,6 +341,7 @@ class ConversionSettingsFrame(tk.Frame):
 
     def __init__(self, parent):
         super().__init__(parent)
+        self.saveSuccess = False
 
         self.titleLabel = tk.Label(self, text="Conversion Settings")
         self.titleLabel.pack(padx=10, pady=10)
@@ -340,11 +367,13 @@ class ConversionSettingsFrame(tk.Frame):
         self.saveButton.pack(padx=10, pady=10)
 
     def saveButtonCallback(self):
-        globals.printerTypeSelected = self.printerTypeCombobox.current()
-        selectedPrinter = globals.PRINTER_TYPES[globals.printerTypeSelected]
+        globals.printerTypeSelected = self.printerTypeCombobox.current() #Set printer type global value
+        selectedPrinter = globals.PRINTER_TYPES[globals.printerTypeSelected] #Get corresponding string 
 
-        globals.writeStatusQueue("Save Button Click " + selectedPrinter)
-        print("Save Button Click", selectedPrinter)
+        globals.writeStatusQueue("Set Printer Type: " + selectedPrinter)
+        self.saveSuccess = True
+
+        #TODO - Close window after saving? - Change to "Save and Exit"
 
 
 def queueLoop(rootObject):
