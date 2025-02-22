@@ -22,6 +22,7 @@ class TestGuiButtons(unittest.TestCase):
     def testImport(self):
         importMock = mock.Mock()
 
+        self.guiRootObj.importFileButton.configure(state="normal")
         self.guiRootObj.importFileButton.configure(command = importMock)
         self.guiRootObj.importFileButton.invoke()
         
@@ -30,6 +31,7 @@ class TestGuiButtons(unittest.TestCase):
     def testExport(self):
         exportMock = mock.Mock()
 
+        self.guiRootObj.exportFileButton.configure(state="normal")
         self.guiRootObj.exportFileButton.configure(command = exportMock)
         self.guiRootObj.exportFileButton.invoke()
         
@@ -38,6 +40,7 @@ class TestGuiButtons(unittest.TestCase):
     def testConvSettings(self):
         convSettingsMock = mock.Mock()
 
+        self.guiRootObj.conversionSettings.configure(state="normal")
         self.guiRootObj.conversionSettings.configure(command = convSettingsMock)
         self.guiRootObj.conversionSettings.invoke()
         
@@ -46,41 +49,50 @@ class TestGuiButtons(unittest.TestCase):
     def testStartConv(self):
         startConvMock = mock.Mock()
 
+        self.guiRootObj.startConvButton.configure(state="normal")
         self.guiRootObj.startConvButton.configure(command = startConvMock)
         self.guiRootObj.startConvButton.invoke()
         
         startConvMock.assert_called()
     
     def testWriteStatus(self):
+        self.guiRootObj.clearStatus()
         self.guiRootObj.writeStatus("Alphabetical Characters")
-        assert self.guiRootObj.statusTextArea.get("1.0", tk.END) == "Alphabetical Characters\n"
+        assert self.guiRootObj.statusTextArea.get("1.0", tk.END)[11:] == "Alphabetical Characters\n\n"
 
+        self.guiRootObj.clearStatus()
         self.guiRootObj.writeStatus("Numbers 0123456789")
-        assert self.guiRootObj.statusTextArea.get("1.0", tk.END) == "Numbers 0123456789\n"
+        assert self.guiRootObj.statusTextArea.get("1.0", tk.END)[11:] == "Numbers 0123456789\n\n"
 
+        self.guiRootObj.clearStatus()
         self.guiRootObj.writeStatus("Special Characters `~!@#$%^&*()_+")
-        assert self.guiRootObj.statusTextArea.get("1.0", tk.END) == "Special Characters `~!@#$%^&*()_+\n"
+        assert self.guiRootObj.statusTextArea.get("1.0", tk.END)[11:] == "Special Characters `~!@#$%^&*()_+\n\n"
 
     def testStatusQueue(self):
+        self.guiRootObj.clearStatus()
         globals.writeStatusQueue("TEST1")
         guiRoot.queueLoop(self.guiRootObj) # Have to "artificially" loop through queue 
-        assert self.guiRootObj.statusTextArea.get("1.0", tk.END) == "TEST1\n"
+        assert self.guiRootObj.statusTextArea.get("1.0", tk.END)[11:] == "TEST1\n\n"
 
+        self.guiRootObj.clearStatus()
         globals.writeStatusQueue("TEST2")
         guiRoot.queueLoop(self.guiRootObj)
-        assert self.guiRootObj.statusTextArea.get("1.0", tk.END) == "TEST2\n"
+        assert self.guiRootObj.statusTextArea.get("1.0", tk.END)[11:] == "TEST2\n\n"
 
+        self.guiRootObj.clearStatus()
         globals.writeStatusQueue("Alphabetical Characters")
         guiRoot.queueLoop(self.guiRootObj)
-        assert self.guiRootObj.statusTextArea.get("1.0", tk.END) == "Alphabetical Characters\n"
+        assert self.guiRootObj.statusTextArea.get("1.0", tk.END)[11:] == "Alphabetical Characters\n\n"
 
+        self.guiRootObj.clearStatus()
         globals.writeStatusQueue("Numbers 0123456789")
         guiRoot.queueLoop(self.guiRootObj)
-        assert self.guiRootObj.statusTextArea.get("1.0", tk.END) == "Numbers 0123456789\n"
+        assert self.guiRootObj.statusTextArea.get("1.0", tk.END)[11:] == "Numbers 0123456789\n\n"
 
+        self.guiRootObj.clearStatus()
         globals.writeStatusQueue("Special Characters `~!@#$%^&*()_+")
         guiRoot.queueLoop(self.guiRootObj)
-        assert self.guiRootObj.statusTextArea.get("1.0", tk.END) == "Special Characters `~!@#$%^&*()_+\n"
+        assert self.guiRootObj.statusTextArea.get("1.0", tk.END)[11:] == "Special Characters `~!@#$%^&*()_+\n\n"
 
 if __name__ == "__main__":
     unittest.main()

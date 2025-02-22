@@ -125,6 +125,11 @@ class GuiRoot(tk.Tk):
         self.statusTextArea.insert(tk.END, fullText)        # Write new text
         self.statusTextArea.configure(state="disabled")     # Disable text box again
 
+    def clearStatus(self):
+        self.statusTextArea.configure(state="normal")
+        self.statusTextArea.delete("1.0", tk.END)
+        self.statusTextArea.configure(state="disabled")
+
     '''
     Function that is called when the "Select Import File" button is clicked
     '''
