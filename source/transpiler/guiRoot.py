@@ -17,7 +17,7 @@ import json
 
 WINDOW_TITLE = "S25-38"  # TODO - Provide suitable titles
 MENU_TITLE = "S25-38 Machine Instruction Converter"
-GUI_WINDOW_SIZE = "500x300"
+GUI_WINDOW_SIZE = "500x350"
 
 QUEUE_LOOP_RATE = 100
 
@@ -73,7 +73,7 @@ class GuiRoot(tk.Tk):
         self.importFilepathEntry.insert(tk.END, "Import filepath will be displayed here")
         self.importFilepathEntry.configure(state="readonly")
 
-        self.importFrame.pack(anchor="w", padx=5, pady=5, fill="x", expand=True)
+        self.importFrame.pack(anchor="w", padx=5, pady=5, fill="x")
 
         # Export button + export filepath
         self.exportFrame = tk.Frame(self)
@@ -88,34 +88,42 @@ class GuiRoot(tk.Tk):
         self.exportFilepathEntry.insert(tk.END, "Export filepath will be displayed here")
         self.exportFilepathEntry.configure(state="readonly")
 
-        self.exportFrame.pack(anchor="w", padx=5, pady=5, fill="x", expand=True)
+        self.exportFrame.pack(anchor="w", padx=5, pady=5, fill="x")
 
         # Start Conversion Button
         self.startConvButton = tk.Button(self, text="Start Conversion", command=self.startConversionButtonCallback)
         self.startConvButton.pack(anchor="center", padx=5, pady=5)
+        self.startConvButton.configure(state="disabled")
 
         # Label for Status Text
-        self.statusTextArea = tk.Label(self, text="Status:")
-        self.statusTextArea.pack(anchor="w", padx=5, pady=5)
+        self.statusFrame = tk.Frame()
+        self.statusTextAreaLabel = tk.Label(self.statusFrame, text="Status:")
+        self.statusTextAreaLabel.pack(anchor="w", padx=5)
 
         # Status Text Area
-        self.statusTextArea = tk.Text(self, wrap=tk.WORD)
-        self.statusTextArea.pack(anchor="center", padx=5, pady=5)
-        self.statusTextArea.configure(state="disabled")  # Prevent user from typing in text box
+        self.statusTextArea = tk.Text(self.statusFrame, wrap=tk.WORD)
+        self.statusTextArea.pack(anchor="w", fill="both", expand=True)
+
+        self.statusTextAreaScrollbar = tk.Scrollbar(self.statusTextArea, command=self.statusTextArea.yview)
+        self.statusTextAreaScrollbar.pack(side="right", fill="y")
+
+        self.statusTextArea['yscrollcommand'] = self.statusTextAreaScrollbar.set
+        self.statusTextArea.configure(state="disabled") # Prevent user from typing in text box
+
+        self.statusFrame.pack(anchor="w", padx=5, pady=5, fill="both", expand=True)
 
     def writeStatus(self, text):
-        self.statusTextArea.configure(state="normal")   # Enable writing to text box
-        self.statusTextArea.delete("1.0", tk.END)       # Clear textbox
+        self.statusTextArea.configure(state="normal")   #Enable writing to text box
 
         # Adding timestamp to status message
         currentTime = time.localtime()
-        
-        timeString = "[{}:{}:{}]".format(currentTime.tm_hour, currentTime.tm_min, currentTime.tm_sec)
+        timeString = "[{:02}:{:02}:{:02}]".format(currentTime.tm_hour, currentTime.tm_min, currentTime.tm_sec)
 
-        fullText = timeString + " " + text
+        fullText = timeString + " " + text + "\n"
+        self.statusTextArea.see("end") # Autoscroll
 
-        self.statusTextArea.insert(tk.END, fullText)        #Write new text
-        self.statusTextArea.configure(state="disabled")     #Disable text box again
+        self.statusTextArea.insert(tk.END, fullText)        # Write new text
+        self.statusTextArea.configure(state="disabled")     # Disable text box again
 
     '''
     Function that is called when the "Select Import File" button is clicked
@@ -186,6 +194,15 @@ class GuiRoot(tk.Tk):
     Function that is called when the "Set Export Destination" button is clicked
     '''
     def setExportDestinationButtonCallback(self):
+
+        #Determine the type of file to export to
+        EXPORT_FILE_TYPES_LIST = [("All files", "*.*")]
+
+        match(globals.printerTypeSelected):
+            case globals.PrinterType.NSCRYPT:
+                EXPORT_FILE_TYPES_LIST.insert(0, NSCRYPT_FILE_TYPE)
+            case globals.PrinterType.OPTOMEC:
+                EXPORT_FILE_TYPES_LIST.insert(0, ACSPL_FILE_TYPE)
 
         # Opens a dialog for user to set a filename and path for export
         filepath = filedialog.asksaveasfilename(filetypes = EXPORT_FILE_TYPES_LIST, defaultextension = EXPORT_FILE_TYPES_LIST[0])
@@ -261,6 +278,8 @@ class GuiRoot(tk.Tk):
         self.printParams.config(state=tk.NORMAL)  # enables printer parameter button and menu
         self.importFileButton.config(state="normal")
         self.exportFileButton.config(state="normal")
+        self.startConvButton.configure(state="normal")
+
 
     '''
     Function that is called when the "Printer Parameter" button is clicked
@@ -335,7 +354,24 @@ class GuiRoot(tk.Tk):
             with open("parameters.json", "w") as settingsFile:
                 json.dump(prevData, settingsFile)
 
+    '''
+    Function that is called when the "Start Conversion" button is clicked
+    '''
+    def startConversionButtonCallback(self):
+    
+        #TODO - Add checks if needed
+        conversionAllowed = True
 
+        if(globals.getImportFilepath() == None):
+            conversionAllowed = False
+            self.writeStatus("Cannot start conversion: Please select import file")
+
+        if(globals.getExportFilepath() == None):
+            conversionAllowed = False
+            self.writeStatus("Cannot start conversion: Please set export destination")
+
+        if(conversionAllowed):
+            self.writeStatus("Starting Conversion Process")
 
 class ConversionSettingsFrame(tk.Frame):
 
@@ -370,7 +406,10 @@ class ConversionSettingsFrame(tk.Frame):
         globals.printerTypeSelected = self.printerTypeCombobox.current() #Set printer type global value
         selectedPrinter = globals.PRINTER_TYPES[globals.printerTypeSelected] #Get corresponding string 
 
+        globals.writeStatusQueue("Conversion Settings Saved")
         globals.writeStatusQueue("Set Printer Type: " + selectedPrinter)
+        
+        #TODO - Add more checks if needed
         self.saveSuccess = True
 
         #TODO - Close window after saving? - Change to "Save and Exit"
