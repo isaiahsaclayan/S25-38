@@ -18,13 +18,15 @@ from toolpathExporter import ToolpathExporter  # Import the new exporter subsyst
 WINDOW_TITLE = "S25-38"  # TODO - Provide suitable titles
 MENU_TITLE = "S25-38 Machine Instruction Converter"
 GUI_WINDOW_SIZE = "500x300"
+QUEUE_LOOP_RATE = 100
+
 
 # TODO - Change these to proper extensions
 CREO_FILE_TYPE = ("Creo Toolpath Files", '*.ncl.1')
 NSCRYPT_FILE_TYPE = ("nScrypt GCODE Files", '*.gcode')
 ACSPL_FILE_TYPE = ("ACSPL Files", '*.txt')
 IMPORT_FILE_TYPES_LIST = (CREO_FILE_TYPE, NSCRYPT_FILE_TYPE, ACSPL_FILE_TYPE, ("All files", "*.*")) 
-EXPORT_FILE_TYPES_LIST = (NSCRYPT_FILE_TYPE, ACSPL_FILE_TYPE, ("All files", "*.*"))
+EXPORT_FILE_TYPES_LIST = [("nScrypt GCODE Files", "*.gcode"), ("ACSPL Files", "*.txt"), ("All Files", "*.*")]
 
 class GuiRoot(tk.Tk):
     """
@@ -89,10 +91,12 @@ class GuiRoot(tk.Tk):
         self.statusTextArea = tk.Label(self, text="Status:")
         self.statusTextArea.pack(anchor="w", padx=5, pady=5)
 
-        # Status Text Area
-        self.statusTextArea = tk.Text(self, wrap=tk.WORD)
+          # Status Text Area
+        self.statusTextArea = tk.Text(self, wrap=tk.WORD, height=5, width=50)
         self.statusTextArea.pack(anchor="center", padx=5, pady=5)
-        self.statusTextArea.configure(state="disabled")  # Prevent user from typing in text box
+        self.statusTextArea.configure(state="disabled")
+
+        self.queueLoop()
 
     def writeStatus(self, text):
         """ Updates the status text box in the GUI. """
