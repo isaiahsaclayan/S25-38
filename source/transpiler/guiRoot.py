@@ -4,8 +4,6 @@ Created: 01/17/25
 File: guiRoot.py
 Description: The root tkinter object for the GUI application
 '''
-import os
-import logging
 
 import tkinter as tk
 from tkinter import filedialog, messagebox
@@ -13,46 +11,61 @@ from paramClass import NscryptParameters, OptomecParameters
 from paramClass import NscryptParameterGui, OptomecParameterGui
 from tkinter import ttk
 import applicationGlobals as globals
-from .toolpathExporter import ToolpathExporter
+from toolpathExporter import ToolpathExporter  # Import ToolpathExporter
 
-WINDOW_TITLE = "S25-38"
+WINDOW_TITLE = "S25-38"  # TODO - Provide suitable titles
 MENU_TITLE = "S25-38 Machine Instruction Converter"
 GUI_WINDOW_SIZE = "500x300"
+
 QUEUE_LOOP_RATE = 100
 
-IMPORT_FILE_TYPES_LIST = [("Toolpath Files", "*.txt"), ("All Files", "*.*")]
-EXPORT_FILE_TYPES_LIST = [("nScrypt GCODE Files", "*.gcode"), ("ACSPL Files", "*.txt"), ("All Files", "*.*")]
+# File Types
+CREO_FILE_TYPE = ("Creo Toolpath Files", '*.ncl.1')
+NSCRYPT_FILE_TYPE = ("nScrypt GCODE Files", '*.gcode')
+ACSPL_FILE_TYPE = ("ACSPL Files", '*.txt')
+IMPORT_FILE_TYPES_LIST = (CREO_FILE_TYPE, NSCRYPT_FILE_TYPE, ACSPL_FILE_TYPE, ("All files", "*.*"))
+EXPORT_FILE_TYPES_LIST = (NSCRYPT_FILE_TYPE, ACSPL_FILE_TYPE, ("All files", "*.*"))
+
 
 class GuiRoot(tk.Tk):
     def __init__(self):
         tk.Tk.__init__(self)
         self.container = tk.Frame(self)
-        self.resizable(False, False)
+        self.resizable(False, False)  # Resizing is disabled on both axes
         self.params = []
-        self.export_path = ""
         self.toolpath_data = None
-        self.printer_type = "nScrypt"  # Default printer type
+        self.export_path = ""
 
+        # Title of the window
         self.title(WINDOW_TITLE)
         self.geometry(GUI_WINDOW_SIZE)
 
+        # Title of Menu
         self.menuTitleLabel = tk.Label(self, text=MENU_TITLE)
         self.menuTitleLabel.pack(anchor="center")
 
-        # Import button + filepath
+        # Import button + import filepath
         self.importFrame = tk.Frame(self)
+
+        # Import Button and Label
         self.importFileButton = tk.Button(self.importFrame, text="Import File", command=self.importButtonCallback)
         self.importFileButton.pack(side="left")
+
         self.importFilepathLabel = tk.Label(self.importFrame)
         self.importFilepathLabel.pack(side="left")
+
         self.importFrame.pack(anchor="w", padx=5, pady=5)
 
-        # Export button + filepath
+        # Export button + export filepath
         self.exportFrame = tk.Frame(self)
+
+        # Set Export Destination Button and Label
         self.exportFileButton = tk.Button(self.exportFrame, text="Set Export Destination", command=self.setExportDestinationButtonCallback)
         self.exportFileButton.pack(side="left")
+
         self.exportFilepathLabel = tk.Label(self.exportFrame)
         self.exportFilepathLabel.pack(side="left")
+
         self.exportFrame.pack(anchor="w", padx=5, pady=5)
 
         # Conversion Settings Button
@@ -61,43 +74,50 @@ class GuiRoot(tk.Tk):
 
         # Printer Parameters Button
         self.printParams = tk.Button(self, text="Printer Parameters", command=self.printParamsButtonCallback)
-        self.printParams.config(state=tk.DISABLED)
+        self.printParams.config(state=tk.DISABLED)  # button can't be clicked until file has been imported
         self.printParams.pack(anchor="w", padx=5, pady=5)
 
         # Start Conversion Button
         self.startConvButton = tk.Button(self, text="Start Conversion", command=self.startConversionButtonCallback)
         self.startConvButton.pack(anchor="center", padx=5, pady=5)
 
-        # Status Text Area
-        self.statusTextArea = tk.Text(self, wrap=tk.WORD, height=5, width=50)
-        self.statusTextArea.pack(anchor="center", padx=5, pady=5)
-        self.statusTextArea.configure(state="disabled")
+        # Label for Status Text
+        self.statusTextArea = tk.Label(self, text="Status:")
+        self.statusTextArea.pack(anchor="w", padx=5, pady=5)
 
-        self.queueLoop()  # Add queue loop for exporter messages
+        # Status Text Area
+        self.statusTextArea = tk.Text(self, wrap=tk.WORD)
+        self.statusTextArea.pack(anchor="center", padx=5, pady=5)
+        self.statusTextArea.configure(state="disabled")  # Prevent user from typing in text box
 
     def writeStatus(self, text):
-        """Updates the status text area with messages."""
-        self.statusTextArea.configure(state="normal")
-        self.statusTextArea.insert(tk.END, text + "\n")
-        self.statusTextArea.configure(state="disabled")
-        self.statusTextArea.see(tk.END)
+        self.statusTextArea.configure(state="normal")  # Enable writing to text box
+        self.statusTextArea.delete("1.0", tk.END)  # Clear textbox
+        self.statusTextArea.insert(tk.END, text)  # Write new text
+        self.statusTextArea.configure(state="disabled")  # Disable text box again
 
     def importButtonCallback(self):
-        file_path = filedialog.askopenfilename(filetypes=IMPORT_FILE_TYPES_LIST)
-        if file_path:
-            self.importFilepathLabel["text"] = file_path
-            with open(file_path, "r", encoding="utf-8") as file:
-                self.toolpath_data = file.readlines()
-            self.writeStatus(f"Imported: {file_path}")
+        importFilename = filedialog.askopenfilename(filetypes=IMPORT_FILE_TYPES_LIST)
+        self.importFilepathLabel["text"] = importFilename
+
+        if importFilename:
+            try:
+                with open(importFilename, "r", encoding="utf-8") as file:
+                    self.toolpath_data = file.readlines()
+                self.writeStatus(f"Imported: {importFilename}")
+            except Exception as e:
+                messagebox.showerror("Error", f"Failed to import file: {str(e)}")
+                self.writeStatus("Import Failed")
 
     def setExportDestinationButtonCallback(self):
-        self.export_path = filedialog.askdirectory()
+        exportFilename = filedialog.askdirectory()
+        self.exportFilepathLabel["text"] = exportFilename
+        self.export_path = exportFilename
+
         if self.export_path:
-            self.exportFilepathLabel["text"] = f"Export Path: {self.export_path}"
-            self.writeStatus(f"Export path set: {self.export_path}")
+            self.writeStatus(f"Export Path Set: {self.export_path}")
 
     def startConversionButtonCallback(self):
-        """Starts the toolpath export process using ToolpathExporter."""
         if not self.toolpath_data:
             messagebox.showerror("Error", "No toolpath imported!")
             return
@@ -106,19 +126,26 @@ class GuiRoot(tk.Tk):
             messagebox.showerror("Error", "No export destination set!")
             return
 
-        exporter = ToolpathExporter(self.export_path, self.printer_type)
-        result = exporter.export_with_formatting(self.toolpath_data)
-        globals.writeStatusQueue(result)  # Pass result to queue for GUI updates
+        # Determine printer type
+        printer_type = globals.PRINTER_TYPES[globals.printerTypeSelected]
+        exporter = ToolpathExporter(self.export_path, printer_type)
 
-    def queueLoop(self):
-        """Processes queued messages from the exporter."""
-        while not globals.statusQueue.empty():
-            message = globals.statusQueue.get()
-            self.writeStatus(message)
-        self.after(QUEUE_LOOP_RATE, self.queueLoop)
+        # Export toolpath
+        result = exporter.export_with_formatting(self.toolpath_data)
+
+        # Display feedback
+        if "Error" in result:
+            messagebox.showerror("Export Failed", result)
+        else:
+            messagebox.showinfo("Success", result)
+
+        self.writeStatus(result)
 
     def conversionSettingsButtonCallback(self):
-        """Handles opening the printer selection menu."""
+        self.writeStatus("Conversion Settings Click")
+        print("Conversion Settings Click")
+
+        # Create new window
         convSettingsWindow = tk.Toplevel()
         self.eval("tk::PlaceWindow {} center".format(str(convSettingsWindow)))
 
@@ -127,40 +154,34 @@ class GuiRoot(tk.Tk):
 
         convSettingsFrame = ConversionSettingsFrame(convSettingsWindow)
         convSettingsFrame.pack()
+
         convSettingsWindow.wait_window()
 
         if globals.printerTypeSelected == 0:
             self.params = NscryptParameters()
         else:
             self.params = OptomecParameters()
-        self.printParams.config(state=tk.NORMAL)
+        self.printParams.config(state=tk.NORMAL)  # enables printer parameter button and menu
 
     def printParamsButtonCallback(self):
-        """Handles opening the parameter selection window based on the selected printer type."""
+        self.writeStatus("Printer Parameters Click")
+        print("Printer Parameters Click")
+        paramWindow = tk.Toplevel()
+        self.eval("tk::PlaceWindow {} center".format(str(paramWindow)))
+
+        paramWindow.geometry("500x250")
+        paramWindow.resizable(False, False)
+
         if globals.printerTypeSelected == 0:
-            paramWindow = tk.Toplevel()
-            self.eval("tk::PlaceWindow {} center".format(str(paramWindow)))
-
             paramWindow.title("nScrypt Parameters")
-            paramWindow.geometry("500x250")
-            paramWindow.resizable(False, False)
-
             paramFrame = NscryptParameterGui(paramWindow, self)
-            paramFrame.grid()
-
-            paramWindow.wait_window()
         else:
-            paramWindow = tk.Toplevel()
-            self.eval("tk::PlaceWindow {} center".format(str(paramWindow)))
-
             paramWindow.title("Optomec Parameters")
-            paramWindow.geometry("500x250")
-            paramWindow.resizable(False, False)
-
             paramFrame = OptomecParameterGui(paramWindow, self)
-            paramFrame.grid()
 
-            paramWindow.wait_window()
+        paramFrame.grid()
+        paramWindow.wait_window()
+
 
 class ConversionSettingsFrame(tk.Frame):
     def __init__(self, parent):
@@ -168,8 +189,9 @@ class ConversionSettingsFrame(tk.Frame):
 
         self.titleLabel = tk.Label(self, text="Conversion Settings")
         self.titleLabel.pack(padx=10, pady=10)
-        
+
         self.printerTypeSelectFrame = tk.Frame(self)
+
         self.printTypeSelectLabel = tk.Label(self.printerTypeSelectFrame, text="Printer Type: ")
         self.printTypeSelectLabel.pack(side="left")
 
@@ -185,12 +207,16 @@ class ConversionSettingsFrame(tk.Frame):
     def saveButtonCallback(self):
         globals.printerTypeSelected = self.printerTypeCombobox.current()
         selectedPrinter = globals.PRINTER_TYPES[globals.printerTypeSelected]
-        globals.writeStatusQueue("Selected Printer: " + selectedPrinter)
-        self.master.destroy()
+
+        globals.writeStatusQueue("Save Button Click " + selectedPrinter)
+        print("Save Button Click", selectedPrinter)
+
 
 def queueLoop(rootObject):
-    """Handles the periodic processing of the status queue."""
-    while not globals.statusQueue.empty():
-        message = globals.statusQueue.get()
-        rootObject.writeStatus(message)
+    while True:
+        try:
+            message = globals.statusQueue.get(block=False)
+            rootObject.writeStatus(message)
+        except globals.queue.Empty:
+            break
     rootObject.after(QUEUE_LOOP_RATE, queueLoop, rootObject)
