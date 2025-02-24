@@ -4,13 +4,13 @@ This directory contains unit and integration tests to verify the functionality o
 # How to Execute All Tests
 1. Open a terminal and navigate to the project root.
 2. Navigate to the test directory: `cd tests`
-3. Execute the command: `python -m unittest -v discover`  
+3. Execute the command: `python -m unittest discover -v`  
 *`-v` can be omitted for a less verbose report.*
 
 # How to Execute an Individual Test File
 1. Open a terminal and navigate to the project root.
 2. Navigate to the test directory: `cd tests`
-3. Execute the command: `python -m unittest -v <name_of_test_file>`  
+3. Execute the command: `python -m unittest <name_of_test_file> -v`  
 *`-v` can be omitted for a less verbose report.*
 
 # Developer Notes
