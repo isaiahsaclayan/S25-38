@@ -33,6 +33,7 @@ class GuiRoot(tk.Tk):
         self.container = tk.Frame(self)
         self.resizable(False, False) #Resizing is disabled on both axes
         self.params = []
+        self.saved_line = -1 #necessary for parameter saving functionality
         
         #Title of the window
         self.title(WINDOW_TITLE) 
@@ -116,7 +117,7 @@ class GuiRoot(tk.Tk):
                 for line in settingsFile:
                     words = line.split(' ')
                     if words[0] == self.importFilepathLabel:
-                        saved_line = temp_line
+                        self.saved_line = temp_line
                         #at this point, import params data from savedParams
                         if words[1] == "nscrypt":
                             globals.printerTypeSelected = 0
@@ -225,8 +226,13 @@ class ConversionSettingsFrame(tk.Frame):
         self.printerTypeCombobox.current(0)
         self.printerTypeCombobox.pack(side="left")
 
-        self.printerTypeSelectFrame.pack(padx=10, pady=10)
+        self.printerTypeSelectFrame.pack(padx=50, pady=50)
 
+        if parent.master.saved_line == -1:
+            self.savedSettingsStatusLabel = tk.Label(self.printerTypeSelectFrame, text="No previously saved settings, safe to choose")
+        else:
+            self.savedSettingsStatusLabel = tk.Label(self.printerTypeSelectFrame, text="There are pre-existing saved settings for the imported file, selecting printer type will override")
+        self.savedSettingsStatusLabel.pack(side="left")
         self.saveButton = tk.Button(self, text="Save", command=self.saveButtonCallback)
 
         self.saveButton.pack(padx=10, pady=10)
