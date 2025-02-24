@@ -4,6 +4,8 @@ Created: 01/17/25
 File: guiRoot.py
 Description: The root tkinter object for the GUI application
 '''
+import os
+import logging
 
 import tkinter as tk
 from tkinter import filedialog, messagebox
