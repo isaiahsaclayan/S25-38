@@ -1,3 +1,11 @@
+"""
+Author: Andrew Viola
+Edited By: John Otooni
+Created:
+File: parser.py
+Description: File created to convert the Creo output to a list of dictionaries
+"""
+
 import os
 import logging
 from typing import List
@@ -37,8 +45,7 @@ class GenericParser:
 
 
     def verify_file(self):
-        file_name, file_extension = os.path.splitext(self.file_path)
-        if file_extension.lower() != '.1':
+        if not self.file_path[-5:].lower() == 'ncl.1':
             logger.error("File type not supported")
     
     def parse_file(self, file_path):
