@@ -6,7 +6,11 @@ Description: The root tkinter object for the GUI application
 '''
 
 import tkinter as tk
+<<<<<<< HEAD
 from tkinter import filedialog, messagebox
+=======
+from tkinter import filedialog
+>>>>>>> c0ef4968dc522ae693a93f33b37ac12dcb8ef574
 from paramClass import NscryptParameters, OptomecParameters
 from paramClass import NscryptParameterGui, OptomecParameterGui
 from tkinter import ttk
@@ -17,15 +21,25 @@ WINDOW_TITLE = "S25-38"  # TODO - Provide suitable titles
 MENU_TITLE = "S25-38 Machine Instruction Converter"
 GUI_WINDOW_SIZE = "500x300"
 
+<<<<<<< HEAD
 QUEUE_LOOP_RATE = 100
 
 # File Types
+=======
+# CONVERSION_SETTINGS_WINDOW_SIZE = "500x300"
+
+#TODO - Change these to proper extensions
+>>>>>>> c0ef4968dc522ae693a93f33b37ac12dcb8ef574
 CREO_FILE_TYPE = ("Creo Toolpath Files", '*.ncl.1')
 NSCRYPT_FILE_TYPE = ("nScrypt GCODE Files", '*.gcode')
 ACSPL_FILE_TYPE = ("ACSPL Files", '*.txt')
 IMPORT_FILE_TYPES_LIST = (CREO_FILE_TYPE, NSCRYPT_FILE_TYPE, ACSPL_FILE_TYPE, ("All files", "*.*"))
 EXPORT_FILE_TYPES_LIST = (NSCRYPT_FILE_TYPE, ACSPL_FILE_TYPE, ("All files", "*.*"))
 
+<<<<<<< HEAD
+=======
+QUEUE_LOOP_RATE = 100
+>>>>>>> c0ef4968dc522ae693a93f33b37ac12dcb8ef574
 
 class GuiRoot(tk.Tk):
     def __init__(self):
@@ -40,8 +54,13 @@ class GuiRoot(tk.Tk):
         self.title(WINDOW_TITLE)
         self.geometry(GUI_WINDOW_SIZE)
 
+<<<<<<< HEAD
         # Title of Menu
         self.menuTitleLabel = tk.Label(self, text=MENU_TITLE)
+=======
+        #Title of Menu
+        self.menuTitleLabel = tk.Label(self, text = MENU_TITLE)
+>>>>>>> c0ef4968dc522ae693a93f33b37ac12dcb8ef574
         self.menuTitleLabel.pack(anchor="center")
 
         # Import button + import filepath
@@ -100,6 +119,7 @@ class GuiRoot(tk.Tk):
         importFilename = filedialog.askopenfilename(filetypes=IMPORT_FILE_TYPES_LIST)
         self.importFilepathLabel["text"] = importFilename
 
+<<<<<<< HEAD
         if importFilename:
             try:
                 with open(importFilename, "r", encoding="utf-8") as file:
@@ -108,6 +128,12 @@ class GuiRoot(tk.Tk):
             except Exception as e:
                 messagebox.showerror("Error", f"Failed to import file: {str(e)}")
                 self.writeStatus("Import Failed")
+=======
+         #TODO - Remove, placeholders
+        self.writeStatus("Import Click")
+        print("Import Click")
+
+>>>>>>> c0ef4968dc522ae693a93f33b37ac12dcb8ef574
 
     def setExportDestinationButtonCallback(self):
         exportFilename = filedialog.askdirectory()
@@ -157,15 +183,26 @@ class GuiRoot(tk.Tk):
 
         convSettingsWindow.wait_window()
 
+<<<<<<< HEAD
+=======
+        #save/set which parameter type after window is closed
+>>>>>>> c0ef4968dc522ae693a93f33b37ac12dcb8ef574
         if globals.printerTypeSelected == 0:
             self.params = NscryptParameters()
         else:
             self.params = OptomecParameters()
+<<<<<<< HEAD
         self.printParams.config(state=tk.NORMAL)  # enables printer parameter button and menu
+=======
+        self.printParams.config(state=tk.NORMAL) #enables printer parameter button and menu
+
+        #TODO - Prevent user from opening another window/interacting with main menu until conversion settings are closed
+>>>>>>> c0ef4968dc522ae693a93f33b37ac12dcb8ef574
 
     def printParamsButtonCallback(self):
         self.writeStatus("Printer Parameters Click")
         print("Printer Parameters Click")
+<<<<<<< HEAD
         paramWindow = tk.Toplevel()
         self.eval("tk::PlaceWindow {} center".format(str(paramWindow)))
 
@@ -182,6 +219,32 @@ class GuiRoot(tk.Tk):
         paramFrame.grid()
         paramWindow.wait_window()
 
+=======
+        if globals.printerTypeSelected == 0:
+            paramWindow = tk.Toplevel()
+            self.eval("tk::PlaceWindow {} center".format(str(paramWindow)))
+
+            paramWindow.title("nScrypt Parameters")
+            paramWindow.geometry("500x250")
+            paramWindow.resizable(False, False)
+
+            paramFrame = NscryptParameterGui(paramWindow, self)
+            paramFrame.grid()
+
+            paramWindow.wait_window()
+        else:
+            paramWindow = tk.Toplevel()
+            self.eval("tk::PlaceWindow {} center".format(str(paramWindow)))
+
+            paramWindow.title("Optomec Parameters")
+            paramWindow.geometry("500x250")
+            paramWindow.resizable(False, False)
+
+            paramFrame = NscryptParameterGui(paramWindow, self)
+            paramFrame.grid()
+
+            paramWindow.wait_window()
+>>>>>>> c0ef4968dc522ae693a93f33b37ac12dcb8ef574
 
 class ConversionSettingsFrame(tk.Frame):
     def __init__(self, parent):
@@ -208,5 +271,23 @@ class ConversionSettingsFrame(tk.Frame):
         globals.printerTypeSelected = self.printerTypeCombobox.current()
         selectedPrinter = globals.PRINTER_TYPES[globals.printerTypeSelected]
 
+<<<<<<< HEAD
         globals.writeStatusQueue("Save Button Click " + selectedPrinter)
         print("Save Button Click", selectedPrinter)
+=======
+        globals.writeStatusQueue("Save Button Click " + selectedPrinter) #TODO - Replace with message queue system
+        #TODO - Close window after saving? - Change to "Save and Exit"
+        print("Save Button Click", selectedPrinter)
+
+def queueLoop(rootObject):
+    # Loop through all available messages until queue is empty
+    while(True):
+        try:
+            message = globals.statusQueue.get(block=False)
+            rootObject.writeStatus(message)
+        except globals.queue.Empty:
+            break
+
+    # Follow the underlying loop of the GUI
+    rootObject.after(QUEUE_LOOP_RATE, queueLoop, rootObject)
+>>>>>>> c0ef4968dc522ae693a93f33b37ac12dcb8ef574
