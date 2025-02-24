@@ -11,7 +11,7 @@ from paramClass import NscryptParameters, OptomecParameters
 from paramClass import NscryptParameterGui, OptomecParameterGui
 from tkinter import ttk
 import applicationGlobals as globals
-from toolpathExporter import ToolpathExporter  # Import ToolpathExporter
+from toolpathExporter import ToolpathExporter  # Ensure this import is included
 
 WINDOW_TITLE = "S25-38"  # TODO - Provide suitable titles
 MENU_TITLE = "S25-38 Machine Instruction Converter"
@@ -33,7 +33,7 @@ class GuiRoot(tk.Tk):
         self.container = tk.Frame(self)
         self.resizable(False, False)  # Resizing is disabled on both axes
         self.params = []
-        self.toolpath_data = None
+        self.toolpath_data = None  # Stores imported toolpath data
         self.export_path = ""
 
         # Title of the window
@@ -210,13 +210,3 @@ class ConversionSettingsFrame(tk.Frame):
 
         globals.writeStatusQueue("Save Button Click " + selectedPrinter)
         print("Save Button Click", selectedPrinter)
-
-
-def queueLoop(rootObject):
-    while True:
-        try:
-            message = globals.statusQueue.get(block=False)
-            rootObject.writeStatus(message)
-        except globals.queue.Empty:
-            break
-    rootObject.after(QUEUE_LOOP_RATE, queueLoop, rootObject)
