@@ -209,6 +209,7 @@ class GuiRoot(tk.Tk):
             paramFrame.grid()
 
             paramWindow.wait_window()
+        #after wait window close need to save new params to file, or need to modify old saved params
 
 class ConversionSettingsFrame(tk.Frame):
     def __init__(self, parent):
