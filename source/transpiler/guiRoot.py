@@ -11,6 +11,7 @@ from paramClass import NscryptParameters, OptomecParameters
 from paramClass import NscryptParameterGui, OptomecParameterGui
 from tkinter import ttk
 import applicationGlobals as globals
+import json
 
 WINDOW_TITLE = "S25-38" #TODO - Provide suitable titles
 MENU_TITLE = "S25-38 Machine Instruction Converter"
@@ -33,7 +34,6 @@ class GuiRoot(tk.Tk):
         self.container = tk.Frame(self)
         self.resizable(False, False) #Resizing is disabled on both axes
         self.params = []
-        self.saved_line = -1 #necessary for parameter saving functionality
         
         #Title of the window
         self.title(WINDOW_TITLE) 
@@ -103,39 +103,18 @@ class GuiRoot(tk.Tk):
          #TODO - Remove, placeholders
         #first try to open file, if fail then create the settings file and begin append
         try:
-            with open("savedParams.txt", 'r') as settingsFile:
+            with open("parameters.json", 'r') as settingsFile:
                 #proceed parse here, look to see if the opened/imported file is listed in the savedParams file
                 #file format is as follows:
                 # name_of_file_first Optomec/nScrypt param1 param2 param3 param4 \n
                 #each line will follow suit if a parse error occurs, it will discard the whole savedParams file
                 #and the params for the current imported file will be saved as the only params
                 #this should only happen if someone has manually gone in and changed the .txt file
-                self.saved_line = -1 #later we will check to see if saved_line is different than -1, if it is then we know
-                                #that the file had saved settings, so we know to update those settings instead of appending
-                                #new settings
-                temp_line = 0
-                for line in settingsFile:
-                    words = line.split(' ')
-                    if words[0] == self.importFilepathLabel:
-                        self.saved_line = temp_line
-                        #at this point, import params data from savedParams
-                        if words[1] == "nscrypt":
-                            globals.printerTypeSelected = 0
-                            self.params = NscryptParameters()
-                        elif words[1] == "optomec":
-                            globals.printerTypeSelected = 1
-                            self.params = OptomecParameters()
-                        #TODO add an elif for error handle
-                        for i in range(self.params.params.size()):
-                            self.params.params[i] = words[2+i] #first 2 words are the imported file and Optomec/Nscrypt
-                        break #we found the file saved in settings, stop looking through the file now
-                    else:
-                        temp_line += 1
+                
+                    
             settingsFile.close()
         except FileNotFoundError:
-            #there is no settings file yet, so when we open file later, a new file will be created
-            #make sure to mimic the above process where it is found but imported file is not yet saved
-            self.saved_line = -1
+
         self.writeStatus("Import Click")
         print("Import Click")
 
@@ -229,7 +208,8 @@ class ConversionSettingsFrame(tk.Frame):
 
         self.printerTypeSelectFrame.pack(padx=50, pady=50)
 
-        if parent.master.saved_line == -1:
+        #relates to if there are previously saved params or not
+        if :
             self.savedSettingsStatusLabel = tk.Label(self.printerTypeSelectFrame, text="No previously saved settings, safe to choose")
         else:
             self.savedSettingsStatusLabel = tk.Label(self.printerTypeSelectFrame, text="There are pre-existing saved settings for the imported file, selecting printer type will override")
