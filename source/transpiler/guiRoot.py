@@ -34,6 +34,7 @@ class GuiRoot(tk.Tk):
         self.container = tk.Frame(self)
         self.resizable(False, False) #Resizing is disabled on both axes
         self.params = []
+        self.hasProfile = False
         
         #Title of the window
         self.title(WINDOW_TITLE) 
@@ -103,18 +104,35 @@ class GuiRoot(tk.Tk):
          #TODO - Remove, placeholders
         #first try to open file, if fail then create the settings file and begin append
         try:
-            with open("parameters.json", 'r') as settingsFile:
-                #proceed parse here, look to see if the opened/imported file is listed in the savedParams file
-                #file format is as follows:
-                # name_of_file_first Optomec/nScrypt param1 param2 param3 param4 \n
-                #each line will follow suit if a parse error occurs, it will discard the whole savedParams file
-                #and the params for the current imported file will be saved as the only params
-                #this should only happen if someone has manually gone in and changed the .txt file
-                
-                    
-            settingsFile.close()
+            settingsData = json.loads(open("parameters.json").read())
+            #proceed parse here, look to see if the opened/imported file is listed in the savedParams file
+            #file format is as follows:
+            # name_of_file_first Optomec/nScrypt param1 param2 param3 param4 \n
+            #each line will follow suit if a parse error occurs, it will discard the whole savedParams file
+            #and the params for the current imported file will be saved as the only params
+            #this should only happen if someone has manually gone in and changed the .txt file
+            try:
+                jdata = settingsData[self.importFilepathLabel]
+                self.writeStatus("Found existing parameter profile")
+                print("Found existing parameter profile")
+                globals.printerTypeSelected = jdata["printer"] #0 for nscrypt, 1 for optomec
+                if globals.printerTypeSelected == 0:
+                    self.params = NscryptParameters()
+                    self.params.params = jdata["vars"]
+                elif globals.printerTypeSelected == 1:
+                    self.params = OptomecParameters()
+                    self.params.params = jdata["vars"]
+                self.hasProfile = True
+            except KeyError:
+                self.writeStatus("No existing parameter profile")
+                print("No existing parameter profile")
+                #do the same thing here as file not found, so we append to json later
+                self.hasProfile = False
         except FileNotFoundError:
-
+            self.writeStatus("No existing parameter profile")
+            print("No existing parameter profile")
+            #something should happen here such that we make sure to creat the json later
+            self.hasProfile = False
         self.writeStatus("Import Click")
         print("Import Click")
 
@@ -153,9 +171,11 @@ class GuiRoot(tk.Tk):
         convSettingsWindow.wait_window()
 
         #save/set which parameter type after window is closed
-        if globals.printerTypeSelected == 0:
+        if globals.printerTypeSelected == 0 and self.hasProfile == False: #this way if someone already has a param profile
+                                                                            #it wont be overwritten
             self.params = NscryptParameters()
-        else:
+        else: #dont check for previous profile. We are trusting that even if they had previous profile, if they intentionally select this
+                #then they are intending to discard their old profile
             self.params = OptomecParameters()
         self.printParams.config(state=tk.NORMAL) #enables printer parameter button and menu
 
@@ -188,6 +208,10 @@ class GuiRoot(tk.Tk):
             paramFrame.grid()
 
             paramWindow.wait_window()
+        """ if self.hasProfile == False:
+            with open("parameters.json", "a") as settingsFile:
+                settingsFile
+        else:"""
         #after wait window close need to save new params to file, or need to modify old saved params
 
 class ConversionSettingsFrame(tk.Frame):
@@ -209,7 +233,7 @@ class ConversionSettingsFrame(tk.Frame):
         self.printerTypeSelectFrame.pack(padx=50, pady=50)
 
         #relates to if there are previously saved params or not
-        if :
+        if parent.master.hasProfile == False:
             self.savedSettingsStatusLabel = tk.Label(self.printerTypeSelectFrame, text="No previously saved settings, safe to choose")
         else:
             self.savedSettingsStatusLabel = tk.Label(self.printerTypeSelectFrame, text="There are pre-existing saved settings for the imported file, selecting printer type will override")
