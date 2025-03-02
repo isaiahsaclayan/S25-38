@@ -2,6 +2,12 @@
 
 # User Manual
 
+## Requisites
+Ensure you have the neccessary requirements installed. Navigate to the project root and execute the following command.
+``` bash
+    pip install -r requirements.txt
+```
+
 ## How to Use the Transpiler
 1. Launch the program.
 2. Click `Import File` to select a file to transpile.
@@ -14,11 +20,29 @@
 
 ---
 # Developer Notes
-`__main__.py` is the main entry point of the program.
+`/source/transpiler/__main__.py` is the main entry point of the program.
+`/source/transpiler` contains all the source code for our system.  
+`/tests` contains all the test code for our system.
 
-`transpiler` is the python module that will house our code.
+## System Breakdown
 
-`python -m transpiler` to run main, must be in source directory.
+### GUI
+TODO
+
+### Parameters
+TODO
+
+### Parser
+TODO
+
+### ACSPL Converter
+TODO
+
+### nScrypt Converter
+TODO
+
+### Toolpath Export
+TODO
 
 ## Install Requirements
 Navigate to project root, then execute the following command.
