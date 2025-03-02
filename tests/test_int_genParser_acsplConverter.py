@@ -61,7 +61,7 @@ class TestIntegrationParserToACSPL(unittest.TestCase):
     @patch("builtins.open", new_callable=mock_open, read_data="")
     def test_empty_input_file(self, mock_file):
         # Arrange, use the mock to simulate an empty file
-        mock_parser = GenericParser("empty_file")
+        mock_parser = GenericParser("empty_file.ncl.1")
 
         # Act
         parsed_commands = mock_parser.parse_commands()
@@ -71,6 +71,9 @@ class TestIntegrationParserToACSPL(unittest.TestCase):
         self.assertEqual(len(parsed_commands), 0) # Ensure no commands were parsed
         self.assertEqual(len(translated_command), 0) # Ensure no commands were translated
 
+    @patch("builtins.open", new_callable=mock_open, read_data="INVALIDCOMMAND / 1.0, 2.0, 3.0")
+    def test_invalid_command(self, mock_file):
+        pass
 
     # TODO remove this test before delivery
     def test_print(self):
