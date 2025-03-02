@@ -95,6 +95,26 @@ class TestIntegrationParserToACSPL(unittest.TestCase):
         self.assertEqual(len(translated_command), 0) # Ensure the command was not translated by converter
         self.assertIn("INVALIDCOMMAND", mock_parser.unparsedCommands[0]) # Ensure the invalid command is in the unparsed list
 
+    @patch("builtins.open", new_callable=mock_open, read_data="COOLNT / ON")
+    def test_ignored_command(self, mock_file):
+        """
+        Ensures a command that is supported by parser, but not converter is processed correctly.
+        Parser should process the command but the converter should not.
+        """
+        # Arrange, use the mock to simulate an ignored command
+        mock_parser = GenericParser("ignored_command.ncl.1")
+
+        # Act
+        parsed_commands = mock_parser.parse_commands()
+        translated_command = self.acsplConverter.translate(parsed_commands)
+
+        # Assert
+        # Ensure the command was processed by the parser
+        self.assertEqual(len(parsed_commands), 1)
+        # Ensure the command was not translated by the converter, there should only be 3 lines appended
+        # the machine setup code block, a start comment, and the stop code block
+        self.assertEqual(len(translated_command), 3)
+
     # TODO remove this test before delivery
     def test_print(self):
         # Arrange
@@ -102,8 +122,8 @@ class TestIntegrationParserToACSPL(unittest.TestCase):
         # Act
         translated_commands = self.acsplConverter.translate(parsed_commands)
         # Assert
-        for command in translated_commands:
-            print(command)
+        #for command in translated_commands:
+            #print(command)
 
 if __name__ == "__main__":
     unittest.main()
