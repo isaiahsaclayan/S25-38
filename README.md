@@ -26,6 +26,9 @@ Navigate to project root, then execute the following command.
     pip install -r requirements.txt
 ```
 
+## To Run Tests
+Navigate to tests/ReadME.md to reference testing instructions. 
+
 ## To Implement Logger Into Your Subsystem
 1. Import logging to your python file.
 ``` python
