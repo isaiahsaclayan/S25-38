@@ -1,5 +1,9 @@
+# Utility Imports
 import unittest
+from unittest.mock import patch, mock_open # For mocking the file
 import sys
+
+# Transpiler Imports
 sys.path.append("../source/transpiler/")
 from acsplConverter import AcsplConverter
 from parser import GenericParser
@@ -52,6 +56,21 @@ class TestIntegrationParserToACSPL(unittest.TestCase):
         # Ensure all commands are strings
         for command in translated_commands:
             self.assertIsInstance(command, str)
+
+
+    @patch("builtins.open", new_callable=mock_open, read_data="")
+    def test_empty_input_file(self, mock_file):
+        # Arrange, use the mock to simulate an empty file
+        mock_parser = GenericParser("empty_file")
+
+        # Act
+        parsed_commands = mock_parser.parse_commands()
+        translated_command = self.acsplConverter.translate(parsed_commands)
+
+        # Assert
+        self.assertEqual(len(parsed_commands), 0) # Ensure no commands were parsed
+        self.assertEqual(len(translated_command), 0) # Ensure no commands were translated
+
 
     # TODO remove this test before delivery
     def test_print(self):
