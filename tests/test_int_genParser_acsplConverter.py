@@ -73,7 +73,18 @@ class TestIntegrationParserToACSPL(unittest.TestCase):
 
     @patch("builtins.open", new_callable=mock_open, read_data="INVALIDCOMMAND / 1.0, 2.0, 3.0")
     def test_invalid_command(self, mock_file):
-        pass
+        # Arrange, use the mock to simulate an invalid command
+        mock_parser = GenericParser("invalid_command.ncl.1")
+
+        # Act
+        parsed_commands = mock_parser.parse_commands()
+        translated_command = self.acsplConverter.translate(parsed_commands)
+
+        # Assert
+        self.assertEqual(len(parsed_commands), 0) # Ensure the command was not processed by parser
+        self.assertEqual(len(translated_command), 0) # Ensure the command was not translated by converter
+        self.assertIn("INVALIDCOMMAND", mock_parser.unparsedCommands[0]) # Ensure the invalid command is in the unparsed list
+
 
     # TODO remove this test before delivery
     def test_print(self):
