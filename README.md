@@ -10,10 +10,10 @@
 5. Click `Printer Parameters` to set any desired parameters to be included in the output.
 6. Click `Start Conversion`.
 7. Observe the status window for any errors and feedback during the conversion process.
-8. If successful, view obtained transpiled file in the previously selected directory in step 3.
+8. If successful, view obtained transpiled file in the previously selected directory in step 3.    
 
+---
 # Developer Notes
-
 `__main__.py` is the main entry point of the program.
 
 `transpiler` is the python module that will house our code.
