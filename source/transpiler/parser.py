@@ -30,7 +30,7 @@ class GenericParser:
     def __init__(self, file_path):
         self.file_path = file_path
         self.creoCommands = self.parse_file(self.file_path)
-        self.coordinateSystem = ""
+        self.coordinateSystem = "xyz"
         self.coordinateSearch = False
         self.parsedCommands = []
         self.unparsedCommands = []
