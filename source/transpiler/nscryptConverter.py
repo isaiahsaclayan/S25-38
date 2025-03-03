@@ -14,7 +14,7 @@ TOOL = "spindle_speed"
 INVALID_COMMAND = "INVALID"
 DO_NOT_SHOW = "DO_NOT_SHOW"
 VERSION = "Version 1.1"
-TYPE = "Type Vector"
+TYPE = "Type Spherical"
 
 SUPPORTED_COMMANDS: List[str] = [
     "move",
