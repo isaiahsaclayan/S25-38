@@ -108,9 +108,11 @@ class NscryptConverter(ToolpathConverter):
         :param parsed_commands: list of commands to be translated from generic parser
         :return: list of strings that are translated commands
         """
+        if len(parsed_commands) == 0:
+            return []
         nScrypt_commands = []
-        nScrypt_commands.append("Version 1.1")
-        nScrypt_commands.append("Type Vector") # TODO: Eventually determine between Vector and Spherical, for now just Vector
+        nScrypt_commands.append(VERSION)
+        nScrypt_commands.append(TYPE) # TODO: Eventually determine between Vector and Spherical, for now just Vector
         for command_info in parsed_commands:
             command = list(command_info.keys())[0]
             params = command_info[command]
@@ -119,6 +121,6 @@ class NscryptConverter(ToolpathConverter):
                 nScrypt_commands.append(converted_command)
                 self._translated_commands.append(converted_command)
             elif converted_command == INVALID_COMMAND:
-                nScrypt_commands.append(f"!INVALID COMMAND: {command_info}")
+                pass #nScrypt_commands.append(f"!INVALID COMMAND: {command_info}") Notes: I'm not sure this is necessary, if the export handled invalid commands it would be fine, but for simplicity sake I think we should just remove invalid but nonbreaking commands
             
         return nScrypt_commands
