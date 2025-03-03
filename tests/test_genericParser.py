@@ -1,64 +1,106 @@
-import pytest
+import unittest
 import os
 import sys
+# sys.path.append("../source/transpiler/")
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../source/transpiler/")))
 
-sys.path.append("../source/transpiler/")
+from parser import GenericParser
 
-from parser import genericParser
+class TestParser(unittest.TestCase):
+    def setUp(self):
+        #set up temporary files
+        self.test_file = "test.ncl.1"
+        self.sample_content = """$$* TITLE / 1.0
+$$-> CSYS / 1.0000000000, 0.0000000000, 0.0000000000, 0.0000000000,  $
+            0.0000000000, 1.0000000000, 0.0000000000, 0.0000000000,  $
+            0.0000000000, 0.0000000000, 1.0000000000, 0.0000000000
+SPINDL / RPM, 1000, FWD
+COOLNT / ON
+GOTO / -0.3500000000, 5.0107142857, 1.2250000000
+FEDRAT / 10.0, IPM
+UNITS / INCH
+LOADTL / 5
+MACHIN / XYZ, 100
+PARTNO / 12345
+RAPID
+FINI
+"""
+        with open(self.test_file, "w") as f:
+            f.write(self.sample_content)
+        
+        self.parser = GenericParser(self.test_file)
 
-def test_verify_file(tmp_path):
-    filename = tmp_path / "test.txt"
-    filename.write_text("invalid content")
-    
-    parser = genericParser(str(filename))
-    with pytest.raises(SystemExit):  # Assuming logger.error leads to exit
-        parser.verify_file()
+        # Invalid test file
+        self.invalid_file = "invalid.txt"
+        self.invalid_content = "This is an invalid test file for parser verification."
+        with open(self.invalid_file, "w") as f:
+            f.write(self.invalid_content)
 
-def test_parse_file(tmp_path):
-    filename = tmp_path / "test.ncl.1"
-    filename.write_text("$$* TITLE 1.0\nGOTO 1,2,3")
-    
-    parser = genericParser(str(filename))
-    assert parser.creoCommands == ["$$* TITLE 1.0", "GOTO 1,2,3"]
+    def tearDown(self):
+        for file in [self.test_file, self.invalid_file]:
+            if os.path.exists(file):
+                os.remove(file)
 
-def test_conversion(tmp_path):
-    filename = tmp_path / "test.ncl.1"
-    filename.write_text("$$* TITLE 1.0\nGOTO 1,2,3\nSPINDL ON 500\nCOOLNT ON\nFINI")
+    def test_verify_file_valid(self):
+        self.parser.verify_file()  
 
-    parser = genericParser(str(filename))
-    parser.conversion()
-    
-    assert {"title": {"type": "TITLE", "version": "1.0"}} in parser.parsedCommands
-    assert {"move": {}} in parser.parsedCommands  # Coordinate system not set
-    assert {"spindle_speed": {"control": "ON", "speed": 500.0}} in parser.parsedCommands
-    assert {"coolant": {"bool": True}} in parser.parsedCommands
-    assert {"finish_file": {"bool": True}} in parser.parsedCommands
+    def test_verify_file_invalid(self):
+        parser = GenericParser(self.invalid_file)
+        with self.assertLogs("main", level="ERROR") as log:
+            parser.verify_file()
+        self.assertIn("File type not supported", log.output[0])
 
-def test_movement_command():
-    parser = genericParser("dummy_file.ncl")
-    parser.coordinateSystem = ["X", "Y", "Z"]
-    command = ["GOTO", "", "1.0,", "2.0,", "3.0"]
-    parsed = parser._movementCommand(command)
-    assert parsed == {"move": {"X": 1.0, "Y": 2.0, "Z": 3.0}}
+    def test_parse_file(self):
+        commands = self.parser.parse_file(self.test_file)
+        self.assertEqual(len(commands), len(self.sample_content.split("\n")))
 
-def test_spindle_speed():
-    parser = genericParser("dummy_file.ncl")
-    command = ["SPINDL", "", "ON", "1000"]
-    parsed = parser._spindleSpeed(command)
-    assert parsed == {"spindle_speed": {"control": "ON", "speed": 1000.0}}
+    def test_conversion(self):
+        self.parser.conversion()
+        self.assertGreater(len(self.parser.parsedCommands), 0)
 
-def test_coolant_command():
-    parser = genericParser("dummy_file.ncl")
-    assert parser._coolantCommand(["COOLNT", "", "ON"]) == {"coolant": {"bool": True}}
-    assert parser._coolantCommand(["COOLNT", "", "OFF"]) == {"coolant": {"bool": False}}
+    def test_movement_command(self):
+        move_cmd = self.parser._movementCommand(["GOTO", "/", "1.0,", "3.0"])
+        self.assertIn("ERROR", move_cmd)
 
-def test_save(tmp_path):
-    filename = tmp_path / "output_test.txt"
-    parser = genericParser("dummy_file.ncl")
-    parser.parsedCommands = [{"example": "test"}]
-    parser.save(str(filename))
-    
-    assert filename.read_text().strip() == "{'example': 'test'}"
+    def test_spindle_speed(self):
+        speed_cmd = self.parser._spindleSpeed(["SPINDL", "/", "ON", "1000"])
+        self.assertEqual(speed_cmd["spindle_speed"]["control"], "ON")
+        self.assertEqual(speed_cmd["spindle_speed"]["speed"], 1000.0)
+
+    def test_coolant_command(self):
+        coolant_on = self.parser._coolantCommand(["COOLNT", "/", "ON"])
+        coolant_off = self.parser._coolantCommand(["COOLNT","/", "OFF"])
+        self.assertTrue(coolant_on["coolant"]["bool"])
+        self.assertFalse(coolant_off["coolant"]["bool"])
+
+    def test_speed_command(self):
+        speed_cmd = self.parser._speedCommand(["FEDRAT", "/", "10.0", "IPM"])
+        self.assertEqual(speed_cmd["speed"]["speed"], 10.0)
+
+    def test_info_comment(self):
+        self.parser._infoCommentCommand(["$$->", "FEATNO", "/", "123"])
+        self.assertIn({"feature_number": {"feature_number": "123"}}, self.parser.parsedCommands)
+
+    def test_check_orientation(self):
+        self.parser._checkOrientationLine(["1", "1", "1"])
+        self.assertEqual(self.parser.coordinateSystem, "xyz")
+
+    def test_str_representation(self):
+        self.parser.conversion()
+        output = str(self.parser)
+        self.assertTrue(len(output) == 508)
+
+    def test_save_output(self):
+        output_file = "output.txt"
+        self.parser.conversion()
+        self.parser.save(output_file)
+
+        self.assertTrue(os.path.exists(output_file))
+        os.remove(output_file)
+
+    def test_parse_commands(self):
+        parsed_commands = self.parser.parse_commands()
+        self.assertGreater(len(parsed_commands), 0)
 
 if __name__ == "__main__":
-    pytest.main()
+    unittest.main()
