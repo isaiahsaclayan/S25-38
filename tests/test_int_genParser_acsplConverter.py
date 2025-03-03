@@ -8,6 +8,10 @@ sys.path.append("../source/transpiler/")
 from acsplConverter import AcsplConverter
 from parser import GenericParser
 
+def _print(results):
+    for result in results:
+        print(result)
+
 class TestIntegrationParserToACSPL(unittest.TestCase):
     def setUp(self):
         """
@@ -122,8 +126,8 @@ class TestIntegrationParserToACSPL(unittest.TestCase):
         # Act
         translated_commands = self.acsplConverter.translate(parsed_commands)
         # Assert
-        #for command in translated_commands:
-            #print(command)
+        for command in translated_commands
+          #print(command)
 
 if __name__ == "__main__":
     unittest.main()
