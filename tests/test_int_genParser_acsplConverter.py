@@ -126,7 +126,7 @@ class TestIntegrationParserToACSPL(unittest.TestCase):
         # Act
         translated_commands = self.acsplConverter.translate(parsed_commands)
         # Assert
-        for command in translated_commands
+        #for command in translated_commands:
           #print(command)
 
 if __name__ == "__main__":
