@@ -9,11 +9,6 @@ def _print(results):
     for result in results:
         print(result)
 
-
-def _print(results):
-    for result in results:
-        print(result)
-
 class TestIntegrationParserTonScrypt(unittest.TestCase):
     def setUp(self):
         self.nScryptConverter = NscryptConverter()
