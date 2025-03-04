@@ -20,29 +20,9 @@ Ensure you have the neccessary requirements installed. Navigate to the project r
 
 ---
 # Developer Notes
-`/source/transpiler/__main__.py` is the main entry point of the program.
+`/source/transpiler/__main__.py` is the main entry point of the program.  
 `/source/transpiler` contains all the source code for our system.  
 `/tests` contains all the test code for our system.
-
-## System Breakdown
-
-### GUI
-TODO
-
-### Parameters
-TODO
-
-### Parser
-TODO
-
-### ACSPL Converter
-TODO
-
-### nScrypt Converter
-TODO
-
-### Toolpath Export
-TODO
 
 ## Install Requirements
 Navigate to project root, then execute the following command.
