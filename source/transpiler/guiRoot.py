@@ -208,11 +208,20 @@ class GuiRoot(tk.Tk):
             paramFrame.grid()
 
             paramWindow.wait_window()
-        """ if self.hasProfile == False:
-            with open("parameters.json", "a") as settingsFile:
-                settingsFile
-        else:"""
         #after wait window close need to save new params to file, or need to modify old saved params
+        if self.hasProfile == False:
+            with open("parameters.json", "a") as settingsFile:
+                jdata = [
+                    {
+                        "filename": self.importFilepathLabel,
+                        "printer": globals.printerTypeSelected,
+                        "vars": self.params.params
+                }
+                ]
+                settingsFile.write(json.dumps(jdata))
+                settingsFile.close()
+        """else:
+            #easiest way to update an entry is to write over the whole file, with the one entry updated"""
 
 class ConversionSettingsFrame(tk.Frame):
     def __init__(self, parent):
