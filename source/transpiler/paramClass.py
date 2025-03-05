@@ -75,14 +75,14 @@ class NscryptParameterGui(tk.Frame):
         temp2 = self.param2.get()
         temp3 = self.param3.get()
 
-        if int(temp1) >= 100:
+        if float(temp1) >= 100:
             #create an error message telling them to go below allowed limit
             self.gui.writeStatus("Parameter out of bounds")
             print("Parameter 1 too high!")
-        elif int(temp2) >= 100:
+        elif float(temp2) >= 100:
             self.gui.writeStatus("Parameter out of bounds")
             print("Parameter 2 too high!")
-        elif int(temp3) >= 100:
+        elif float(temp3) >= 100:
             self.gui.writeStatus("Parameter out of bounds")
             print("Parameter 3 too high!")
         else:
@@ -139,14 +139,14 @@ class OptomecParameterGui(tk.Frame):
         temp2 = self.param2.get()
         temp3 = self.param3.get()
 
-        if int(temp1) >= 100:
+        if float(temp1) >= 100:
             #create an error message telling them to go below allowed limit
             self.gui.writeStatus("Parameter out of bounds")
             print("Parameter 1 too high!")
-        elif int(temp2) >= 100:
+        elif float(temp2) >= 100:
             self.gui.writeStatus("Parameter out of bounds")
             print("Parameter 2 too high!")
-        elif int(temp3) >= 100:
+        elif float(temp3) >= 100:
             self.gui.writeStatus("Parameter out of bounds")
             print("Parameter 3 too high!")
         else:

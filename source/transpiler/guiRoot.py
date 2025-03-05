@@ -34,6 +34,7 @@ class GuiRoot(tk.Tk):
         self.container = tk.Frame(self)
         self.resizable(False, False)  # Resizing is disabled on both axes
         
+        #for the use of parameter subsystem
         self.params = []
         self.hasProfile = False
         self.importFilename = ""
@@ -115,16 +116,13 @@ class GuiRoot(tk.Tk):
             except Exception as e:
                 messagebox.showerror("Error", f"Failed to import file: {str(e)}")
                 self.writeStatus("Import Failed")
-         #TODO - Remove, placeholders
-        #first try to open file, if fail then create the settings file and begin append
+
+        #first try to open param file, if fail then create the settings file and begin append
         try:
             settingsData = json.loads(open("parameters.json").read())
-            #proceed parse here, look to see if the opened/imported file is listed in the savedParams file
+            #look to see if the opened/imported file is listed in the savedParams file
             #file format is as follows:
-            # name_of_file_first Optomec/nScrypt param1 param2 param3 param4 \n
-            #each line will follow suit if a parse error occurs, it will discard the whole savedParams file
-            #and the params for the current imported file will be saved as the only params
-            #this should only happen if someone has manually gone in and changed the .txt file
+            # name_of_file_first: [Optomec/nScrypt, [param1 param2 param3 param4]]
             try:
                 jdata = settingsData[self.importFilename]
                 self.writeStatus("Found existing parameter profile")
@@ -136,12 +134,12 @@ class GuiRoot(tk.Tk):
                     self.params = OptomecParameters()
                 self.params.params = jdata[1]
                 self.hasProfile = True
-            except KeyError:
+            except (KeyError, json.decoder.JSONDecodeError):
                 self.writeStatus("No existing parameter profile")
                 print("No existing parameter profile")
                 #do the same thing here as file not found, so we append to json later
                 self.hasProfile = False
-        except FileNotFoundError:
+        except (FileNotFoundError, json.decoder.JSONDecodeError):
             self.writeStatus("No existing parameter profile")
             print("No existing parameter profile")
             #something should happen here such that we make sure to creat the json later
@@ -202,7 +200,7 @@ class GuiRoot(tk.Tk):
         if globals.printerTypeSelected == 0 and self.hasProfile == False: #this way if someone already has a param profile
                                                                             #it wont be overwritten
             self.params = NscryptParameters()
-        else: #dont check for previous profile. We are trusting that even if they had previous profile, if they intentionally select this
+        elif globals.printerTypeSelected == 1: #dont check for previous profile. We are trusting that even if they had previous profile, if they intentionally select this
                 #then they are intending to discard their old profile
             self.params = OptomecParameters()
         self.printParams.config(state=tk.NORMAL)  # enables printer parameter button and menu
@@ -224,8 +222,8 @@ class GuiRoot(tk.Tk):
             paramFrame = OptomecParameterGui(paramWindow, self)
 
             paramFrame = NscryptParameterGui(paramWindow, self)
-            paramFrame.grid()
-
+        
+        paramFrame.grid()
         paramWindow.wait_window()
         #after wait window close need to save new params to file, or need to modify old saved params
         if self.hasProfile == False:
