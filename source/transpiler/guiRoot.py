@@ -33,8 +33,11 @@ class GuiRoot(tk.Tk):
         tk.Tk.__init__(self)
         self.container = tk.Frame(self)
         self.resizable(False, False)  # Resizing is disabled on both axes
+        
         self.params = []
         self.hasProfile = False
+        self.importFilename = ""
+
         self.toolpath_data = None
         self.export_path = ""
 
@@ -101,6 +104,8 @@ class GuiRoot(tk.Tk):
     def importButtonCallback(self):
         importFilename = filedialog.askopenfilename(filetypes=IMPORT_FILE_TYPES_LIST)
         self.importFilepathLabel["text"] = importFilename
+        self.importFilename = importFilename
+
 
         if importFilename:
             try:
@@ -121,16 +126,15 @@ class GuiRoot(tk.Tk):
             #and the params for the current imported file will be saved as the only params
             #this should only happen if someone has manually gone in and changed the .txt file
             try:
-                jdata = settingsData[self.importFilepathLabel]
+                jdata = settingsData[self.importFilename]
                 self.writeStatus("Found existing parameter profile")
                 print("Found existing parameter profile")
-                globals.printerTypeSelected = jdata["printer"] #0 for nscrypt, 1 for optomec
+                globals.printerTypeSelected = jdata[0] #will equal 0 for nscrypt, 1 for optomec
                 if globals.printerTypeSelected == 0:
                     self.params = NscryptParameters()
-                    self.params.params = jdata["vars"]
                 elif globals.printerTypeSelected == 1:
                     self.params = OptomecParameters()
-                    self.params.params = jdata["vars"]
+                self.params.params = jdata[1]
                 self.hasProfile = True
             except KeyError:
                 self.writeStatus("No existing parameter profile")
@@ -222,21 +226,48 @@ class GuiRoot(tk.Tk):
             paramFrame = NscryptParameterGui(paramWindow, self)
             paramFrame.grid()
 
-            paramWindow.wait_window()
+        paramWindow.wait_window()
         #after wait window close need to save new params to file, or need to modify old saved params
         if self.hasProfile == False:
-            with open("parameters.json", "a") as settingsFile:
-                jdata = [
-                    {
-                        "filename": self.importFilepathLabel,
-                        "printer": globals.printerTypeSelected,
-                        "vars": self.params.params
+            try:
+                try:
+                    with open("parameters.json", "r") as settingsFile:
+                        prevData = json.load(settingsFile)
+                        found = True
+                except json.decoder.JSONDecodeError:
+                    found = False
+            except FileNotFoundError:
+                print("Creating new settings file")
+                found = False
+            with open("parameters.json", "w") as settingsFile:
+                tempVars = []
+                for entry in self.params.params:
+                    tempVars.append(entry)
+                jdata = {
+                        self.importFilename: [globals.printerTypeSelected,tempVars]
                 }
-                ]
-                settingsFile.write(json.dumps(jdata))
+                if found:
+                    prevData.update(jdata)
+                    json.dump(prevData, settingsFile)
+                else:
+                    json.dump(jdata, settingsFile)
                 settingsFile.close()
-        """else:
-            #easiest way to update an entry is to write over the whole file, with the one entry updated"""
+        else:
+            #easiest way to update an entry is to write over the whole file, with the one entry updated
+            with open("parameters.json", 'r') as settingsFile:
+                prevData = json.load(settingsFile)
+                del prevData[self.importFilename]
+                settingsFile.close()
+            tempVars = []
+            for entry in self.params.params: #cant put ndarray into json, so must make normal array
+                    tempVars.append(entry)
+            jdata = {
+                        self.importFilename: [globals.printerTypeSelected,tempVars]
+                }
+            prevData.update(jdata)
+            with open("parameters.json", "w") as settingsFile:
+                json.dump(prevData, settingsFile)
+
 
 
 class ConversionSettingsFrame(tk.Frame):
