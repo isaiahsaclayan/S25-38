@@ -238,11 +238,8 @@ class GuiRoot(tk.Tk):
                 print("Creating new settings file")
                 found = False
             with open("parameters.json", "w") as settingsFile:
-                tempVars = []
-                for entry in self.params.params:
-                    tempVars.append(entry)
                 jdata = {
-                        self.importFilename: [globals.printerTypeSelected,tempVars]
+                        self.importFilename: [globals.printerTypeSelected, self.params.params]
                 }
                 if found:
                     prevData.update(jdata)
@@ -256,11 +253,8 @@ class GuiRoot(tk.Tk):
                 prevData = json.load(settingsFile)
                 del prevData[self.importFilename]
                 settingsFile.close()
-            tempVars = []
-            for entry in self.params.params: #cant put ndarray into json, so must make normal array
-                    tempVars.append(entry)
             jdata = {
-                        self.importFilename: [globals.printerTypeSelected,tempVars]
+                        self.importFilename: [globals.printerTypeSelected, self.params.params]
                 }
             prevData.update(jdata)
             with open("parameters.json", "w") as settingsFile:

@@ -4,7 +4,7 @@ Created: 02/03/25
 File: paramClass.py
 Description: The file for the design and implementation of the class that holds the data structures for parameter inputs
 '''
-import numpy as np
+import numpy as np #potentially no longer using/need np
 import tkinter as tk
 from tkinter import filedialog
 class NscryptParameters:
@@ -12,14 +12,14 @@ class NscryptParameters:
         #params will be a 1D n-length array,
         #any param that is not set by user to any specific value will be -1 by default
         #currently making n=16 as a base estimate for the number of relevant parameters for a given printer
-        self.params = np.array([-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1], dtype=float)
+        self.params = [-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0]
 
 class OptomecParameters:
     def __init__(self):
         #params will be a 1D n-length array,
         #any param that is not set by user to any specific value will be -1 by default
         #currently making n=18 as a base estimate for the number of relevant parameters for a given printer
-        self.params = np.array([-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1], dtype=float)
+        self.params = [-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0]
 
 
 #TESTING
@@ -86,9 +86,9 @@ class NscryptParameterGui(tk.Frame):
             self.gui.writeStatus("Parameter out of bounds")
             print("Parameter 3 too high!")
         else:
-            self.gui.params.params[0] = temp1
-            self.gui.params.params[1] = temp2
-            self.gui.params.params[2] = temp3
+            self.gui.params.params[0] = float(temp1)
+            self.gui.params.params[1] = float(temp2)
+            self.gui.params.params[2] = float(temp3)
             self.master.destroy()
 
     def cancelButtonCallback(self): #closes window and doesnt update params
@@ -150,9 +150,9 @@ class OptomecParameterGui(tk.Frame):
             self.gui.writeStatus("Parameter out of bounds")
             print("Parameter 3 too high!")
         else:
-            self.gui.params.params[0] = temp1
-            self.gui.params.params[1] = temp2
-            self.gui.params.params[2] = temp3
+            self.gui.params.params[0] = float(temp1)
+            self.gui.params.params[1] = float(temp2)
+            self.gui.params.params[2] = float(temp3)
             self.master.destroy()
 
     def cancelButtonCallback(self): #closes window and doesnt update params
