@@ -20,6 +20,22 @@ Ensure you have the neccessary requirements installed. Navigate to the project r
 
 ---
 # Developer Notes
+
+## To run via terminal
+
+Navigate to the project root, then execute the following command.
+``` bash
+    python .\source\transpiler\
+```
+
+or
+
+Navigate to sources directory.
+``` bash
+    python .\transpiler\
+```
+
+## Structure Notes
 `/source/transpiler/__main__.py` is the main entry point of the program.  
 `/source/transpiler` contains all the source code for our system.  
 `/tests` contains all the test code for our system.
