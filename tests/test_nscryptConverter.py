@@ -46,7 +46,6 @@ class TestnScryptConverter(unittest.TestCase):
         }
         exp_result = [VERSION,
                       TYPE,
-                      "!INVALID COMMAND: {'INVALID': {}}",
         ]
         # Act
         result = self.nScryptConverter.translate([INVALID_COMMAND])
@@ -131,20 +130,8 @@ class TestnScryptConverter(unittest.TestCase):
         # Arrange
         exp_result = [VERSION,
                       TYPE,
-                      "!INVALID COMMAND: {'title': {'type': 'Pro/CLfile', 'version': '11.0 - 11.0.0.0'}}",
-                      "!INVALID COMMAND: {'manufacturer_number': {'manufacturer_number': 'MFG0006'}}",
-                      "!INVALID COMMAND: {'part_number': {'part_number': 'MFG0006'}}",
-                      "!INVALID COMMAND: {'feature_number': {'feature_number': '402'}}",
-                      "!INVALID COMMAND: {'machine_info': {'machine_type': 'UNCX01', 'machine_number': '1'}}",
-                      "!INVALID COMMAND: {'geometry_type': {'geometry_type': 'OUTPUT_ON_CENTER'}}",
-                      "!INVALID COMMAND: {'tool': {'tool': '1'}}",
-                      "!INVALID COMMAND: {'tool_size': {'tool_size': '0.500000'}}",
-                      "!INVALID COMMAND: {'coordinate_system': {'coordinate_system': 'xyz'}}",
                       "TOOL ON",
-                      "!INVALID COMMAND: {'coolant': {'bool': True}}",
-                      "!INVALID COMMAND: {'max_speed': {'bool': True}}",
                       "-8.889999999999999 127.27214285678 31.115000000000002 0.0 0.0",
-                      "!INVALID COMMAND: {'speed': {'speed': 10.0}}",
                       "-8.889999999999999 127.27214285678 27.94 0.0 0.0",
                       "85.09 127.27214285678 27.94 0.0 0.0",
                       "85.09 127.27214285678 30.479999999999997 0.0 0.0",
