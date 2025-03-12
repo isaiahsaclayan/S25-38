@@ -292,11 +292,9 @@ class GuiRoot(tk.Tk):
     def printParamsButtonCallback(self):
         self.writeStatus("Printer Parameters Click")
         print("Printer Parameters Click")
-        if globals.printerTypeSelected == 0:
-            paramWindow = tk.Toplevel()
-            paramWindow.grab_set()
-
-            self.eval("tk::PlaceWindow {} center".format(str(paramWindow)))
+        paramWindow = tk.Toplevel()
+        self.eval("tk::PlaceWindow {} center".format(str(paramWindow)))
+        paramWindow.grab_set()
 
         paramWindow.geometry("500x250")
         paramWindow.resizable(False, False)
@@ -304,22 +302,10 @@ class GuiRoot(tk.Tk):
         if globals.printerTypeSelected == 0:
             paramWindow.title("nScrypt Parameters")
             paramFrame = NscryptParameterGui(paramWindow, self)
-            paramFrame.grid()
-
-            paramWindow.wait_window()
-            paramWindow.grab_release()
-
         else:
-            paramWindow = tk.Toplevel()
-            paramWindow.grab_set()
-
-            self.eval("tk::PlaceWindow {} center".format(str(paramWindow)))
-
             paramWindow.title("Optomec Parameters")
             paramFrame = OptomecParameterGui(paramWindow, self)
 
-            paramFrame = NscryptParameterGui(paramWindow, self)
-        
         paramFrame.grid()
         paramWindow.wait_window()
         paramWindow.grab_release()
