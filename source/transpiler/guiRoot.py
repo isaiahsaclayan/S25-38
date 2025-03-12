@@ -150,11 +150,12 @@ class GuiRoot(tk.Tk):
             # for redundancy, check if the file can be opened
 
             try:     
-                openedFile = open(file = filepath, mode="r")
+                openedFile = open(file = filepath, mode="r", encoding="utf-8")
+                self.toolpath_data = openedFile.readlines()
                 openedFile.close()
 
-                globals.setImportFilepath(filepath) # Store import filepath
-
+                globals.importFilePath = filepath # Store import filepath
+                
                 self.importFilepathEntry.configure(state="normal")
                 self.importFilepathEntry.delete(0, tk.END)
                 self.importFilepathEntry.insert(tk.END, filepath)
@@ -162,8 +163,8 @@ class GuiRoot(tk.Tk):
 
                 self.writeStatus("Select Import File Successful")
 
-            except:
-                self.writeStatus("Select Import File Error")
+            except Exception as e:
+                self.writeStatus("Select Import File Error: ", str(e))
         
         #first try to open param file, if fail then create the settings file and begin append
         try:
@@ -219,7 +220,7 @@ class GuiRoot(tk.Tk):
 
         # User sets export filepath
         else:
-            globals.setExportFilepath(filepath) # Store export filepath
+            globals.exportFilePath = filepath # Store export filepath
 
             self.exportFilepathEntry.configure(state="normal")
             self.exportFilepathEntry.delete(0, tk.END)
@@ -363,6 +364,21 @@ class GuiRoot(tk.Tk):
 
         if(conversionAllowed):
             self.writeStatus("Starting Conversion Process")
+
+            # Determine printer type
+            printer_type = globals.PRINTER_TYPES[globals.printerTypeSelected]
+            exporter = ToolpathExporter(self.export_path, printer_type)
+
+            # Export toolpath
+            result = exporter.export_with_formatting(self.toolpath_data)
+
+            # Display feedback
+            if "Error" in result:
+                messagebox.showerror("Export Failed", result)
+            else:
+                messagebox.showinfo("Success", result)
+
+            self.writeStatus(result)
 
 class ConversionSettingsFrame(tk.Frame):
 
