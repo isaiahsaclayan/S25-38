@@ -41,7 +41,8 @@ class GuiRoot(tk.Tk):
         self.importFilename = ""
 
         self.toolpath_data = None
-        self.export_path = ""
+        self.export_path = None
+        self.import_path = None
 
         # Title of the window
         self.title(WINDOW_TITLE)
@@ -154,7 +155,7 @@ class GuiRoot(tk.Tk):
                 self.toolpath_data = openedFile.readlines()
                 openedFile.close()
 
-                globals.importFilePath = filepath # Store import filepath
+                self.import_path = filepath # Store import filepath
                 
                 self.importFilepathEntry.configure(state="normal")
                 self.importFilepathEntry.delete(0, tk.END)
@@ -211,7 +212,8 @@ class GuiRoot(tk.Tk):
                 EXPORT_FILE_TYPES_LIST.insert(0, ACSPL_FILE_TYPE)
 
         # Opens a dialog for user to set a filename and path for export
-        filepath = filedialog.asksaveasfilename(filetypes = EXPORT_FILE_TYPES_LIST, defaultextension = EXPORT_FILE_TYPES_LIST[0])
+        # filepath = filedialog.asksaveasfilename(filetypes = EXPORT_FILE_TYPES_LIST, defaultextension = EXPORT_FILE_TYPES_LIST[0])
+        filepath = filedialog.askdirectory()
 
         # User cancels setting export destination
         # If the user clicks the cancel button, an empty string is returned
@@ -220,7 +222,7 @@ class GuiRoot(tk.Tk):
 
         # User sets export filepath
         else:
-            globals.exportFilePath = filepath # Store export filepath
+            self.export_path = filepath # Store export filepath
 
             self.exportFilepathEntry.configure(state="normal")
             self.exportFilepathEntry.delete(0, tk.END)
@@ -354,11 +356,11 @@ class GuiRoot(tk.Tk):
         #TODO - Add checks if needed
         conversionAllowed = True
 
-        if(globals.getImportFilepath() == None):
+        if(self.import_path == None):
             conversionAllowed = False
             self.writeStatus("Cannot start conversion: Please select import file")
 
-        if(globals.getExportFilepath() == None):
+        if(self.export_path == None):
             conversionAllowed = False
             self.writeStatus("Cannot start conversion: Please set export destination")
 
