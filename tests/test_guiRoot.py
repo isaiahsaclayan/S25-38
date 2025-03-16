@@ -15,11 +15,11 @@ import guiRoot
 import tkinter as tk
 import applicationGlobals as globals
 
-class TestGuiButtons(unittest.TestCase):
+class TestGuiRoot(unittest.TestCase):
     def setUp(self):
         self.guiRootObj = guiRoot.GuiRoot()
 
-    def testImport(self):
+    def test_Import(self):
         importMock = mock.Mock()
 
         self.guiRootObj.importFileButton.configure(state="normal")
@@ -28,7 +28,7 @@ class TestGuiButtons(unittest.TestCase):
         
         importMock.assert_called()
     
-    def testExport(self):
+    def test_Export(self):
         exportMock = mock.Mock()
 
         self.guiRootObj.exportFileButton.configure(state="normal")
@@ -37,7 +37,7 @@ class TestGuiButtons(unittest.TestCase):
         
         exportMock.assert_called()
 
-    def testConvSettings(self):
+    def test_ConvSettings(self):
         convSettingsMock = mock.Mock()
 
         self.guiRootObj.conversionSettings.configure(state="normal")
@@ -46,7 +46,7 @@ class TestGuiButtons(unittest.TestCase):
         
         convSettingsMock.assert_called()
 
-    def testStartConv(self):
+    def test_StartConv(self):
         startConvMock = mock.Mock()
 
         self.guiRootObj.startConvButton.configure(state="normal")
@@ -55,7 +55,7 @@ class TestGuiButtons(unittest.TestCase):
         
         startConvMock.assert_called()
     
-    def testWriteStatus(self):
+    def test_WriteStatus(self):
         self.guiRootObj.clearStatus()
         self.guiRootObj.writeStatus("Alphabetical Characters")
         assert self.guiRootObj.statusTextArea.get("1.0", tk.END)[11:] == "Alphabetical Characters\n\n"
@@ -68,7 +68,7 @@ class TestGuiButtons(unittest.TestCase):
         self.guiRootObj.writeStatus("Special Characters `~!@#$%^&*()_+")
         assert self.guiRootObj.statusTextArea.get("1.0", tk.END)[11:] == "Special Characters `~!@#$%^&*()_+\n\n"
 
-    def testStatusQueue(self):
+    def test_StatusQueue(self):
         self.guiRootObj.clearStatus()
         globals.writeStatusQueue("TEST1")
         guiRoot.queueLoop(self.guiRootObj) # Have to "artificially" loop through queue 
