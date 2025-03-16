@@ -432,3 +432,7 @@ def queueLoop(rootObject):
         except globals.queue.Empty:
             break
     rootObject.after(QUEUE_LOOP_RATE, queueLoop, rootObject)
+
+#TODO - Fill out for conversion process, to be called when pressing start conversion button
+def conversionProcess():
+    pass
