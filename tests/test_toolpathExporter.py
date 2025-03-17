@@ -1,120 +1,214 @@
-import unittest
-import os
-import sys
+'''
+Author: Alvin Chung
+Created: 01/17/25
+File: guiRoot.py
+Description: The root tkinter object for the GUI application
+'''
 
-# Append the source directory to sys.path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../source/transpiler")))
+import tkinter as tk
+from tkinter import filedialog, messagebox
+from paramClass import NscryptParameters, OptomecParameters
+from paramClass import NscryptParameterGui, OptomecParameterGui
+from tkinter import ttk
+import applicationGlobals as globals
+from toolpathExporter import ToolpathExporter  # Added import
 
-from parser import GenericParser
-from acsplConverter import AcsplConverter
-from nscryptConverter import NscryptConverter
-from toolpathExporter import ToolpathExporter
+WINDOW_TITLE = "S25-38"
+MENU_TITLE = "S25-38 Machine Instruction Converter"
+GUI_WINDOW_SIZE = "500x300"
 
-class TestToolpathExporter(unittest.TestCase):
-    def setUp(self):
-        """Set up test environment"""
-        self.export_path = "test_exports"
-        os.makedirs(self.export_path, exist_ok=True)
+QUEUE_LOOP_RATE = 100
 
-        self.exporter_gcode = ToolpathExporter(self.export_path, "nScrypt")
-        self.exporter_acspl = ToolpathExporter(self.export_path, "Optomec")
+# File Types
+CREO_FILE_TYPE = ("Creo Toolpath Files", '*.ncl.1')
+NSCRYPT_FILE_TYPE = ("nScrypt GCODE Files", '*.gcode')
+ACSPL_FILE_TYPE = ("ACSPL Files", '*.txt')
+IMPORT_FILE_TYPES_LIST = (CREO_FILE_TYPE, NSCRYPT_FILE_TYPE, ACSPL_FILE_TYPE, ("All files", "*.*"))
+EXPORT_FILE_TYPES_LIST = (NSCRYPT_FILE_TYPE, ACSPL_FILE_TYPE, ("All files", "*.*"))
 
-        self.parser = GenericParser("tests/resources/sample_toolpath.ncl.1")  # Mock input file
-        self.converter_gcode = NscryptConverter()
-        self.converter_acspl = AcsplConverter()
 
-    def tearDown(self):
-        """Clean up generated files"""
-        for file in os.listdir(self.export_path):
-            os.remove(os.path.join(self.export_path, file))
-        os.rmdir(self.export_path)
+class GuiRoot(tk.Tk):
+    def __init__(self):
+        tk.Tk.__init__(self)
+        self.container = tk.Frame(self)
+        self.resizable(False, False)  # Resizing is disabled on both axes
+        self.params = []
+        self.toolpath_data = None  # Stores imported toolpath data
+        self.export_path = ""
 
-    ### UNIT TESTS ###
+        # Title of the window
+        self.title(WINDOW_TITLE)
+        self.geometry(GUI_WINDOW_SIZE)
 
-    def test_export_gcode(self):
-        """Test successful G-Code export"""
-        toolpath_data = ["MOVE X10 Y10 Z5 F300", "SET SPEED 100"]
-        result = self.exporter_gcode.export_with_formatting(toolpath_data)
-        self.assertIn("Export successful", result)
+        # Title of Menu
+        self.menuTitleLabel = tk.Label(self, text=MENU_TITLE)
+        self.menuTitleLabel.pack(anchor="center")
 
-    def test_export_acspl(self):
-        """Test successful ACSPL export"""
-        toolpath_data = ["MOVE 10,10,5", "SPEED 100"]
-        result = self.exporter_acspl.export_with_formatting(toolpath_data)
-        self.assertIn("Export successful", result)
+        # Import button + import filepath
+        self.importFrame = tk.Frame(self)
 
-    def test_invalid_toolpath_format(self):
-        """Test error handling for invalid toolpath format"""
-        invalid_toolpath = ["INVALID_COMMAND 123"]
-        result = self.exporter_gcode.export_with_formatting(invalid_toolpath)
-        self.assertIn("Error", result)
+        # Import Button and Label
+        self.importFileButton = tk.Button(self.importFrame, text="Import File", command=self.importButtonCallback)
+        self.importFileButton.pack(side="left")
 
-    def test_empty_toolpath(self):
-        """Test exporting an empty toolpath file"""
-        empty_toolpath = []
-        result = self.exporter_gcode.export_with_formatting(empty_toolpath)
-        self.assertIn("Error", result)
+        self.importFilepathLabel = tk.Label(self.importFrame)
+        self.importFilepathLabel.pack(side="left")
 
-    def test_toolpath_file_creation(self):
-        """Test if the toolpath file is actually created"""
-        toolpath_data = ["G1 X10 Y20 Z30"]
-        self.exporter_gcode.export_with_formatting(toolpath_data)
+        self.importFrame.pack(anchor="w", padx=5, pady=5)
 
-        expected_file = os.path.join(self.export_path, "exported_toolpath.gcode")
-        self.assertTrue(os.path.exists(expected_file))
+        # Export button + export filepath
+        self.exportFrame = tk.Frame(self)
 
-    def test_invalid_printer_type(self):
-        """Test if an invalid printer type is handled properly"""
-        exporter = ToolpathExporter(self.export_path, "InvalidPrinter")
-        toolpath_data = ["MOVE X10 Y10 Z5"]
-        result = exporter.export_with_formatting(toolpath_data)
-        self.assertIn("Error", result)
+        # Set Export Destination Button and Label
+        self.exportFileButton = tk.Button(self.exportFrame, text="Set Export Destination", command=self.setExportDestinationButtonCallback)
+        self.exportFileButton.pack(side="left")
 
-    ### INTEGRATION TESTS ###
+        self.exportFilepathLabel = tk.Label(self.exportFrame)
+        self.exportFilepathLabel.pack(side="left")
 
-    def test_integration_gcode(self):
-        """Test full flow from parsing to exporting G-Code"""
-        parsed_toolpath = self.parser.parse_commands()
-        converted_toolpath = self.converter_gcode.translate(parsed_toolpath)
-        result = self.exporter_gcode.export_with_formatting(converted_toolpath)
+        self.exportFrame.pack(anchor="w", padx=5, pady=5)
 
-        # Check if export is successful
-        self.assertIn("Export successful", result)
+        # Conversion Settings Button
+        self.conversionSettings = tk.Button(self, text="Conversion Settings", command=self.conversionSettingsButtonCallback)
+        self.conversionSettings.pack(anchor="w", padx=5, pady=5)
 
-        # Verify if file was created
-        expected_file = os.path.join(self.export_path, "exported_toolpath.gcode")
-        self.assertTrue(os.path.exists(expected_file))
+        # Printer Parameters Button
+        self.printParams = tk.Button(self, text="Printer Parameters", command=self.printParamsButtonCallback)
+        self.printParams.config(state=tk.DISABLED)  # button can't be clicked until file has been imported
+        self.printParams.pack(anchor="w", padx=5, pady=5)
 
-    def test_integration_acspl(self):
-        """Test full flow from parsing to exporting ACSPL"""
-        parsed_toolpath = self.parser.parse_commands()
-        converted_toolpath = self.converter_acspl.translate(parsed_toolpath)
-        result = self.exporter_acspl.export_with_formatting(converted_toolpath)
+        # Start Conversion Button
+        self.startConvButton = tk.Button(self, text="Start Conversion", command=self.startConversionButtonCallback)
+        self.startConvButton.pack(anchor="center", padx=5, pady=5)
 
-        # Check if export is successful
-        self.assertIn("Export successful", result)
+        # Label for Status Text
+        self.statusTextArea = tk.Label(self, text="Status:")
+        self.statusTextArea.pack(anchor="w", padx=5, pady=5)
 
-        # Verify if file was created
-        expected_file = os.path.join(self.export_path, "exported_toolpath.txt")
-        self.assertTrue(os.path.exists(expected_file))
+        # Status Text Area
+        self.statusTextArea = tk.Text(self, wrap=tk.WORD)
+        self.statusTextArea.pack(anchor="center", padx=5, pady=5)
+        self.statusTextArea.configure(state="disabled")  # Prevent user from typing in text box
 
-    def test_integration_invalid_parser(self):
-        """Test handling of an invalid parser output"""
-        invalid_parser = GenericParser("tests/resources/invalid_toolpath.ncl.1")
-        parsed_toolpath = invalid_parser.parse_commands()
-        
-        result_gcode = self.exporter_gcode.export_with_formatting(parsed_toolpath)
-        result_acspl = self.exporter_acspl.export_with_formatting(parsed_toolpath)
+    def writeStatus(self, text):
+        self.statusTextArea.configure(state="normal")  # Enable writing to text box
+        self.statusTextArea.delete("1.0", tk.END)  # Clear textbox
+        self.statusTextArea.insert(tk.END, text)  # Write new text
+        self.statusTextArea.configure(state="disabled")  # Disable text box again
 
-        self.assertIn("Error", result_gcode)
-        self.assertIn("Error", result_acspl)
+    def importButtonCallback(self):
+        importFilename = filedialog.askopenfilename(filetypes=IMPORT_FILE_TYPES_LIST)
+        self.importFilepathLabel["text"] = importFilename
 
-    def test_integration_incomplete_toolpath(self):
-        """Test handling of an incomplete toolpath"""
-        incomplete_toolpath = [{"move": {"x": 10, "y": 20}}]  # Missing required parameters
-        result = self.exporter_gcode.export_with_formatting(incomplete_toolpath)
+        if importFilename:
+            try:
+                with open(importFilename, "r", encoding="utf-8") as file:
+                    self.toolpath_data = file.readlines()
+                self.writeStatus(f"Imported: {importFilename}")
+            except Exception as e:
+                messagebox.showerror("Error", f"Failed to import file: {str(e)}")
+                self.writeStatus("Import Failed")
 
-        self.assertIn("Error", result)
+    def setExportDestinationButtonCallback(self):
+        exportFilename = filedialog.askdirectory()
+        self.exportFilepathLabel["text"] = exportFilename
+        self.export_path = exportFilename
 
-if __name__ == "__main__":
-    unittest.main()
+        if self.export_path:
+            self.writeStatus(f"Export Path Set: {self.export_path}")
+
+    def startConversionButtonCallback(self):
+        if not self.toolpath_data:
+            messagebox.showerror("Error", "No toolpath imported!")
+            return
+
+        if not self.export_path:
+            messagebox.showerror("Error", "No export destination set!")
+            return
+
+        # Determine printer type
+        printer_type = globals.PRINTER_TYPES[globals.printerTypeSelected]
+        exporter = ToolpathExporter(self.export_path, printer_type)
+
+        # Export toolpath
+        result = exporter.export_with_formatting(self.toolpath_data)
+
+        # Display feedback
+        if "Error" in result:
+            messagebox.showerror("Export Failed", result)
+        else:
+            messagebox.showinfo("Success", result)
+
+        self.writeStatus(result)
+
+    def conversionSettingsButtonCallback(self):
+        self.writeStatus("Conversion Settings Click")
+        print("Conversion Settings Click")
+
+        # Create new window
+        convSettingsWindow = tk.Toplevel()
+        self.eval("tk::PlaceWindow {} center".format(str(convSettingsWindow)))
+
+        convSettingsWindow.title("Conversion Settings")
+        convSettingsWindow.resizable(False, False)
+
+        convSettingsFrame = ConversionSettingsFrame(convSettingsWindow)
+        convSettingsFrame.pack()
+
+        convSettingsWindow.wait_window()
+
+        # Save/set which parameter type after window is closed
+        if globals.printerTypeSelected == 0:
+            self.params = NscryptParameters()
+        else:
+            self.params = OptomecParameters()
+
+        self.printParams.config(state=tk.NORMAL)  # Enables printer parameter button and menu
+
+    def printParamsButtonCallback(self):
+        self.writeStatus("Printer Parameters Click")
+        print("Printer Parameters Click")
+        paramWindow = tk.Toplevel()
+        self.eval("tk::PlaceWindow {} center".format(str(paramWindow)))
+
+        paramWindow.geometry("500x250")
+        paramWindow.resizable(False, False)
+
+        if globals.printerTypeSelected == 0:
+            paramWindow.title("nScrypt Parameters")
+            paramFrame = NscryptParameterGui(paramWindow, self)
+        else:
+            paramWindow.title("Optomec Parameters")
+            paramFrame = OptomecParameterGui(paramWindow, self)
+
+        paramFrame.grid()
+        paramWindow.wait_window()
+
+
+class ConversionSettingsFrame(tk.Frame):
+    def __init__(self, parent):
+        super().__init__(parent)
+
+        self.titleLabel = tk.Label(self, text="Conversion Settings")
+        self.titleLabel.pack(padx=10, pady=10)
+
+        self.printerTypeSelectFrame = tk.Frame(self)
+
+        self.printTypeSelectLabel = tk.Label(self.printerTypeSelectFrame, text="Printer Type: ")
+        self.printTypeSelectLabel.pack(side="left")
+
+        self.printerTypeCombobox = ttk.Combobox(self.printerTypeSelectFrame, values=globals.PRINTER_TYPES, state="readonly")
+        self.printerTypeCombobox.current(0)
+        self.printerTypeCombobox.pack(side="left")
+
+        self.printerTypeSelectFrame.pack(padx=10, pady=10)
+
+        self.saveButton = tk.Button(self, text="Save", command=self.saveButtonCallback)
+        self.saveButton.pack(padx=10, pady=10)
+
+    def saveButtonCallback(self):
+        globals.printerTypeSelected = self.printerTypeCombobox.current()
+        selectedPrinter = globals.PRINTER_TYPES[globals.printerTypeSelected]
+
+        globals.writeStatusQueue("Save Button Click " + selectedPrinter)
+        print("Save Button Click", selectedPrinter)
