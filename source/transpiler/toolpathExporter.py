@@ -35,7 +35,7 @@ class ToolpathExporter:
             writeStatusQueue("Error: Toolpath is empty. Export aborted.")
             return False
         for line in toolpath:
-            if not isinstance(line, str) or len(line.strip()) == 0:
+            if not isinstance(line, str) :
                 writeStatusQueue("Error: Invalid command in toolpath. Export failed.")
                 return False
         return True
