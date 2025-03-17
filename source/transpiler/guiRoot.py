@@ -52,22 +52,12 @@ class GuiRoot(tk.Tk):
         self.menuTitleLabel = tk.Label(self, text=MENU_TITLE)
         self.menuTitleLabel.pack(anchor="center")
 
-        # Conversion Settings Button
-        self.conversionSettings = tk.Button(self, text="Conversion Settings", command=self.conversionSettingsButtonCallback)
-        self.conversionSettings.pack(anchor="w", padx=5, pady=5)
-
-        # Printer Parameters Button
-        self.printParams = tk.Button(self, text="Printer Parameters", command=self.printParamsButtonCallback)
-        self.printParams.config(state=tk.DISABLED)  # button can't be clicked until file has been imported
-        self.printParams.pack(anchor="w", padx=5, pady=5)
-
         # Import button + import filepath
         self.importFrame = tk.Frame(self)
 
         # Import Button and Entry
         self.importFileButton = tk.Button(self.importFrame, text="Select Import File", command=self.importButtonCallback)
         self.importFileButton.pack(side="left")
-        self.importFileButton.configure(state="disabled")
 
         self.importFilepathEntry = tk.Entry(self.importFrame, relief="sunken")
         self.importFilepathEntry.pack(side="left", padx=5, fill="x", expand=True)
@@ -78,6 +68,16 @@ class GuiRoot(tk.Tk):
 
         # Export button + export filepath
         self.exportFrame = tk.Frame(self)
+
+        # Conversion Settings Button
+        self.conversionSettings = tk.Button(self, text="Conversion Settings", command=self.conversionSettingsButtonCallback)
+        self.conversionSettings.pack(anchor="w", padx=5, pady=5)
+        self.conversionSettings.configure(state="disabled")
+
+        # Printer Parameters Button
+        self.printParams = tk.Button(self, text="Printer Parameters", command=self.printParamsButtonCallback)
+        self.printParams.config(state=tk.DISABLED)  # button can't be clicked until file has been imported
+        self.printParams.pack(anchor="w", padx=5, pady=5)
 
         # Set Export Destination Button and Entry
         self.exportFileButton = tk.Button(self.exportFrame, text="Set Export Destination", command=self.setExportDestinationButtonCallback)
@@ -143,6 +143,7 @@ class GuiRoot(tk.Tk):
         # If the user clicks the cancel button, an empty string is returned
         if(len(filepath) == 0): 
             self.writeStatus("Select Import File Cancelled")
+            return
 
         # A file is selected successfully in the file dialog
         else:
@@ -166,6 +167,7 @@ class GuiRoot(tk.Tk):
 
             except Exception as e:
                 self.writeStatus("Select Import File Error: ", str(e))
+                return
         
         #first try to open param file, if fail then create the settings file and begin append
         try:
@@ -194,8 +196,10 @@ class GuiRoot(tk.Tk):
             print("No existing parameter profile")
             #something should happen here such that we make sure to creat the json later
             self.hasProfile = False
-        self.writeStatus("Import Click")
-        print("Import Click")
+
+        self.conversionSettings.configure(state="normal")
+        self.printParams.configure(state="normal")
+        self.exportFileButton.configure(state="normal")
 
     '''
     Function that is called when the "Set Export Destination" button is clicked
@@ -231,6 +235,8 @@ class GuiRoot(tk.Tk):
 
             self.writeStatus("Set Export Destination Successful")
 
+        if(self.import_path != None and self.export_path != None):
+            self.startConvButton.configure(state="normal")
 
     def startConversionButtonCallback(self):
         if not self.toolpath_data:
@@ -285,8 +291,6 @@ class GuiRoot(tk.Tk):
                 self.params = OptomecParameters()
                 
             self.printParams.config(state=tk.NORMAL)  # enables printer parameter button and menu
-            self.importFileButton.config(state="normal")
-            self.exportFileButton.config(state="normal")
             self.startConvButton.configure(state="normal")
 
 
@@ -398,7 +402,7 @@ class ConversionSettingsFrame(tk.Frame):
         self.printTypeSelectLabel.pack(side="left")
 
         self.printerTypeCombobox = ttk.Combobox(self.printerTypeSelectFrame, values=globals.PRINTER_TYPES, state="readonly")
-        self.printerTypeCombobox.current(0)
+        self.printerTypeCombobox.current(globals.printerTypeSelected)
         self.printerTypeCombobox.pack(side="left")
 
         self.printerTypeSelectFrame.pack(padx=50, pady=50)
