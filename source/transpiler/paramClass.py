@@ -21,12 +21,6 @@ class OptomecParameters:
         #currently making n=18 as a base estimate for the number of relevant parameters for a given printer
         self.params = [-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0]
 
-
-#TESTING
-#below is example of calling on Parameters to initialize a Parameter array. This will need to be done upon toolpath import
-#tmp = Parameters()
-#tmp
-
 MENU_TITLE = "S25-38 Machine Instruction Converter"
 GUI_WINDOW_SIZE = "500x250"
 
