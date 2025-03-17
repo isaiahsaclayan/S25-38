@@ -91,6 +91,7 @@ class GenericParser:
                     self.parsedCommands.append({"max_speed":{"bool":True}})
                 else:
                     self.unparsedCommands.append(command)
+                    logger.error("Command not found")
             else:
                 self._checkOrientationLine(command)
             
@@ -103,7 +104,9 @@ class GenericParser:
         elif len(command) == 5:
             return {"move": {self.coordinateSystem[0]:float(command[0][:-1]), self.coordinateSystem[1]:float(command[1][:-1]), self.coordinateSystem[2]:float(command[2][:-1]), self.coordinateSystem[3]:float(command[3][:-1]), self.coordinateSystem[4]:float(command[4])}}
         else:
+            logger.error("Error with movement command")
             return "ERROR"
+            
     
     def _spindleSpeed(self, command):
         command = command[2:]
