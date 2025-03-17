@@ -276,17 +276,18 @@ class GuiRoot(tk.Tk):
 
         if(convSettingsFrame.saveSuccess): # Check if the save button was actually pressed
 
-        #save/set which parameter type after window is closed
-        if globals.printerTypeSelected == 0 and self.hasProfile == False: #this way if someone already has a param profile
-                                                                            #it wont be overwritten
-            self.params = NscryptParameters()
-        elif globals.printerTypeSelected == 1: #dont check for previous profile. We are trusting that even if they had previous profile, if they intentionally select this
-                #then they are intending to discard their old profile
-            self.params = OptomecParameters()
-        self.printParams.config(state=tk.NORMAL)  # enables printer parameter button and menu
-        self.importFileButton.config(state="normal")
-        self.exportFileButton.config(state="normal")
-        self.startConvButton.configure(state="normal")
+            #save/set which parameter type after window is closed
+            if globals.printerTypeSelected == 0 and self.hasProfile == False: #this way if someone already has a param profile
+                                                                                #it wont be overwritten
+                self.params = NscryptParameters()
+            elif globals.printerTypeSelected == 1: #dont check for previous profile. We are trusting that even if they had previous profile, if they intentionally select this
+                    #then they are intending to discard their old profile
+                self.params = OptomecParameters()
+                
+            self.printParams.config(state=tk.NORMAL)  # enables printer parameter button and menu
+            self.importFileButton.config(state="normal")
+            self.exportFileButton.config(state="normal")
+            self.startConvButton.configure(state="normal")
 
 
     '''
