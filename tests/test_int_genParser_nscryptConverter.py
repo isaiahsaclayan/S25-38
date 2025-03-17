@@ -1,71 +1,40 @@
-# Utility Imports
 import unittest
-from unittest.mock import patch, mock_open # For mocking the file
 import sys
-
-# Transpiler Imports
 sys.path.append("../source/transpiler/")
-from acsplConverter import AcsplConverter
+from unittest.mock import patch, mock_open # For mocking the file
+from nscryptConverter import NscryptConverter
 from parser import GenericParser
 
 def _print(results):
     for result in results:
         print(result)
 
-class TestIntegrationParserToACSPL(unittest.TestCase):
+class TestIntegrationParserTonScrypt(unittest.TestCase):
     def setUp(self):
-        """
-        Set up the test environment.
-        """
-        self.acsplConverter = AcsplConverter()
+        self.nScryptConverter = NscryptConverter()
         self.genericParser = GenericParser("../tests/resources/op010.ncl.1")
 
     def test_conversion_to_translate_noException(self):
-        """
-        Ensure parsing and conversion do not raise any exceptions.
-        """
         # Arrange
         parsed_commands = self.genericParser.parse_commands() # Parse the file and get the parsed commands
 
         # Act & Assert
         try:
-            self.acsplConverter.translate(parsed_commands)
+            self.nScryptConverter.translate(parsed_commands)
         except Exception as e:
             self.fail(f"Exception raised during translation: {e}")
 
     def test_conversion_to_translation_noInvalidCommands(self):
-        """
-        Ensure translated output does not contain invalid commands, as all in the current
-        Creo file are supported.
-        """
         # Arrange
         parsed_commands = self.genericParser.parse_commands()
 
         # Act
-        translated_commands = self.acsplConverter.translate(parsed_commands)
+        translated_commands = self.nScryptConverter.translate(parsed_commands)
 
         # Assert
         for command in translated_commands:
             self.assertNotIn("INVALID", command)
-
-    def test_conversion_to_translation_typeCheck(self):
-        """
-        Ensure the translated output is a list of strings.
-        """
-        # Arrange
-        parsed_commands = self.genericParser.parse_commands()
-
-        # Act
-        translated_commands = self.acsplConverter.translate(parsed_commands)
-
-        # Assert
-        self.assertIsInstance(translated_commands, list) # Ensure the output is a list
-        self.assertGreater(len(translated_commands), 0) # Ensure there are commands
-        # Ensure all commands are strings
-        for command in translated_commands:
-            self.assertIsInstance(command, str)
-
-
+            
     @patch("builtins.open", new_callable=mock_open, read_data="")
     def test_empty_input_file(self, mock_file):
         """
@@ -76,7 +45,7 @@ class TestIntegrationParserToACSPL(unittest.TestCase):
 
         # Act
         parsed_commands = mock_parser.parse_commands()
-        translated_command = self.acsplConverter.translate(parsed_commands)
+        translated_command = self.nScryptConverter.translate(parsed_commands)
 
         # Assert
         self.assertEqual(len(parsed_commands), 0) # Ensure no commands were parsed
@@ -92,7 +61,7 @@ class TestIntegrationParserToACSPL(unittest.TestCase):
 
         # Act
         parsed_commands = mock_parser.parse_commands()
-        translated_command = self.acsplConverter.translate(parsed_commands)
+        translated_command = self.nScryptConverter.translate(parsed_commands)
 
         # Assert
         self.assertEqual(len(parsed_commands), 0) # Ensure the command was not processed by parser
@@ -110,24 +79,55 @@ class TestIntegrationParserToACSPL(unittest.TestCase):
 
         # Act
         parsed_commands = mock_parser.parse_commands()
-        translated_command = self.acsplConverter.translate(parsed_commands)
+        translated_command = self.nScryptConverter.translate(parsed_commands)
 
         # Assert
         # Ensure the command was processed by the parser
         self.assertEqual(len(parsed_commands), 1)
         # Ensure the command was not translated by the converter, there should only be 3 lines appended
         # the machine setup code block, a start comment, and the stop code block
+        self.assertEqual(len(translated_command), 2)
+        
+    @patch("builtins.open", new_callable=mock_open, read_data="UNITS / INCHES\nGOTO / 1, -1, 2")
+    def test_unit_change_command(self, mock_file):
+        """
+        Ensures that units are changed according to what the parser takes in
+        """
+        # Arrange, use the mock to simulate an ignored command
+        mock_parser = GenericParser("unit_change.ncl.1")
+
+        # Act
+        parsed_commands = mock_parser.parse_commands()
+        translated_command = self.nScryptConverter.translate(parsed_commands)
+
+        # Assert
+        # Ensure the command was processed by the parser
+        self.assertEqual(len(parsed_commands), 2)
         self.assertEqual(len(translated_command), 3)
+        self.assertEqual(translated_command[2], "25.4 -25.4 50.8 0.0 0.0")
+        
+    def test_axis_command(self):
+        """
+        Ensures the proper axis are translated regardless of the order they are in
+        """
+        mock_parser = GenericParser("../tests/resources/op010-axis_change.ncl.1")
+
+        # Act
+        parsed_commands = mock_parser.parse_commands()
+        translated_command = self.nScryptConverter.translate(parsed_commands)
+
+        # Assert
+        # Checking if axis translated correctly
+        self.assertEqual(translated_command[3], f"{1.2250000000*25.4} {-0.3500000000*25.4} {5.0107142857*25.4} 0.0 0.0")
 
     # TODO remove this test before delivery
     def test_print(self):
         # Arrange
         parsed_commands = self.genericParser.parse_commands()
         # Act
-        translated_commands = self.acsplConverter.translate(parsed_commands)
-        # Assert
-        #for command in translated_commands:
-          #print(command)
+        translated_commands = self.nScryptConverter.translate(parsed_commands)
+
+        #_print(translated_commands)
 
 if __name__ == "__main__":
     unittest.main()
