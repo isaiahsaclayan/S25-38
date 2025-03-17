@@ -17,53 +17,48 @@ import applicationGlobals
 
 class TestToolpathExporter(unittest.TestCase):
     def setUp(self):
-        """Creates a temporary directory for testing exports."""
-        self.temp_dir = tempfile.TemporaryDirectory()
-        self.exporter = ToolpathExporter(self.temp_dir.name, "nScrypt")
+        self.export_path = "test_exports"
+        self.exporter = ToolpathExporter(self.export_path, "nScrypt")
+        os.makedirs(self.export_path, exist_ok=True)
 
     def tearDown(self):
-        """Cleans up the temporary directory after each test."""
-        self.temp_dir.cleanup()
+        # Cleanup exported files after each test
+        for file in os.listdir(self.export_path):
+            os.remove(os.path.join(self.export_path, file))
+        os.rmdir(self.export_path)
 
-    def test_valid_export(self):
-        """Test successful toolpath export with valid data."""
-        toolpath_data = ["MOVE X10 Y10 Z5 F300", "SET SPEED 100"]
-        result = self.exporter.export_with_formatting(toolpath_data)
+    def test_export_success(self):
+        """Test exporting a valid toolpath for nScrypt"""
+        toolpath_data = ["MOVE X10 Y10 Z5 F300", "SET SPEED 100", ""]  # Includes empty line
+        result = self.exporter.export(toolpath_data)
         self.assertIn("Export successful", result)
 
-    def test_empty_toolpath(self):
-        """Test exporting an empty toolpath fails with an error message."""
-        result = self.exporter.export_with_formatting([])
+        file_path = os.path.join(self.export_path, "exported_toolpath.gcode")
+        with open(file_path, "r", encoding="utf-8") as file:
+            content = file.read().splitlines()
+        self.assertEqual(content, toolpath_data)  # Ensure file contents match exactly
+
+    def test_export_acspl_success(self):
+        """Test exporting a valid ACSPL toolpath for Optomec"""
+        exporter = ToolpathExporter(self.export_path, "Optomec")
+        toolpath_data = ["!Machine Type - Optomec 5-axis Aerosol Jet", "XSEG/A (10,11,12,14,15)", ""]
+        result = exporter.export(toolpath_data)
+        self.assertIn("Export successful", result)
+
+        file_path = os.path.join(self.export_path, "exported_toolpath.txt")
+        with open(file_path, "r", encoding="utf-8") as file:
+            content = file.read().splitlines()
+        self.assertEqual(content, toolpath_data)
+
+    def test_export_empty_toolpath(self):
+        """Test exporting an empty toolpath, which should fail"""
+        result = self.exporter.export([])
         self.assertIn("Error", result)
 
-    def test_invalid_command(self):
-        """Test handling of invalid commands in the toolpath."""
-        invalid_toolpath = ["INVALID_COMMAND 123"]
-        result = self.exporter.export_with_formatting(invalid_toolpath)
-        self.assertIn("Error", result)
-
-    def test_correct_file_creation(self):
-        """Ensure the exported file is created with the correct format."""
-        toolpath_data = ["MOVE X10 Y10 Z5"]
-        result = self.exporter.export_with_formatting(toolpath_data)
-        
-        # Extract file path from result
-        file_path = result.split(": ")[1]
-        self.assertTrue(os.path.exists(file_path))
-    
-    def test_custom_file_naming(self):
-        """Ensure generated file name follows the expected pattern."""
-        toolpath_data = ["MOVE X10 Y10 Z5"]
-        self.exporter.export_with_formatting(toolpath_data)
-        
-        files = os.listdir(self.temp_dir.name)
-        self.assertTrue(any(file.startswith("nScrypt_toolpath") and file.endswith(".gcode") for file in files))
-
-    def test_invalid_export_path(self):
-        """Test handling of invalid export directory."""
-        invalid_exporter = ToolpathExporter("/invalid/directory", "nScrypt")
-        toolpath_data = ["MOVE X10 Y10 Z5"]
-        result = invalid_exporter.export_with_formatting(toolpath_data)
+    def test_export_no_export_path(self):
+        """Test handling of missing export path"""
+        exporter = ToolpathExporter("", "nScrypt")
+        result = exporter.export(["MOVE X10 Y10 Z5 F300"])
         self.assertIn("Error", result)
 
 if __name__ == "__main__":
