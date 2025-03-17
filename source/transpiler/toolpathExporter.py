@@ -55,7 +55,7 @@ class ToolpathExporter:
 
         try:
             with open(file_name, "w", encoding="utf-8") as file:
-                file.writelines("\n".join(toolpath) + "\n")  # Ensures correct line endings
+                file.writelines(toolpath)  # Ensures correct line endings
             writeStatusQueue(f"Export successful: {file_name}")
             return f"Export successful: {file_name}"
         except Exception as e:
