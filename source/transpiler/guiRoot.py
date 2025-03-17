@@ -131,7 +131,7 @@ class GuiRoot(tk.Tk):
         exporter = ToolpathExporter(self.export_path, printer_type)
 
         # Export toolpath
-        result = exporter.export_with_formatting(self.toolpath_data)
+        result = exporter.export(self.toolpath_data)
 
         # Display feedback
         if "Error" in result:
