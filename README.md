@@ -10,9 +10,9 @@ Ensure you have the neccessary requirements installed. Navigate to the project r
 
 ## How to Use the Transpiler
 1. Launch the program.
-2. Click `Conversion Settings` to select the desired printer.
-3. Click `Printer Parameters` to set any desired parameters to be included in the output.
-4. Click `Select Import File` to select a file to transpile.
+2. Click `Select Import File` to select a file to transpile.
+3. Click `Conversion Settings` to select the desired printer.
+4. Click `Printer Parameters` to set any desired parameters to be included in the output.
 5. Click `Set Export Destination` to select the directory and name of the generated transpiled file.
 6. Click `Start Conversion`.
 7. Observe the status window for any errors and feedback during the conversion process.
