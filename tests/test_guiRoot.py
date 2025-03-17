@@ -12,14 +12,6 @@ import sys
 sys.path.append("../source/transpiler/")
 import guiRoot
 
-# Get the absolute path to the 'source/transpiler' directory
-BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../source/transpiler"))
-sys.path.insert(0, BASE_DIR)  # Insert at the beginning of sys.path
-import guiRoot
-import toolpathExporter
-import nscryptConverter
-import parser
-
 import tkinter as tk
 import applicationGlobals as globals
 
