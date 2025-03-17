@@ -33,8 +33,7 @@ class GuiRoot(tk.Tk):
     def __init__(self):
         tk.Tk.__init__(self)
         self.container = tk.Frame(self)
-        self.resizable(False, False)  # Resizing is disabled on both axes
-        
+
         #for the use of parameter subsystem
         self.params = []
         self.hasProfile = False
@@ -237,30 +236,6 @@ class GuiRoot(tk.Tk):
 
         if(self.import_path != None and self.export_path != None):
             self.startConvButton.configure(state="normal")
-
-    def startConversionButtonCallback(self):
-        if not self.toolpath_data:
-            messagebox.showerror("Error", "No toolpath imported!")
-            return
-
-        if not self.export_path:
-            messagebox.showerror("Error", "No export destination set!")
-            return
-
-        # Determine printer type
-        printer_type = globals.PRINTER_TYPES[globals.printerTypeSelected]
-        exporter = ToolpathExporter(self.export_path, printer_type)
-
-        # Export toolpath
-        result = exporter.export_with_formatting(self.toolpath_data)
-
-        # Display feedback
-        if "Error" in result:
-            messagebox.showerror("Export Failed", result)
-        else:
-            messagebox.showinfo("Success", result)
-
-        self.writeStatus(result)
 
     def conversionSettingsButtonCallback(self):
 
