@@ -17,7 +17,7 @@ import json
 
 WINDOW_TITLE = "S25-38"  # TODO - Provide suitable titles
 MENU_TITLE = "S25-38 Machine Instruction Converter"
-GUI_WINDOW_SIZE = "500x350"
+GUI_WINDOW_SIZE = "800x400"
 
 QUEUE_LOOP_RATE = 100
 
