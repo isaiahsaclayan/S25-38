@@ -256,7 +256,7 @@ class GuiRoot(tk.Tk):
         convSettingsWindow.grab_release() # Re-enables inputs into main menu while this window is open
 
         if(convSettingsFrame.saveSuccess): # Check if the save button was actually pressed
-
+            #TODO - the following profile check might be redundant, if so remove
             #save/set which parameter type after window is closed
             if globals.printerTypeSelected == 0 and self.hasProfile == False: #this way if someone already has a param profile
                                                                                 #it wont be overwritten
@@ -264,10 +264,8 @@ class GuiRoot(tk.Tk):
             elif globals.printerTypeSelected == 1: #dont check for previous profile. We are trusting that even if they had previous profile, if they intentionally select this
                     #then they are intending to discard their old profile
                 self.params = OptomecParameters()
-                
-            self.printParams.config(state=tk.NORMAL)  # enables printer parameter button and menu
-            self.startConvButton.configure(state="normal")
-
+            
+            convSettingsFrame.saveSuccess = False # Reset
 
     '''
     Function that is called when the "Printer Parameter" button is clicked
@@ -386,7 +384,7 @@ class ConversionSettingsFrame(tk.Frame):
         if parent.master.hasProfile == False:
             self.savedSettingsStatusLabel = tk.Label(self.printerTypeSelectFrame, text="No previously saved settings, safe to choose")
         else:
-            self.savedSettingsStatusLabel = tk.Label(self.printerTypeSelectFrame, text="There are pre-existing saved settings for the imported file, selecting printer type will override")
+            self.savedSettingsStatusLabel = tk.Label(self.printerTypeSelectFrame, text="There are pre-existing saved settings for the imported file, saving will override and clear current settings.")
         self.savedSettingsStatusLabel.pack(side="left")
         self.saveButton = tk.Button(self, text="Save", command=self.saveButtonCallback)
         self.saveButton.pack(padx=10, pady=10)
