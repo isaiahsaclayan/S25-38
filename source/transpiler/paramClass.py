@@ -4,22 +4,24 @@ Created: 02/03/25
 File: paramClass.py
 Description: The file for the design and implementation of the class that holds the data structures for parameter inputs
 '''
-import numpy as np #potentially no longer using/need np
+#import numpy as np #potentially no longer using/need np
 import tkinter as tk
 from tkinter import filedialog
+from tkinter import ttk
+
 class NscryptParameters:
     def __init__(self):
         #params will be a 1D n-length array,
         #any param that is not set by user to any specific value will be -1 by default
-        #currently making n=16 as a base estimate for the number of relevant parameters for a given printer
-        self.params = [-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0]
+        #currently making n=10 as a base estimate for the number of relevant parameters for a given printer
+        self.params = [-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0]
 
 class OptomecParameters:
     def __init__(self):
         #params will be a 1D n-length array,
         #any param that is not set by user to any specific value will be -1 by default
-        #currently making n=18 as a base estimate for the number of relevant parameters for a given printer
-        self.params = [-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0]
+        #currently making n=12 as a base estimate for the number of relevant parameters for a given printer
+        self.params = [-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0]
 
 MENU_TITLE = "S25-38 Machine Instruction Converter"
 GUI_WINDOW_SIZE = "500x250"
@@ -35,11 +37,14 @@ class NscryptParameterGui(tk.Frame):
         self.testLabel.grid(row=0, column=1)
 
         #parameter Controls
-        self.p1label = tk.Label(self, text="Parameter 1: ")
+        self.p1label = tk.Label(self, text="Spherical[0] or Vector[1]: ")
         self.p1label.grid(row=1)
-        self.param1 = tk.Entry(self)
-        self.param1.insert(0,str(gui.params.params[0]))
-        self.param1.grid(row=1, column=1)
+        #self.param1 = tk.Entry(self)
+        #self.param1.insert(0,str(gui.params.params[0]))
+        #self.param1.grid(row=1, column=1)
+        self.cType = tk.Entry(self)
+        self.cType.insert(0,str(gui.params.params[0]))
+        self.cType.grid(row=1, column=1)
 
         self.p2label = tk.Label(self, text="Parameter 2: ")
         self.p2label.grid(row=2)
@@ -65,14 +70,14 @@ class NscryptParameterGui(tk.Frame):
         self.cancelButton.grid(row=5, column=2)
 
     def okButtonCallback(self): #updates params and closes window
-        temp1 = self.param1.get() #must manually type out a get for each parameter
+        temp1 = self.cType.get() #must manually type out a get for each parameter
         temp2 = self.param2.get()
         temp3 = self.param3.get()
 
-        if float(temp1) >= 100:
+        if float(temp1) != 1 and float(temp1) != 0:
             #create an error message telling them to go below allowed limit
-            self.gui.writeStatus("Parameter out of bounds")
-            print("Parameter 1 too high!")
+            self.gui.writeStatus("Type must be 0 or 1")
+            print("Coordinate Type must be 0 or 1")
         elif float(temp2) >= 100:
             self.gui.writeStatus("Parameter out of bounds")
             print("Parameter 2 too high!")
