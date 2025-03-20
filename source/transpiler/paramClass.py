@@ -4,7 +4,7 @@ Created: 02/03/25
 File: paramClass.py
 Description: The file for the design and implementation of the class that holds the data structures for parameter inputs
 '''
-import numpy as np
+import numpy as np #potentially no longer using/need np
 import tkinter as tk
 from tkinter import filedialog
 class NscryptParameters:
@@ -12,20 +12,14 @@ class NscryptParameters:
         #params will be a 1D n-length array,
         #any param that is not set by user to any specific value will be -1 by default
         #currently making n=16 as a base estimate for the number of relevant parameters for a given printer
-        self.params = np.array([-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1], dtype=float)
+        self.params = [-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0]
 
 class OptomecParameters:
     def __init__(self):
         #params will be a 1D n-length array,
         #any param that is not set by user to any specific value will be -1 by default
         #currently making n=18 as a base estimate for the number of relevant parameters for a given printer
-        self.params = np.array([-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1], dtype=float)
-
-
-#TESTING
-#below is example of calling on Parameters to initialize a Parameter array. This will need to be done upon toolpath import
-#tmp = Parameters()
-#tmp
+        self.params = [-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0]
 
 MENU_TITLE = "S25-38 Machine Instruction Converter"
 GUI_WINDOW_SIZE = "500x250"
@@ -75,20 +69,20 @@ class NscryptParameterGui(tk.Frame):
         temp2 = self.param2.get()
         temp3 = self.param3.get()
 
-        if int(temp1) >= 100:
+        if float(temp1) >= 100:
             #create an error message telling them to go below allowed limit
             self.gui.writeStatus("Parameter out of bounds")
             print("Parameter 1 too high!")
-        elif int(temp2) >= 100:
+        elif float(temp2) >= 100:
             self.gui.writeStatus("Parameter out of bounds")
             print("Parameter 2 too high!")
-        elif int(temp3) >= 100:
+        elif float(temp3) >= 100:
             self.gui.writeStatus("Parameter out of bounds")
             print("Parameter 3 too high!")
         else:
-            self.gui.params.params[0] = temp1
-            self.gui.params.params[1] = temp2
-            self.gui.params.params[2] = temp3
+            self.gui.params.params[0] = float(temp1)
+            self.gui.params.params[1] = float(temp2)
+            self.gui.params.params[2] = float(temp3)
             self.master.destroy()
 
     def cancelButtonCallback(self): #closes window and doesnt update params
@@ -139,20 +133,20 @@ class OptomecParameterGui(tk.Frame):
         temp2 = self.param2.get()
         temp3 = self.param3.get()
 
-        if int(temp1) >= 100:
+        if float(temp1) >= 100:
             #create an error message telling them to go below allowed limit
             self.gui.writeStatus("Parameter out of bounds")
             print("Parameter 1 too high!")
-        elif int(temp2) >= 100:
+        elif float(temp2) >= 100:
             self.gui.writeStatus("Parameter out of bounds")
             print("Parameter 2 too high!")
-        elif int(temp3) >= 100:
+        elif float(temp3) >= 100:
             self.gui.writeStatus("Parameter out of bounds")
             print("Parameter 3 too high!")
         else:
-            self.gui.params.params[0] = temp1
-            self.gui.params.params[1] = temp2
-            self.gui.params.params[2] = temp3
+            self.gui.params.params[0] = float(temp1)
+            self.gui.params.params[1] = float(temp2)
+            self.gui.params.params[2] = float(temp3)
             self.master.destroy()
 
     def cancelButtonCallback(self): #closes window and doesnt update params
