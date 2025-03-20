@@ -104,17 +104,17 @@ class OptomecParameterGui(tk.Frame):
         self.testLabel.grid(row=0, column=1)
 
         #parameter Controls
-        self.p1label = tk.Label(self, text="Parameter 1: ")
+        self.p1label = tk.Label(self, text="OpenDelay (in ms): ")
         self.p1label.grid(row=1)
-        self.param1 = tk.Entry(self)
-        self.param1.insert(0,str(gui.params.params[0]))
-        self.param1.grid(row=1, column=1)
+        self.oDelay = tk.Entry(self)
+        self.oDelay.insert(0,str(gui.params.params[0]))
+        self.oDelay.grid(row=1, column=1)
 
-        self.p2label = tk.Label(self, text="Parameter 2: ")
+        self.p2label = tk.Label(self, text="CloseDelay (in ms): ")
         self.p2label.grid(row=2)
-        self.param2 = tk.Entry(self)
-        self.param2.insert(0,str(gui.params.params[1]))
-        self.param2.grid(row=2, column=1)
+        self.cDelay = tk.Entry(self)
+        self.cDelay.insert(0,str(gui.params.params[1]))
+        self.cDelay.grid(row=2, column=1)
 
         self.p3label = tk.Label(self, text="Parameter 3: ")
         self.p3label.grid(row=3)
@@ -134,17 +134,17 @@ class OptomecParameterGui(tk.Frame):
         self.cancelButton.grid(row=5, column=2)
 
     def okButtonCallback(self): #updates params and closes window
-        temp1 = self.param1.get() #must manually type out a get for each parameter
-        temp2 = self.param2.get()
+        temp1 = self.oDelay.get() #must manually type out a get for each parameter
+        temp2 = self.cDelay.get()
         temp3 = self.param3.get()
 
-        if float(temp1) >= 100:
+        if float(temp1) > 1000 or float(temp1) < 0:
             #create an error message telling them to go below allowed limit
             self.gui.writeStatus("Parameter out of bounds")
-            print("Parameter 1 too high!")
-        elif float(temp2) >= 100:
+            print("Parameter 1 out of bounds (max 1000, min 0)")
+        elif float(temp2) > 1000 or float(temp2) < 0:
             self.gui.writeStatus("Parameter out of bounds")
-            print("Parameter 2 too high!")
+            print("Parameter 2 out of bounds (max 1000, min 0)")
         elif float(temp3) >= 100:
             self.gui.writeStatus("Parameter out of bounds")
             print("Parameter 3 too high!")
