@@ -156,6 +156,7 @@ class GuiRoot(tk.Tk):
                 openedFile.close()
 
                 self.import_path = filepath # Store import filepath
+                self.importFilename = filepath #used for params subsystem
                 
                 self.importFilepathEntry.configure(state="normal")
                 self.importFilepathEntry.delete(0, tk.END)
@@ -256,13 +257,11 @@ class GuiRoot(tk.Tk):
 
         self.printParams.configure(state="normal") #enable the params menu, eve if it was only clicked but not saved
         if(convSettingsFrame.saveSuccess): # Check if the save button was actually pressed
-            #TODO - the following profile check might be redundant, if so remove
             #save/set which parameter type after window is closed
-            if globals.printerTypeSelected == 0 and self.hasProfile == False: #this way if someone already has a param profile
-                                                                                #it wont be overwritten
+            #only do this if they intentionally press the button rather than close out after seeing warning
+            if globals.printerTypeSelected == 0:
                 self.params = NscryptParameters()
-            elif globals.printerTypeSelected == 1: #dont check for previous profile. We are trusting that even if they had previous profile, if they intentionally select this
-                    #then they are intending to discard their old profile
+            elif globals.printerTypeSelected == 1:
                 self.params = OptomecParameters()
             
             convSettingsFrame.saveSuccess = False # Reset
