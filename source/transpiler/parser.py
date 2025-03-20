@@ -45,7 +45,7 @@ class GenericParser:
 
 
     def verify_file(self):
-        if not (self.file_path[-5:].lower() == 'ncl.1' or self.file_path[-4:].lower() == 'ncl'):
+        if not (self.file_path[-5:].lower() == 'ncl.1' or self.file_path[-3:].lower() == 'ncl'):
             logger.error("File type not supported")
 
     def parse_file(self, file_path):
