@@ -22,7 +22,7 @@ class ToolpathExporter:
         """
         self.export_path = export_path
         self.printer_type = printer_type
-        self.supported_formats = {"nScrypt": ".gcode", "Optomec": ".txt"}
+        self.supported_formats = {"nScrypt": ".nff", "Optomec": ".prg"}
 
     def validate_toolpath(self, toolpath: List[str]) -> bool:
         """
@@ -49,13 +49,17 @@ class ToolpathExporter:
         """
         if not self.validate_toolpath(toolpath):
             return "Error: Invalid toolpath."
+        
+        if not os.path.isdir(self.export_path):
+            return "Error: Export path does not exist."
 
         file_extension = self.supported_formats.get(self.printer_type, ".txt")
         file_name = os.path.join(self.export_path, f"exported_toolpath{file_extension}")
 
         try:
             with open(file_name, "w", encoding="utf-8") as file:
-                file.writelines(toolpath)  # Ensures correct line endings
+                for line in toolpath:
+                    file.write(line + "\n")
             writeStatusQueue(f"Export successful: {file_name}")
             return f"Export successful: {file_name}"
         except Exception as e:

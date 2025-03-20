@@ -7,13 +7,7 @@ import sys
 # Get absolute path to the source/transpiler directory
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../source/transpiler"))
 sys.path.insert(0, BASE_DIR)  # Insert at the beginning of sys.path
-import guiRoot
-import ToolpathExporter
-import nscryptConverter
-import parser
-import applicationGlobals
-
-
+from toolpathExporter import ToolpathExporter
 
 class TestToolpathExporter(unittest.TestCase):
     def setUp(self):
@@ -33,7 +27,7 @@ class TestToolpathExporter(unittest.TestCase):
         result = self.exporter.export(toolpath_data)
         self.assertIn("Export successful", result)
 
-        file_path = os.path.join(self.export_path, "exported_toolpath.gcode")
+        file_path = os.path.join(self.export_path, "exported_toolpath.nff")
         with open(file_path, "r", encoding="utf-8") as file:
             content = file.read().splitlines()
         self.assertEqual(content, toolpath_data)  # Ensure file contents match exactly
@@ -45,7 +39,7 @@ class TestToolpathExporter(unittest.TestCase):
         result = exporter.export(toolpath_data)
         self.assertIn("Export successful", result)
 
-        file_path = os.path.join(self.export_path, "exported_toolpath.txt")
+        file_path = os.path.join(self.export_path, "exported_toolpath.prg")
         with open(file_path, "r", encoding="utf-8") as file:
             content = file.read().splitlines()
         self.assertEqual(content, toolpath_data)
