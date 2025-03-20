@@ -8,7 +8,11 @@ Description: The root tkinter object for the GUI application
 import tkinter as tk
 from tkinter import filedialog, messagebox
 from paramClass import NscryptParameters, OptomecParameters
+from applicationGlobals import writeStatusQueue
 from paramClass import NscryptParameterGui, OptomecParameterGui
+from nscryptConverter import NscryptConverter
+from acsplConverter import AcsplConverter
+from parser import GenericParser
 from tkinter import ttk
 import applicationGlobals as globals
 import time
@@ -23,8 +27,8 @@ QUEUE_LOOP_RATE = 100
 
 # File Types
 CREO_FILE_TYPE = ("Creo Toolpath Files", '*.ncl.1')
-NSCRYPT_FILE_TYPE = ("nScrypt GCODE Files", '*.gcode')
-ACSPL_FILE_TYPE = ("ACSPL Files", '*.txt')
+NSCRYPT_FILE_TYPE = ("nScrypt GCODE Files", '*.nff')
+ACSPL_FILE_TYPE = ("ACSPL Files", '*.prg')
 IMPORT_FILE_TYPES_LIST = [CREO_FILE_TYPE, ("All files", "*.*")]
 EXPORT_FILE_TYPES_LIST = [("All files", "*.*")]
 
@@ -217,7 +221,7 @@ class GuiRoot(tk.Tk):
         # Opens a dialog for user to set a filename and path for export
         # filepath = filedialog.asksaveasfilename(filetypes = EXPORT_FILE_TYPES_LIST, defaultextension = EXPORT_FILE_TYPES_LIST[0])
         filepath = filedialog.askdirectory()
-
+        
         # User cancels setting export destination
         # If the user clicks the cancel button, an empty string is returned
         if(len(filepath) == 0): 
@@ -343,21 +347,28 @@ class GuiRoot(tk.Tk):
 
         if(conversionAllowed):
             self.writeStatus("Starting Conversion Process")
-
+            
             # Determine printer type
             printer_type = globals.PRINTER_TYPES[globals.printerTypeSelected]
-            exporter = ToolpathExporter(self.export_path, printer_type)
-
-            # Export toolpath
-            result = exporter.export_with_formatting(self.toolpath_data)
-
-            # Display feedback
-            if "Error" in result:
-                messagebox.showerror("Export Failed", result)
+            
+            # Obtained converted data
+            converted_paths = conversionProcess(self.import_path, self.params, printer_type)
+            
+            if converted_paths == -1:
+                self.writeStatus("Conversion Failed")
             else:
-                messagebox.showinfo("Success", result)
+                exporter = ToolpathExporter(self.export_path, printer_type)
 
-            self.writeStatus(result)
+                # Export toolpath
+                result = exporter.export(converted_paths)
+
+                # Display feedback
+                if "Error" in result:
+                    messagebox.showerror("Export Failed", result)
+                else:
+                    messagebox.showinfo("Success", result)
+
+                self.writeStatus(result)
 
 class ConversionSettingsFrame(tk.Frame):
 
@@ -411,5 +422,18 @@ def queueLoop(rootObject):
     rootObject.after(QUEUE_LOOP_RATE, queueLoop, rootObject)
 
 #TODO - Fill out for conversion process, to be called when pressing start conversion button
-def conversionProcess():
-    pass
+def conversionProcess(file_path, parameters, printer_type):
+    parser = GenericParser(file_path)
+    parsed_commands = parser.parse_commands()
+    
+    if printer_type == globals.PRINTER_TYPES[0]: # nScrypt
+        converter = NscryptConverter()
+    elif printer_type == globals.PRINTER_TYPES[1]: # Optomec
+        converter = AcsplConverter()
+    else:
+        writeStatusQueue("Invalid printer type")
+        return -1
+    
+    converted_paths = converter.translate(parsed_commands)
+    return converted_paths
+    
