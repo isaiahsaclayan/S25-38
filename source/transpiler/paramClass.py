@@ -4,10 +4,8 @@ Created: 02/03/25
 File: paramClass.py
 Description: The file for the design and implementation of the class that holds the data structures for parameter inputs
 '''
-#import numpy as np #potentially no longer using/need np
 import tkinter as tk
 from tkinter import filedialog
-from tkinter import ttk
 
 class NscryptParameters:
     def __init__(self):
@@ -39,9 +37,6 @@ class NscryptParameterGui(tk.Frame):
         #parameter Controls
         self.p1label = tk.Label(self, text="Spherical[0] or Vector[1]: ")
         self.p1label.grid(row=1)
-        #self.param1 = tk.Entry(self)
-        #self.param1.insert(0,str(gui.params.params[0]))
-        #self.param1.grid(row=1, column=1)
         self.cType = tk.Entry(self)
         self.cType.insert(0,str(gui.params.params[0]))
         self.cType.grid(row=1, column=1)
