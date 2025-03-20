@@ -13,15 +13,15 @@ class NscryptParameters:
     def __init__(self):
         #params will be a 1D n-length array,
         #any param that is not set by user to any specific value will be -1 by default
-        #currently making n=16 as a base estimate for the number of relevant parameters for a given printer
-        self.params = [-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0]
+        #currently making n=10 as a base estimate for the number of relevant parameters for a given printer
+        self.params = [-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0]
 
 class OptomecParameters:
     def __init__(self):
         #params will be a 1D n-length array,
         #any param that is not set by user to any specific value will be -1 by default
-        #currently making n=18 as a base estimate for the number of relevant parameters for a given printer
-        self.params = [-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0]
+        #currently making n=12 as a base estimate for the number of relevant parameters for a given printer
+        self.params = [-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0]
 
 MENU_TITLE = "S25-38 Machine Instruction Converter"
 GUI_WINDOW_SIZE = "500x250"
@@ -37,7 +37,7 @@ class NscryptParameterGui(tk.Frame):
         self.testLabel.grid(row=0, column=1)
 
         #parameter Controls
-        self.p1label = tk.Label(self, text="Vector[0] or Spherical[1]: ")
+        self.p1label = tk.Label(self, text="Spherical[0] or Vector[1]: ")
         self.p1label.grid(row=1)
         #self.param1 = tk.Entry(self)
         #self.param1.insert(0,str(gui.params.params[0]))
