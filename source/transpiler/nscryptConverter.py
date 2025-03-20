@@ -15,6 +15,7 @@ INVALID_COMMAND = "INVALID"
 DO_NOT_SHOW = "DO_NOT_SHOW"
 VERSION = "Version 1.1"
 TYPE = "Type Spherical"
+VECTOR_TYPE = "Type Vector"
 
 SUPPORTED_COMMANDS: List[str] = [
     "move",
@@ -28,9 +29,17 @@ SUPPORTED_UNITS: List[str] = [
 ]
 
 class NscryptConverter(ToolpathConverter):
-    def __init__(self):
-        super().__init__(SUPPORTED_COMMANDS)
+    def __init__(self, params=None):
+        super().__init__(SUPPORTED_COMMANDS, params)
         self._units = SUPPORTED_UNITS[0] # Millimeters
+        if self._parameters is None:
+            self.type = TYPE
+        elif self._parameters.params[0] == 0:
+            self.type = TYPE
+        elif self._parameters.params[0] == 1:
+            self.type = VECTOR_TYPE
+        else:
+            self.type = TYPE
 
     def _process_command(self, command: str, params: dict[str, str]):
         """
@@ -112,7 +121,7 @@ class NscryptConverter(ToolpathConverter):
             return []
         nScrypt_commands = []
         nScrypt_commands.append(VERSION)
-        nScrypt_commands.append(TYPE) # TODO: Eventually determine between Vector and Spherical, for now just Vector
+        nScrypt_commands.append(self.type)
         for command_info in parsed_commands:
             command = list(command_info.keys())[0]
             params = command_info[command]
@@ -121,6 +130,7 @@ class NscryptConverter(ToolpathConverter):
                 nScrypt_commands.append(converted_command)
                 self._translated_commands.append(converted_command)
             elif converted_command == INVALID_COMMAND:
-                pass #nScrypt_commands.append(f"!INVALID COMMAND: {command_info}") Notes: I'm not sure this is necessary, if the export handled invalid commands it would be fine, but for simplicity sake I think we should just remove invalid but nonbreaking commands
+                pass # nScrypt_commands.append(f"!INVALID COMMAND: {command_info}") Notes: I'm not sure this is necessary,
+                     # if the export handled invalid commands it would be fine, but for simplicity sake I think we should just remove invalid but nonbreaking commands
             
         return nScrypt_commands

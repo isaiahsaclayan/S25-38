@@ -427,9 +427,9 @@ def conversionProcess(file_path, parameters, printer_type):
     parsed_commands = parser.parse_commands()
     
     if printer_type == globals.PRINTER_TYPES[0]: # nScrypt
-        converter = NscryptConverter()
+        converter = NscryptConverter(params=parameters)
     elif printer_type == globals.PRINTER_TYPES[1]: # Optomec
-        converter = AcsplConverter()
+        converter = AcsplConverter(params=parameters)
     else:
         writeStatusQueue("Invalid printer type")
         return -1
