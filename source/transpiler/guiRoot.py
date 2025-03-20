@@ -197,7 +197,6 @@ class GuiRoot(tk.Tk):
             self.hasProfile = False
 
         self.conversionSettings.configure(state="normal")
-        self.printParams.configure(state="normal")
         self.exportFileButton.configure(state="normal")
 
     '''
@@ -255,6 +254,7 @@ class GuiRoot(tk.Tk):
         convSettingsWindow.wait_window()
         convSettingsWindow.grab_release() # Re-enables inputs into main menu while this window is open
 
+        self.printParams.configure(state="normal") #enable the params menu, eve if it was only clicked but not saved
         if(convSettingsFrame.saveSuccess): # Check if the save button was actually pressed
             #TODO - the following profile check might be redundant, if so remove
             #save/set which parameter type after window is closed
