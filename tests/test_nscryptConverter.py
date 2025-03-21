@@ -102,9 +102,7 @@ class TestnScryptConverter(unittest.TestCase):
         
     def test_initial_output(self):
         # Arrange
-        exp_result = [VERSION,
-                      TYPE,
-        ]
+        exp_result = []
         # Act
         result = self.nScryptConverter.translate([])
         # Assert

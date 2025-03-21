@@ -228,9 +228,9 @@ class Machine:
 # Derived Class for ACSPL Conversion
 class AcsplConverter(ToolpathConverter):
 
-    def __init__(self):
+    def __init__(self,params=None):
         # Initialize Supported Commands List
-        super().__init__(SUPPORTED_COMMANDS)
+        super().__init__(SUPPORTED_COMMANDS,params)
 
         # Create an Instance of Machine
         self.machine = Machine()

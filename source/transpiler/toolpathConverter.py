@@ -10,7 +10,7 @@ from typing import List
 # Parent Class for Generic to Language Specific Conversion
 class ToolpathConverter:
 
-    def __init__(self, supported_commands: list[str]):
+    def __init__(self, supported_commands: list[str], params=None):
         """
         :param supported_commands: Dictionary of generic command to language specific command
         """
@@ -20,6 +20,9 @@ class ToolpathConverter:
 
         # Stores the list of translated commands
         self._translated_commands: list[str] = []
+        
+        # Store the parameters
+        self._parameters = params
 
     def _process_command(self, command:str, params:dict[str, str]):
         """
