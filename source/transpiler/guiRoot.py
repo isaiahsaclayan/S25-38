@@ -150,7 +150,12 @@ class GuiRoot(tk.Tk):
 
         # A file is selected successfully in the file dialog
         else:
-            
+
+            # Check if file selected is of proper extension
+            if not filepath.endswith('.ncl.1'):
+                self.writeStatus("Select Import File Error: Invalid file type. Please select a .ncl.1 file.")
+                return
+
             # The file dialog already handles when the user tries to input an invalid file name
             # for redundancy, check if the file can be opened
 
@@ -427,9 +432,9 @@ def conversionProcess(file_path, parameters, printer_type):
     parsed_commands = parser.parse_commands()
     
     if printer_type == globals.PRINTER_TYPES[0]: # nScrypt
-        converter = NscryptConverter()
+        converter = NscryptConverter(params=parameters)
     elif printer_type == globals.PRINTER_TYPES[1]: # Optomec
-        converter = AcsplConverter()
+        converter = AcsplConverter(params=parameters)
     else:
         writeStatusQueue("Invalid printer type")
         return -1
