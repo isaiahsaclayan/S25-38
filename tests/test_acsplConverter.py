@@ -2,7 +2,20 @@ import unittest
 import sys
 sys.path.append("../source/transpiler/")
 from acsplConverter import AcsplConverter
-from acsplConverter import MACHINE_SETUP, STOP, CLOSE_INKJET, OPEN_INKJET, START_COMMENT
+from acsplConverter import HEADER_COMMENT, HEADER_CONFIG, CLOSE_INKJET, OPEN_INKJET, START_COMMENT, STOP
+import datetime as dt
+
+
+# Get current date
+date = dt.datetime.now().strftime("%d-%m-%Y")
+# Get current time
+time = dt.datetime.now().strftime("%H:%M")
+
+HEADER = (HEADER_COMMENT +
+          f"!Date=DD-MM-YY - {date} Time=HH:MM - {time}\n" +
+          f"OpenDelay = 0\n" +
+          f"CloseDelay = 0\n" +
+          HEADER_CONFIG)
 
 PARSED_COMMANDS = [
     {'coolant': {'bool': True}},
@@ -59,11 +72,11 @@ class TestAcsplConverter(unittest.TestCase):
         INVALID_COMMAND = {
             "INVALID": {}
         }
-        exp_result = [MACHINE_SETUP,
+        exp_result = [HEADER,
                       START_COMMENT,
                       "!INVALID COMMAND: {'INVALID': {}}",
                       STOP
-        ]
+                      ]
         # Act
         result = self.acsplConverter.translate([INVALID_COMMAND])
         # Assert
@@ -75,11 +88,11 @@ class TestAcsplConverter(unittest.TestCase):
             {"max_speed": {"bool": "True"}},
             {"move": {"x": "10.0", "y": "20.0", "z": "30.0"}}
         ]
-        exp_result = [MACHINE_SETUP,
+        exp_result = [HEADER,
                       START_COMMENT,
                       "PTP/EV (10,11,12,14,15), 10.0, 20.0, 30.0, 0.0, 0.0, gDblRapidSpeed",
                       STOP
-        ]
+                      ]
         # Act
         result = self.acsplConverter.translate(PTP_COMMAND)
         # Assert
@@ -106,7 +119,7 @@ class TestAcsplConverter(unittest.TestCase):
             {"move": {"x": "40.0", "y": "50.0", "z": "60.0"}},
             {"max_speed": {"bool": "True"}}
         ]
-        exp_result = [MACHINE_SETUP,
+        exp_result = [HEADER,
                       START_COMMENT,
                       "PTP/EV (10,11,12,14,15), 10.0, 20.0, 30.0, 0.0, 0.0, gDblRapidSpeed",
                       OPEN_INKJET,
@@ -114,7 +127,7 @@ class TestAcsplConverter(unittest.TestCase):
                       "LINE/V (10,11,12,14,15), 40.0, 50.0, 60.0, 0.0, 0.0, gDblProcessSpeed",
                       CLOSE_INKJET,
                       STOP
-        ]
+                      ]
         # Act
         result = self.acsplConverter.translate(XSEG_COMMAND)
         # Assert

@@ -1,5 +1,3 @@
-from os import write
-
 from toolpathConverter import ToolpathConverter
 from applicationGlobals import writeStatusQueue
 from typing import List
@@ -248,8 +246,12 @@ class AcsplConverter(ToolpathConverter):
         self.machine = Machine()
 
         # Parse the open and close delay
-        self._open_delay = int(self._parameters.params[0] if (self._parameters.params[0] != -1.0) else 0)
-        self._close_delay = int(self._parameters.params[1] if (self._parameters.params[1] != -1.0) else 0)
+        if params:
+            self._open_delay = int(self._parameters.params[0] if (self._parameters.params[0] != -1.0) else 0)
+            self._close_delay = int(self._parameters.params[1] if (self._parameters.params[1] != -1.0) else 0)
+        else:
+            self._open_delay = 0
+            self._close_delay = 0
 
         # Log ACSPL Converter Instantiation
         notify_and_log("ACSPL Converter Instantiated")
