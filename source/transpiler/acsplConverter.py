@@ -8,6 +8,16 @@ import logging
 # Get the logger instance
 logger = logging.getLogger(__name__)
 
+# Function to log and print messages to the console and status window
+def notify_and_log(message: str) -> None:
+    """
+    Log and print the message to the console and status window
+    :param message: message to be logged and printed
+    :return: None
+    """
+    logger.info(message)
+    writeStatusQueue(message)
+
 """
 ACSPL Code Blocks
 """
@@ -235,8 +245,15 @@ class AcsplConverter(ToolpathConverter):
         # Create an Instance of Machine
         self.machine = Machine()
 
+        # Parse the open and close delay
+        self._open_delay = int(self._parameters.params[0] if (self._parameters.params[0] != -1.0) else 0)
+        self._close_delay = int(self._parameters.params[1] if (self._parameters.params[1] != -1.0) else 0)
+
         # Log ACSPL Converter Instantiation
-        logger.info("ACSPL Converter Instantiated")
+        notify_and_log("ACSPL Converter Instantiated")
+
+        # Log Open and Close Parameters
+        notify_and_log(f"Received Open Delay: {self._open_delay} \t Received Close Delay: {self._close_delay}")
 
     def _format_and_append_command(self, command: str, switch: str = "") -> None:
         """
@@ -265,20 +282,20 @@ class AcsplConverter(ToolpathConverter):
         # Type check, must be type List[Dict[str,Dict[str,str]]
         type_err = "Invalid argument type provided to translate function - must be type List[Dict[str,Dict[str,str]]"
         if not isinstance(args, list):
-            logger.info(type_err)
+            notify_and_log(type_err)
             return False
         for item in args:
             if not isinstance(item, dict):
-                logger.info(type_err)
+                notify_and_log(type_err)
                 return False
             for key, value in item.items():
                 if not isinstance(key, str) or not isinstance(value, dict):
-                    logger.info(type_err)
+                    notify_and_log(type_err)
                     return False
 
         # Check if list is empty
         if len(args) == 0:
-            writeStatusQueue("No commands provided to ACSPL translate function")
+            notify_and_log("No commands provided to ACSPL translate function")
             return False
 
         # If all checks pass
@@ -401,7 +418,7 @@ class AcsplConverter(ToolpathConverter):
         """
 
         # Notify user of start of transpiling
-        writeStatusQueue("Transpiling to ACSPL...")
+        notify_and_log("Transpiling to ACSPL...")
 
         # Append the machine setup code block
         self._translated_commands.append(MACHINE_SETUP)
@@ -411,7 +428,7 @@ class AcsplConverter(ToolpathConverter):
 
         # Check if the provided parameter is valid
         if not self._validate_translate_arg(parsed_commands):
-            writeStatusQueue("Invalid argument provided to ACSPL translate function")
+            notify_and_log("Invalid argument provided to ACSPL translate function")
             return []
 
         # Iterate through each command
@@ -431,9 +448,8 @@ class AcsplConverter(ToolpathConverter):
             # If the command is not supported command
             if parsed_command not in SUPPORTED_COMMANDS:
                 self._translated_commands.append(f"!INVALID COMMAND: {command}")
-                logger.info(f"Invalid command: {command}")
                 # Notify user of invalid command
-                writeStatusQueue(f"{parsed_command} not supported")
+                notify_and_log(f"{parsed_command} not supported")
                 continue
 
             # Process the command
@@ -448,6 +464,6 @@ class AcsplConverter(ToolpathConverter):
         self._translated_commands.append(STOP)
 
         # Notify user of completion
-        writeStatusQueue("Finished transpiling to ACSPL")
+        notify_and_log("Success! File is transpiled to ACSPL.")
 
         return self._translated_commands
