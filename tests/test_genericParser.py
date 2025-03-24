@@ -59,8 +59,24 @@ FINI
         self.assertGreater(len(self.parser.parsedCommands), 0)
 
     def test_movement_command(self):
-        move_cmd = self.parser._movementCommand(["GOTO", "/", "1.0,", "3.0"])
-        self.assertIn("ERROR", move_cmd)
+        # Invalid movement command
+        move_cmd_invalid = self.parser._movementCommand(["GOTO", "/", "1.0,", "3.0"])
+        self.assertIn("ERROR", move_cmd_invalid)
+
+        self.parser.coordinateSystem = "xyz"
+        move_cmd_valid = self.parser._movementCommand(["GOTO", "/", "1.0,", "2.0,", "3.0"])
+        expected_output = {"move": {"x": 1.0, "y": 2.0, "z": 3.0}}
+        self.assertEqual(move_cmd_valid, expected_output)
+
+        self.parser.coordinateSystem = "xyza"
+        move_cmd_valid_4d = self.parser._movementCommand(["GOTO", "/", "1.0,", "2.0,", "3.0,", "4.0"])
+        expected_output_4d = {"move": {"x": 1.0, "y": 2.0, "z": 3.0, "a": 4.0}}
+        self.assertEqual(move_cmd_valid_4d, expected_output_4d)
+
+        self.parser.coordinateSystem = "xyzab"
+        move_cmd_valid_5d = self.parser._movementCommand(["GOTO", "/", "1.0,", "2.0,", "3.0,", "4.0,", "5.0"])
+        expected_output_5d = {"move": {"x": 1.0, "y": 2.0, "z": 3.0, "a": 4.0, "b": 5.0}}
+        self.assertEqual(move_cmd_valid_5d, expected_output_5d)
 
     def test_spindle_speed(self):
         speed_cmd = self.parser._spindleSpeed(["SPINDL", "/", "ON", "1000"])
@@ -81,9 +97,54 @@ FINI
         self.parser._infoCommentCommand(["$$->", "FEATNO", "/", "123"])
         self.assertIn({"feature_number": {"feature_number": "123"}}, self.parser.parsedCommands)
 
+        self.parser._infoCommentCommand(["$$->", "MFGNO", "/", "456"])
+        self.assertIn({"manufacturer_number": {"manufacturer_number": "456"}}, self.parser.parsedCommands)
+
+        self.parser._infoCommentCommand(["$$->", "CUTTER", "/", "10.5"])
+        self.assertIn({"tool_size": {"tool_size": "10.5"}}, self.parser.parsedCommands)
+
+        self.parser._infoCommentCommand(["$$->", "END"])
+        self.assertIn({"end_movement": {"bool": True}}, self.parser.parsedCommands)
+
+        self.parser._infoCommentCommand(["$$->", "CUTCOM_GEOMETRY_TYPE", "/", "SPHERE"])
+        self.assertIn({"geometry_type": {"geometry_type": "SPHERE"}}, self.parser.parsedCommands)
+
+        self.parser._infoCommentCommand(["$$->", "CSYS", "/", "1", "0", "0", "0", "0", "1", "0", "0", "0", "0", "1", "0"])
+        self.assertTrue(self.parser.coordinateSearch) 
+
+        self.parser._infoCommentCommand(["$$->", "UNKNOWN_CMD", "/", "DATA"])
+        self.assertIn(["UNKNOWN_CMD", "/", "DATA"], self.parser.unparsedCommands)
+
     def test_check_orientation(self):
+        self.parser.coordinateSystem = ""
+
         self.parser._checkOrientationLine(["1", "1", "1"])
         self.assertEqual(self.parser.coordinateSystem, "xyz")
+
+        self.parser.coordinateSystem = ""
+        self.parser._checkOrientationLine(["1", "1", "1", "1"])
+        self.assertEqual(self.parser.coordinateSystem, "xyza")
+
+        self.parser.coordinateSystem = ""
+        self.parser._checkOrientationLine(["1", "1", "1", "1", "1"])
+        self.assertEqual(self.parser.coordinateSystem, "xyzab")
+
+        self.parser.coordinateSystem = ""
+        self.parser._checkOrientationLine(["1", "0", "1"])
+        self.assertEqual(self.parser.coordinateSystem, "xz")
+
+        self.parser.coordinateSystem = ""
+        self.parser._checkOrientationLine(["0", "1", "0", "0", "1"])
+        self.assertEqual(self.parser.coordinateSystem, "yb")
+
+        self.parser.coordinateSystem = ""
+        self.parser._checkOrientationLine([])
+        self.assertEqual(self.parser.coordinateSystem, "")
+
+        self.parser.coordinateSystem = ""
+        self.parser._checkOrientationLine(["0", "0", "0", "0", "0"])
+        self.assertEqual(self.parser.coordinateSystem, "")
+
 
     def test_str_representation(self):
         self.parser.conversion()
