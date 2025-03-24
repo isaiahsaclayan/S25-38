@@ -6,9 +6,12 @@ Description: Performs generic toolpath to nScrypt conversion.
 """
 
 # Imports
+import logging
 from toolpathConverter import ToolpathConverter # Parent Class
 from applicationGlobals import writeStatusQueue
 from typing import List
+
+logger = logging.getLogger(__name__)
 
 TOOL = "spindle_speed"
 INVALID_COMMAND = "INVALID"
@@ -32,6 +35,7 @@ class NscryptConverter(ToolpathConverter):
     def __init__(self, params=None):
         super().__init__(SUPPORTED_COMMANDS, params)
         self._units = SUPPORTED_UNITS[0] # Millimeters
+        logger.info("nScrypt Converter Instantiated")
         if self._parameters is None:
             self.type = TYPE
         elif self._parameters.params[0] == 0:
@@ -47,7 +51,8 @@ class NscryptConverter(ToolpathConverter):
         :param command: individual command to be translated
         """
         if command not in self._supported_commands:
-            writeStatusQueue(f"Invalid command: {command}")
+            logger.info(f"Unsupported command: {command}")
+            # writeStatusQueue(f"Invalid command: {command}") # Not necessary
             return INVALID_COMMAND
         else:
             if command == SUPPORTED_COMMANDS[0]: # Move
@@ -94,7 +99,8 @@ class NscryptConverter(ToolpathConverter):
         :param params: dictionary of units command parameters
         """
         if params["units"] not in SUPPORTED_UNITS:
-            writeStatusQueue(f"Invalid units: {params['units']}")
+            logger.info(f"Unsupported units: {params['units']}")
+            # writeStatusQueue(f"Invalid units: {params['units']}") # Not necessary
             return INVALID_COMMAND
         else:
             self._units = params["units"]
@@ -117,6 +123,8 @@ class NscryptConverter(ToolpathConverter):
         :param parsed_commands: list of commands to be translated from generic parser
         :return: list of strings that are translated commands
         """
+        logger.info("nScrypt Converter Started")
+        writeStatusQueue("Transpiling to nScrypt...")
         if len(parsed_commands) == 0:
             return []
         nScrypt_commands = []
@@ -132,5 +140,7 @@ class NscryptConverter(ToolpathConverter):
             elif converted_command == INVALID_COMMAND:
                 pass # nScrypt_commands.append(f"!INVALID COMMAND: {command_info}") Notes: I'm not sure this is necessary,
                      # if the export handled invalid commands it would be fine, but for simplicity sake I think we should just remove invalid but nonbreaking commands
-            
+        
+        logger.info("nScrypt Converter Finished")
+        writeStatusQueue("Finished transpiling to nScrypt")
         return nScrypt_commands
