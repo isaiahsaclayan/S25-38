@@ -1,12 +1,7 @@
-from os import write
-
 from toolpathConverter import ToolpathConverter
-from applicationGlobals import writeStatusQueue
+from applicationGlobals import notify_and_log
 from typing import List
-import logging
-
-# Get the logger instance
-logger = logging.getLogger(__name__)
+import datetime as dt
 
 """
 ACSPL Code Blocks
@@ -14,12 +9,11 @@ ACSPL Code Blocks
 
 START_COMMENT = "! Start of Toolpath"
 
-MACHINE_SETUP = """#0
+HEADER_COMMENT = """#0
 !Machine Type - Optomec 5-axis Aerosol Jet
-OpenDelay = 0
-CloseDelay = 0
+"""
 
-! DONOTMERGE: Understand the code and rewrite the preamble
+HEADER_CONFIG="""
 VEL(10) = VEL(0); VEL(11) = VEL(1); VEL(12) = VEL(2); VEL(14) = VEL(4); VEL(15) = VEL(5)
 ACC(10) = ACC(0); ACC(11) = ACC(1); ACC(12) = ACC(2); ACC(14) = ACC(4); ACC(15) = ACC(5)
 DEC(10) = DEC(0); DEC(11) = DEC(1); DEC(12) = DEC(2); DEC(14) = DEC(4); DEC(15) = DEC(5)
@@ -40,10 +34,12 @@ MASTER MPOS(A) = APOS(14)*(1-ALPHA) + MPOS(A)*ALPHA
 MASTER MPOS(B) = APOS(15)*(1-ALPHA) + MPOS(B)*ALPHA
 SLAVE/p X; SLAVE/p Y; SLAVE/p Z; SLAVE/p A; SLAVE/p B
 
-CRangle=2*3.1416"""
+CRangle=2*3.1416
+"""
 
 STOP = """
 HALT ALL
+
 STOP"""
 
 CLOSE_INKJET = """ENDS (10,11,12,14,15)
@@ -235,8 +231,36 @@ class AcsplConverter(ToolpathConverter):
         # Create an Instance of Machine
         self.machine = Machine()
 
+        # Parse the open and close delay
+        if params:
+            self._open_delay = int(self._parameters.params[0] if (self._parameters.params[0] != -1.0) else 0)
+            self._close_delay = int(self._parameters.params[1] if (self._parameters.params[1] != -1.0) else 0)
+        else:
+            self._open_delay = 0
+            self._close_delay = 0
+
         # Log ACSPL Converter Instantiation
-        logger.info("ACSPL Converter Instantiated")
+        notify_and_log("ACSPL Converter Instantiated")
+
+        # Log Open and Close Parameters
+        notify_and_log(f"Received Open Delay: {self._open_delay} \t Received Close Delay: {self._close_delay}")
+
+    def _get_header(self) -> str:
+        """
+        Returns the ACSPL header
+        :return: string representation of the ACSPL header
+        """
+        # Get current date
+        date = dt.datetime.now().strftime("%d-%m-%Y")
+        # Get current time
+        time = dt.datetime.now().strftime("%H:%M")
+
+        # Format ACSPL Header
+        return (HEADER_COMMENT +
+                f"!Date=DD-MM-YY - {date} Time=HH:MM - {time}\n" +
+                f"OpenDelay = {self._open_delay}\n" +
+                f"CloseDelay = {self._close_delay}\n" +
+                HEADER_CONFIG)
 
     def _format_and_append_command(self, command: str, switch: str = "") -> None:
         """
@@ -265,20 +289,20 @@ class AcsplConverter(ToolpathConverter):
         # Type check, must be type List[Dict[str,Dict[str,str]]
         type_err = "Invalid argument type provided to translate function - must be type List[Dict[str,Dict[str,str]]"
         if not isinstance(args, list):
-            logger.info(type_err)
+            notify_and_log(type_err)
             return False
         for item in args:
             if not isinstance(item, dict):
-                logger.info(type_err)
+                notify_and_log(type_err)
                 return False
             for key, value in item.items():
                 if not isinstance(key, str) or not isinstance(value, dict):
-                    logger.info(type_err)
+                    notify_and_log(type_err)
                     return False
 
         # Check if list is empty
         if len(args) == 0:
-            writeStatusQueue("No commands provided to ACSPL translate function")
+            notify_and_log("No commands provided to ACSPL translate function")
             return False
 
         # If all checks pass
@@ -401,18 +425,18 @@ class AcsplConverter(ToolpathConverter):
         """
 
         # Notify user of start of transpiling
-        writeStatusQueue("Transpiling to ACSPL...")
+        notify_and_log("Transpiling to ACSPL...")
+
+        # Check if the provided parsed commands is valid
+        if not self._validate_translate_arg(parsed_commands):
+            notify_and_log("Invalid argument provided to ACSPL translate function")
+            return []
 
         # Append the machine setup code block
-        self._translated_commands.append(MACHINE_SETUP)
+        self._translated_commands.append(self._get_header())
 
         # Add comment to dictate start of toolpath.
         self._translated_commands.append(START_COMMENT)
-
-        # Check if the provided parameter is valid
-        if not self._validate_translate_arg(parsed_commands):
-            writeStatusQueue("Invalid argument provided to ACSPL translate function")
-            return []
 
         # Iterate through each command
         for command in parsed_commands:
@@ -431,9 +455,8 @@ class AcsplConverter(ToolpathConverter):
             # If the command is not supported command
             if parsed_command not in SUPPORTED_COMMANDS:
                 self._translated_commands.append(f"!INVALID COMMAND: {command}")
-                logger.info(f"Invalid command: {command}")
                 # Notify user of invalid command
-                writeStatusQueue(f"{parsed_command} not supported")
+                notify_and_log(f"{parsed_command} not supported")
                 continue
 
             # Process the command
@@ -448,6 +471,6 @@ class AcsplConverter(ToolpathConverter):
         self._translated_commands.append(STOP)
 
         # Notify user of completion
-        writeStatusQueue("Finished transpiling to ACSPL")
+        notify_and_log("Success! File is transpiled to ACSPL.")
 
         return self._translated_commands
