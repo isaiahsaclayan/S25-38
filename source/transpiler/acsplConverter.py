@@ -1,21 +1,7 @@
 from toolpathConverter import ToolpathConverter
-from applicationGlobals import writeStatusQueue
+from applicationGlobals import notify_and_log
 from typing import List
-import logging
 import datetime as dt
-
-# Get the logger instance
-logger = logging.getLogger(__name__)
-
-# Function to log and print messages to the console and status window
-def notify_and_log(message: str) -> None:
-    """
-    Log and print the message to the console and status window
-    :param message: message to be logged and printed
-    :return: None
-    """
-    logger.info(message)
-    writeStatusQueue(message)
 
 """
 ACSPL Code Blocks

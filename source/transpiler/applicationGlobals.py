@@ -1,6 +1,6 @@
 import enum
 import queue
-
+import logging
 PRINTER_TYPES = ("nScrypt", "Optomec")
 printerTypeSelected = 0
 
@@ -13,3 +13,10 @@ statusQueue = queue.Queue()
 
 def writeStatusQueue(message):
     statusQueue.put(message)
+
+# The logger that is used by the application
+logger = logging.getLogger("main")
+
+def notify_and_log(message):
+    writeStatusQueue(message)
+    logging.info(message)
