@@ -278,8 +278,6 @@ class GuiRoot(tk.Tk):
     Function that is called when the "Printer Parameter" button is clicked
     '''
     def printParamsButtonCallback(self):
-        self.writeStatus("Printer Parameters Click")
-        print("Printer Parameters Click")
         paramWindow = tk.Toplevel()
         self.eval("tk::PlaceWindow {} center".format(str(paramWindow)))
         paramWindow.grab_set()
@@ -391,17 +389,25 @@ class ConversionSettingsFrame(tk.Frame):
         self.printerTypeCombobox = ttk.Combobox(self.printerTypeSelectFrame, values=globals.PRINTER_TYPES, state="readonly")
         self.printerTypeCombobox.current(globals.printerTypeSelected)
         self.printerTypeCombobox.pack(side="left")
+        
+        self.printerTypeSelectFrame.pack(padx=10, pady=10)
 
-        self.printerTypeSelectFrame.pack(padx=50, pady=50)
+        self.menuButtonsFrame = tk.Frame(self)
+
+        self.saveButton = tk.Button(self.menuButtonsFrame, text="Save & Exit", command=self.saveButtonCallback)
+        self.cancelButton = tk.Button(self.menuButtonsFrame, text="Cancel", command=self.cancelButtonCallback)
+
+        self.saveButton.pack(padx=5, pady=5, side="left")
+        self.cancelButton.pack(padx=5, pady=5, side="left")
 
         #relates to if there are previously saved params or not
-        if parent.master.hasProfile == False:
-            self.savedSettingsStatusLabel = tk.Label(self.printerTypeSelectFrame, text="No previously saved settings, safe to choose")
-        else:
-            self.savedSettingsStatusLabel = tk.Label(self.printerTypeSelectFrame, text="There are pre-existing saved settings for the imported file, saving will override and clear current settings.")
-        self.savedSettingsStatusLabel.pack(side="left")
-        self.saveButton = tk.Button(self, text="Save", command=self.saveButtonCallback)
-        self.saveButton.pack(padx=10, pady=10)
+        self.savedSettingsStatusLabel = tk.Label(self, text="No previously saved settings, safe to choose")
+        if parent.master.hasProfile:
+            self.savedSettingsStatusLabel.configure(text="There are pre-existing saved settings for the imported file, saving will override and clear current settings.")
+            self.saveButton.configure(text="Overwrite Save & Exit")
+
+        self.savedSettingsStatusLabel.pack(padx=10, pady=10)
+        self.menuButtonsFrame.pack(padx=10, pady=10)
 
     def saveButtonCallback(self):
         globals.printerTypeSelected = self.printerTypeCombobox.current() #Set printer type global value
@@ -412,8 +418,14 @@ class ConversionSettingsFrame(tk.Frame):
         
         #TODO - Add more checks if needed
         self.saveSuccess = True
+        
+        # Close window after saving
+        self.master.destroy()
 
-        #TODO - Close window after saving? - Change to "Save and Exit"
+    def cancelButtonCallback(self):
+        # Close window without saving
+        globals.writeStatusQueue("Conversion Settings Not Saved (Cancelled)")
+        self.master.destroy()
 
 
 def queueLoop(rootObject):

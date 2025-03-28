@@ -20,51 +20,52 @@ Follow the following procedure to manually test GUI functionality. The steps are
 9. Check that the Import Filepath is accurately reflected on the main menu.
 10. Click on the Conversion Settings Button.
 11. Select Printer Type.
-12. Close the Conversion Settings Window WITHOUT SAVING.
-13. Check the following:
+12. Click on the Cancel Button.
+13. Check that a status message appears: "Conversion Settings Not Saved (Cancelled)"
+14. Check the following:
     - Select Import File Button is INTERACTABLE
     - Conversion Settings Button is NOT INTERACTABLE
     - Printer Parameters Button is NOT INTERACTABLE
     - Set Export Destination Button is NOT INTERACTABLE
     - Start Conversion Button is NOT INTERACTABLE
-14. Click on the Conversion Settings Button.
-15. Select Printer Type.
-16. Click Save.
-17. Check that a status message appears: "Conversion Settings Saved" with the corresponding settings that were set. 
-18. Close the Conversion Settings Window.
-19. Check the following:
+15. Click on the Conversion Settings Button.
+16. Select Printer Type.
+17. Click Save & Exit.
+18. Check that a status message appears: "Conversion Settings Saved" with the corresponding settings that were set. 
+19. Close the Conversion Settings Window.
+20. Check the following:
     - Conversion Settings Button is INTERACTABLE
     - Printer Parameters Button is INTERACTABLE
     - Select Import File Button is INTERACTABLE
     - Set Export Destination Button is INTERACTABLE
     - Start Conversion Button is NOT INTERACTABLE
-20. Click on the Printer Parameters Button. (Possibly more thorough testing steps needed.)
-21. Select and Save Applicable Printer Parameters.
-22. Close Printer Parameters Window.
-23. Check the following:
+21. Click on the Printer Parameters Button. (Possibly more thorough testing steps needed.)
+22. Select and Save Applicable Printer Parameters.
+23. Close Printer Parameters Window.
+24. Check the following:
     - Conversion Settings Button is INTERACTABLE
     - Printer Parameters Button is INTERACTABLE
     - Select Import File Button is INTERACTABLE
     - Set Export Destination Button is INTERACTABLE
     - Start Conversion Button is NOT INTERACTABLE
-24. Click Set Export Destination Button.
-25. Cancel Folder Selection.
-26. Check that a status message appears: "Set Export Destination: Cancelled"
-27. Check the following:
+25. Click Set Export Destination Button.
+26. Cancel Folder Selection.
+27. Check that a status message appears: "Set Export Destination: Cancelled"
+28. Check the following:
     - Conversion Settings Button is INTERACTABLE
     - Printer Parameters Button is INTERACTABLE
     - Select Import File Button is INTERACTABLE
     - Set Export Destination Button is INTERACTABLE
     - Start Conversion Button is NOT INTERACTABLE
-28. Click Set Export Destination Button.
-29. Select Destination Folder.
-30. Check that a status message appears: "Set Export Destination: Successful"
-31. Check the following:
+29. Click Set Export Destination Button.
+30. Select Destination Folder.
+31. Check that a status message appears: "Set Export Destination: Successful"
+32. Check the following:
     - Conversion Settings Button is INTERACTABLE
     - Printer Parameters Button is INTERACTABLE
     - Select Import File Button is INTERACTABLE
     - Set Export Destination Button is INTERACTABLE
     - Start Conversion Button is INTERACTABLE
-32. Check that the Export Filepath is accurately reflected on the main menu.
-33. Click Start Conversion Button.
-34. Check that the Conversion Process is executed with appropriate status messages.
+33. Check that the Export Filepath is accurately reflected on the main menu.
+34. Click Start Conversion Button.
+35. Check that the Conversion Process is executed with appropriate status messages.
