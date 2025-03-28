@@ -15,10 +15,41 @@ import guiRoot
 import tkinter as tk
 import applicationGlobals as globals
 
+'''
+Helper function to easily test different strings
+for testing internally, when writing directly to status within the GUI, set internal to true
+for testing with the status queue, set internal to false
+'''
+def testStatusWithString(testString, guiRootObject, internal):
+    guiRootObject.clearStatus()
+
+    match (internal):
+        case True:
+            guiRootObject.writeStatus(testString)
+            
+        case False:
+            globals.writeStatusQueue(testString)
+            guiRoot.queueLoop(guiRootObject) # Have to "artificially" loop through queue
+        case _:
+            raise ValueError("Invalid Value for \"internal\"")
+    
+    testStartIndex = len(testString) * -1
+
+    receivedString = guiRootObject.statusTextArea.get("1.0", tk.END).strip()    # Get string from status area, remove whitespace(including newline characters)
+    receivedString = receivedString[testStartIndex:]                            # Extract only the target string
+
+    assert  testString == receivedString # Check
+
 class TestGuiRoot(unittest.TestCase):
     def setUp(self):
         self.guiRootObj = guiRoot.GuiRoot()
-
+        self.testStringList = ["TEST1", "TEST2", "Alphabetical Characters", "Numbers 0123456789", "Special Characters `~!@#$%^&*()_+"]
+        guiRoot.queueLoop(self.guiRootObj)
+        self.guiRootObj.clearStatus()
+    
+    '''
+    Test Select Import File Button
+    '''
     def test_Import(self):
         importMock = mock.Mock()
 
@@ -28,6 +59,9 @@ class TestGuiRoot(unittest.TestCase):
         
         importMock.assert_called()
     
+    '''
+    Test Set Export Destination Button
+    '''
     def test_Export(self):
         exportMock = mock.Mock()
 
@@ -37,6 +71,9 @@ class TestGuiRoot(unittest.TestCase):
         
         exportMock.assert_called()
 
+    '''
+    Test Conversion Settings Button
+    '''
     def test_ConvSettings(self):
         convSettingsMock = mock.Mock()
 
@@ -45,7 +82,10 @@ class TestGuiRoot(unittest.TestCase):
         self.guiRootObj.conversionSettings.invoke()
         
         convSettingsMock.assert_called()
-
+    
+    '''
+    Test Start Conversion Button
+    '''
     def test_StartConv(self):
         startConvMock = mock.Mock()
 
@@ -54,45 +94,20 @@ class TestGuiRoot(unittest.TestCase):
         self.guiRootObj.startConvButton.invoke()
         
         startConvMock.assert_called()
-    
+
+    '''
+    Test the internal writeStatus() function
+    '''
     def test_WriteStatus(self):
-        self.guiRootObj.clearStatus()
-        self.guiRootObj.writeStatus("Alphabetical Characters")
-        assert self.guiRootObj.statusTextArea.get("1.0", tk.END)[11:] == "Alphabetical Characters\n\n"
+        for string in self.testStringList:
+            testStatusWithString(string, self.guiRootObj, internal=True)
 
-        self.guiRootObj.clearStatus()
-        self.guiRootObj.writeStatus("Numbers 0123456789")
-        assert self.guiRootObj.statusTextArea.get("1.0", tk.END)[11:] == "Numbers 0123456789\n\n"
-
-        self.guiRootObj.clearStatus()
-        self.guiRootObj.writeStatus("Special Characters `~!@#$%^&*()_+")
-        assert self.guiRootObj.statusTextArea.get("1.0", tk.END)[11:] == "Special Characters `~!@#$%^&*()_+\n\n"
-
+    '''
+    Test writing to the status area via the status queue
+    '''
     def test_StatusQueue(self):
-        self.guiRootObj.clearStatus()
-        globals.writeStatusQueue("TEST1")
-        guiRoot.queueLoop(self.guiRootObj) # Have to "artificially" loop through queue 
-        assert self.guiRootObj.statusTextArea.get("1.0", tk.END)[11:] == "TEST1\n\n"
-
-        self.guiRootObj.clearStatus()
-        globals.writeStatusQueue("TEST2")
-        guiRoot.queueLoop(self.guiRootObj)
-        assert self.guiRootObj.statusTextArea.get("1.0", tk.END)[11:] == "TEST2\n\n"
-
-        self.guiRootObj.clearStatus()
-        globals.writeStatusQueue("Alphabetical Characters")
-        guiRoot.queueLoop(self.guiRootObj)
-        assert self.guiRootObj.statusTextArea.get("1.0", tk.END)[11:] == "Alphabetical Characters\n\n"
-
-        self.guiRootObj.clearStatus()
-        globals.writeStatusQueue("Numbers 0123456789")
-        guiRoot.queueLoop(self.guiRootObj)
-        assert self.guiRootObj.statusTextArea.get("1.0", tk.END)[11:] == "Numbers 0123456789\n\n"
-
-        self.guiRootObj.clearStatus()
-        globals.writeStatusQueue("Special Characters `~!@#$%^&*()_+")
-        guiRoot.queueLoop(self.guiRootObj)
-        assert self.guiRootObj.statusTextArea.get("1.0", tk.END)[11:] == "Special Characters `~!@#$%^&*()_+\n\n"
+        for string in self.testStringList:
+            testStatusWithString(string, self.guiRootObj, internal=False)
 
 if __name__ == "__main__":
     unittest.main()
