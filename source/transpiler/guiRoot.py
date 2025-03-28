@@ -224,8 +224,7 @@ class GuiRoot(tk.Tk):
                 EXPORT_FILE_TYPES_LIST.insert(0, ACSPL_FILE_TYPE)
 
         # Opens a dialog for user to set a filename and path for export
-        # filepath = filedialog.asksaveasfilename(filetypes = EXPORT_FILE_TYPES_LIST, defaultextension = EXPORT_FILE_TYPES_LIST[0])
-        filepath = filedialog.askdirectory()
+        filepath = filedialog.asksaveasfilename(filetypes = EXPORT_FILE_TYPES_LIST, defaultextension = EXPORT_FILE_TYPES_LIST[0])
         
         # User cancels setting export destination
         # If the user clicks the cancel button, an empty string is returned
@@ -426,7 +425,6 @@ def queueLoop(rootObject):
             break
     rootObject.after(QUEUE_LOOP_RATE, queueLoop, rootObject)
 
-#TODO - Fill out for conversion process, to be called when pressing start conversion button
 def conversionProcess(file_path, parameters, printer_type):
     parser = GenericParser(file_path)
     parsed_commands = parser.parse_commands()

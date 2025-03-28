@@ -49,19 +49,13 @@ class ToolpathExporter:
         """
         if not self.validate_toolpath(toolpath):
             return "Error: Invalid toolpath."
-        
-        if not os.path.isdir(self.export_path):
-            return "Error: Export path does not exist."
-
-        file_extension = self.supported_formats.get(self.printer_type, ".txt")
-        file_name = os.path.join(self.export_path, f"exported_toolpath{file_extension}")
 
         try:
-            with open(file_name, "w", encoding="utf-8") as file:
+            with open(self.export_path, "w", encoding="utf-8") as file:
                 for line in toolpath:
                     file.write(line + "\n")
-            writeStatusQueue(f"Export successful: {file_name}")
-            return f"Export successful: {file_name}"
+            writeStatusQueue(f"Export successful: {self.export_path}")
+            return f"Export successful: {self.export_path}"
         except Exception as e:
             writeStatusQueue(f"Error: {str(e)}")
             return f"Error: {str(e)}"
