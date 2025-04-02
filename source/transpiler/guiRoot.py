@@ -272,7 +272,8 @@ class GuiRoot(tk.Tk):
             elif globals.printerTypeSelected == 1:
                 self.params = OptomecParameters()
             
-            convSettingsFrame.saveSuccess = False # Reset
+            #TODO - if export_path != None, "change" extension of filepath
+            convSettingsFrame.saveSuccess = False # Reset save flag
 
     '''
     Function that is called when the "Printer Parameter" button is clicked
@@ -403,7 +404,7 @@ class ConversionSettingsFrame(tk.Frame):
         #relates to if there are previously saved params or not
         self.savedSettingsStatusLabel = tk.Label(self, text="No previously saved settings, safe to choose")
         if parent.master.hasProfile:
-            self.savedSettingsStatusLabel.configure(text="There are pre-existing saved settings for the imported file, saving will override and clear current settings.")
+            self.savedSettingsStatusLabel.configure(text="There are pre-existing saved settings for the imported file, saving will override and clear current settings/printer parameters.")
             self.saveButton.configure(text="Overwrite Save & Exit")
 
         self.savedSettingsStatusLabel.pack(padx=10, pady=10)
