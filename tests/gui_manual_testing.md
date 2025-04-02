@@ -24,7 +24,7 @@ Follow the following procedure to manually test GUI functionality. The steps are
 13. Check that a status message appears: "Conversion Settings Not Saved (Cancelled)"
 14. Check the following:
     - Select Import File Button is INTERACTABLE
-    - Conversion Settings Button is NOT INTERACTABLE
+    - Conversion Settings Button is INTERACTABLE
     - Printer Parameters Button is NOT INTERACTABLE
     - Set Export Destination Button is NOT INTERACTABLE
     - Start Conversion Button is NOT INTERACTABLE
@@ -34,9 +34,9 @@ Follow the following procedure to manually test GUI functionality. The steps are
 18. Check that a status message appears: "Conversion Settings Saved" with the corresponding settings that were set. 
 19. Close the Conversion Settings Window.
 20. Check the following:
+    - Select Import File Button is INTERACTABLE
     - Conversion Settings Button is INTERACTABLE
     - Printer Parameters Button is INTERACTABLE
-    - Select Import File Button is INTERACTABLE
     - Set Export Destination Button is INTERACTABLE
     - Start Conversion Button is NOT INTERACTABLE
 21. Click on the Printer Parameters Button. (Possibly more thorough testing steps needed.)
