@@ -1,5 +1,5 @@
 """
-Author: Isaiah Amir Saclayan
+Author: Isaiah Amir Saclayan and Andrew Viola
 Created: 1/29/25
 File: toolpathConverter.py
 Description: Parent class for toolpath conversion
