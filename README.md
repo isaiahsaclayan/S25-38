@@ -1,4 +1,5 @@
-# S25-38
+# S25-38, Transpiler
+**Developers:** Isaiah Amir Saclayan, Alvin Chung, Andrew Viola, Theo Barrett-Johnson, John Otooni, Bozhidar Dimov
 
 # User Manual
 
