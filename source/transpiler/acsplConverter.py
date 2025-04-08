@@ -167,7 +167,7 @@ class Machine:
         """
         self._done = done
 
-    def set_axis_registers(self, x: any, y: any, z: any, a: any = 0.0, b: any = 0.0) -> None:
+    def set_axis_registers(self, x: any, y: any, z: any, a: any, b: any) -> None:
         """
         Set the axis registers for the machine
         :param x: desired location for x-axis
