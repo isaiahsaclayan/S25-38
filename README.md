@@ -1,4 +1,5 @@
-# S25-38
+# S25-38, Transpiler
+**Developers:** Isaiah Amir Saclayan, Alvin Chung, Andrew Viola, Theo Barrett-Johnson, John Otooni, Bozhidar Dimov
 
 # User Manual
 
@@ -16,12 +17,9 @@ Ensure you have the neccessary requirements installed. Navigate to the project r
 5. Click `Set Export Destination` to select the directory and name of the generated transpiled file.
 6. Click `Start Conversion`.
 7. Observe the status window for any errors and feedback during the conversion process.
-8. If successful, view obtained transpiled file in the previously selected directory in step 3.    
+8. If successful, view obtained transpiled file in the previously selected directory in step 5.    
 
----
-# Developer Notes
-
-## To run via terminal
+## How to Run the Transpiler via Command Line
 
 Navigate to the project root, then execute the following command.
 ``` bash
@@ -34,6 +32,18 @@ Navigate to sources directory.
 ``` bash
     python .\transpiler\
 ```
+
+## How to Build the Executable (.exe)
+1. Open a terminal.
+2. Navigate to the project root.
+3. Execute the batch file `generate-exe.bat`.
+4. Wait for the process to complete. Ensure a successful build is indicated in the terminal.
+5. Navigate to the `\build\output` directory.
+6. Locate the `transpiler.exe` file.
+
+---
+# Developer Notes
+
 
 ## Structure Notes
 `/source/transpiler/__main__.py` is the main entry point of the program.  

@@ -1,3 +1,10 @@
+"""
+Author: Isaiah Amir Saclayan
+Created: 02/01/2025
+File: acsplConverter.py
+Description: Performs generic toolpath to ACSPL conversion.
+"""
+
 from toolpathConverter import ToolpathConverter
 from applicationGlobals import notify_and_log
 from typing import List
