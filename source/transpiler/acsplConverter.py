@@ -174,7 +174,7 @@ class Machine:
         """
         self._done = done
 
-    def set_axis_registers(self, x: any, y: any, z: any, a: any = 0.0, b: any = 0.0) -> None:
+    def set_axis_registers(self, x: any, y: any, z: any, a: any, b: any) -> None:
         """
         Set the axis registers for the machine
         :param x: desired location for x-axis
@@ -340,13 +340,16 @@ class AcsplConverter(ToolpathConverter):
 
         # If the command is a move command
         elif command == "move":
-            # TODO: Extend to support 5 axis
 
             # Classify the type of move command
             # If not dispensing, the ACSPL movement is "PTP"
             if not self.machine.is_dispensing:
                 # Set the location registers for the machine to store desired location
-                self.machine.set_axis_registers(params["x"], params["y"], params["z"])
+                self.machine.set_axis_registers(params["x"],
+                                                params["y"],
+                                                params["z"],
+                                                params.get("a", 0.0),
+                                                params.get("b", 0.0))
                 # Format and append the PTP command
                 self._format_and_append_command("PTP", "EV")
                 return
@@ -358,7 +361,11 @@ class AcsplConverter(ToolpathConverter):
                 # Set the machine to be in printing segment
                 self.machine.in_printing_segment = True
                 # Set the location registers for the machine to store desired location
-                self.machine.set_axis_registers(params["x"], params["y"], params["z"])
+                self.machine.set_axis_registers(params["x"],
+                                                params["y"],
+                                                params["z"],
+                                                params.get("a", 0.0),
+                                                params.get("b", 0.0))
                 # Format and append the LINE command
                 self._format_and_append_command("LINE", "V")
                 return
@@ -366,7 +373,11 @@ class AcsplConverter(ToolpathConverter):
             # If dispensing, the ACSPL movement is "LINE"
             elif self.machine.in_printing_segment:
                 # Set the location registers for the machine to store desired location
-                self.machine.set_axis_registers(params["x"], params["y"], params["z"])
+                self.machine.set_axis_registers(params["x"],
+                                                params["y"],
+                                                params["z"],
+                                                params.get("a", 0.0),
+                                                params.get("b", 0.0))
                 # Format and append the LINE command
                 self._format_and_append_command("LINE", "V")
                 return
@@ -395,7 +406,11 @@ class AcsplConverter(ToolpathConverter):
         # If the command is an arc command
         elif command == "arc":
             # Set the location registers for the machine to store desired location
-            self.machine.set_axis_registers(params["x"], params["y"], params["z"])
+            self.machine.set_axis_registers(params["x"],
+                                            params["y"],
+                                            params["z"],
+                                            params.get("a", 0.0),
+                                            params.get("b", 0.0))
             # Format and append the ARC command
             self._format_and_append_command("ARC")
 
