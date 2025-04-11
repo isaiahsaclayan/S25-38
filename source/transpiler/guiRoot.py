@@ -206,6 +206,10 @@ class GuiRoot(tk.Tk):
                     self.params = OptomecParameters()
                 self.params.params = jdata[1]
                 self.hasProfile = True
+
+                self.printParams.configure(state="normal")
+                self.exportFileButton.configure(state="normal")
+
             except (KeyError, json.decoder.JSONDecodeError):
                 self.writeStatus("No existing parameter profile")
                 print("No existing parameter profile")
@@ -218,7 +222,6 @@ class GuiRoot(tk.Tk):
             self.hasProfile = False
 
         self.conversionSettings.configure(state="normal")
-        self.exportFileButton.configure(state="normal")
 
     '''
     Function that is called when the "Set Export Destination" button is clicked
@@ -271,10 +274,11 @@ class GuiRoot(tk.Tk):
         convSettingsWindow.wait_window()
         convSettingsWindow.grab_release() # Re-enables inputs into main menu while this window is open
 
-        self.printParams.configure(state="normal") #enable the params menu, eve if it was only clicked but not saved
         if(convSettingsFrame.saveSuccess): # Check if the save button was actually pressed
-            convSettingsFrame.saveSuccess = False # Reset save flag
+            self.printParams.configure(state="normal")
+            self.exportFileButton.configure(state="normal")
 
+            convSettingsFrame.saveSuccess = False # Reset save flag
             #save/set which parameter type after window is closed
             #only do this if they intentionally press the button rather than close out after seeing warning
             # "change" extension of filepath if it already exists
@@ -298,6 +302,7 @@ class GuiRoot(tk.Tk):
             if(extensionIndex > 0):
                 self.export_path = self.export_path[0:extensionIndex] + newExtension
                 self.setExportFilepathDisplay(self.export_path)
+            
 
     '''
     Function that is called when the "Printer Parameter" button is clicked
@@ -361,7 +366,6 @@ class GuiRoot(tk.Tk):
     '''
     def startConversionButtonCallback(self):
     
-        #TODO - Add checks if needed
         conversionAllowed = True
 
         if(self.import_path == None):
@@ -441,7 +445,6 @@ class ConversionSettingsFrame(tk.Frame):
         globals.writeStatusQueue("Conversion Settings Saved")
         globals.writeStatusQueue("Set Printer Type: " + selectedPrinter)
         
-        #TODO - Add more checks if needed
         self.saveSuccess = True
         
         # Close window after saving
