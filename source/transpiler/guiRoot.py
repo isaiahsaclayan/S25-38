@@ -22,6 +22,7 @@ import json
 WINDOW_TITLE = "S25-38"  # TODO - Provide suitable titles
 MENU_TITLE = "S25-38 Machine Instruction Converter"
 GUI_WINDOW_SIZE = "800x400"
+TOOLPATH_PREVIEW_WINDOW_SIZE = "800x800"
 
 QUEUE_LOOP_RATE = 100
 
@@ -97,6 +98,11 @@ class GuiRoot(tk.Tk):
 
         self.exportFrame.pack(anchor="w", padx=5, pady=5, fill="x")
 
+        # Preview Toolpath Option
+        self.previewCheckValue = tk.IntVar()
+        self.previewCheck = tk.Checkbutton(self, text="Preview Toolpath", variable=self.previewCheckValue)
+        self.previewCheck.pack()
+
         # Start Conversion Button
         self.startConvButton = tk.Button(self, text="Start Conversion", command=self.startConversionButtonCallback)
         self.startConvButton.pack(anchor="center", padx=5, pady=5)
@@ -109,9 +115,9 @@ class GuiRoot(tk.Tk):
 
         # Status Text Area
         self.statusTextArea = tk.Text(self.statusFrame, wrap=tk.WORD)
-        self.statusTextArea.pack(anchor="w", fill="both", expand=True)
+        self.statusTextArea.pack(side="left", anchor="w", fill="both", expand=True)
 
-        self.statusTextAreaScrollbar = tk.Scrollbar(self.statusTextArea, command=self.statusTextArea.yview)
+        self.statusTextAreaScrollbar = tk.Scrollbar(self.statusFrame, command=self.statusTextArea.yview)
         self.statusTextAreaScrollbar.pack(side="right", fill="y")
 
         self.statusTextArea['yscrollcommand'] = self.statusTextAreaScrollbar.set
@@ -265,7 +271,6 @@ class GuiRoot(tk.Tk):
         self.eval("tk::PlaceWindow {} center".format(str(convSettingsWindow)))
 
         convSettingsWindow.title("Conversion Settings")
-    
         convSettingsWindow.resizable(False, False)
 
         convSettingsFrame = ConversionSettingsFrame(convSettingsWindow)
@@ -384,7 +389,27 @@ class GuiRoot(tk.Tk):
             
             # Obtained converted data
             converted_paths = conversionProcess(self.import_path, self.params, printer_type)
-            
+
+            # Check if preview option selected
+
+            if(self.previewCheckValue.get()):
+                toolpathPreviewWindow = tk.Toplevel()
+                toolpathPreviewWindow.grab_set()
+                self.eval("tk::PlaceWindow {} center".format(str(toolpathPreviewWindow)))
+                toolpathPreviewWindow.geometry(TOOLPATH_PREVIEW_WINDOW_SIZE)
+
+                toolpathPreviewWindow.title("Toolpath Preview")
+
+                previewFrame = ToolpathPreviewFrame(toolpathPreviewWindow, converted_paths)
+                previewFrame.pack(padx=5, pady=5, fill="both", expand=True)
+
+                toolpathPreviewWindow.wait_window()
+                toolpathPreviewWindow.grab_release()
+
+                if(previewFrame.cancelExport):
+                    self.writeStatus("Export Cancelled")
+                    return
+                
             if converted_paths == -1:
                 self.writeStatus("Conversion Failed")
             else:
@@ -455,6 +480,47 @@ class ConversionSettingsFrame(tk.Frame):
         globals.writeStatusQueue("Conversion Settings Not Saved (Cancelled)")
         self.master.destroy()
 
+class ToolpathPreviewFrame(tk.Frame):
+    def __init__(self, parent, toolpath):
+        super().__init__(parent)
+
+        self.cancelExport = False
+
+        self.titleLabel = tk.Label(self, text="Toolpath Preview")
+        self.titleLabel.pack(padx=10, pady=10, anchor="w")
+
+        self.buttonsFrame = tk.Frame(self)
+
+        self.continueButton = tk.Button(self.buttonsFrame, text="Continue Export", command=self.continueButtonCallback)
+        self.continueButton.pack(padx=5, pady=5, side="left")
+
+        self.cancelButton = tk.Button(self.buttonsFrame, text="Cancel Export", command=self.cancelButtonCallback)
+        self.cancelButton.pack(padx=5, pady=5, side="left")
+
+        self.buttonsFrame.pack(anchor="w")
+
+        self.textFrame = tk.Frame(self)
+
+        self.textArea = tk.Text(self.textFrame, wrap="none")
+        self.textArea.pack(side="left", anchor="w", fill="both", expand=True)
+        
+        self.textAreaScrollbar = tk.Scrollbar(self.textFrame, command=self.textArea.yview)
+        self.textAreaScrollbar.pack(side="right", fill="y")
+        self.textFrame.pack(padx=5, pady=5, fill="both", expand=True)
+
+        self.textArea['yscrollcommand'] = self.textAreaScrollbar.set
+
+        for line in toolpath:
+            self.textArea.insert(tk.END, line + "\n")
+
+        self.textArea.configure(state="disabled")
+
+    def continueButtonCallback(self):
+        self.master.destroy()
+
+    def cancelButtonCallback(self):
+        self.cancelExport = True
+        self.master.destroy()
 
 def queueLoop(rootObject):
     while True:
