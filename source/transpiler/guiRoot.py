@@ -26,9 +26,12 @@ GUI_WINDOW_SIZE = "800x400"
 QUEUE_LOOP_RATE = 100
 
 # File Types
+NSCRYPT_EXTENSION = ".nff"
+ACSPL_EXTENSION = ".prg"
+
 CREO_FILE_TYPE = ("Creo Toolpath Files", '*.ncl.1')
-NSCRYPT_FILE_TYPE = ("nScrypt GCODE Files", '*.nff')
-ACSPL_FILE_TYPE = ("ACSPL Files", '*.prg')
+NSCRYPT_FILE_TYPE = ("nScrypt GCODE Files", '*' + NSCRYPT_EXTENSION)
+ACSPL_FILE_TYPE = ("ACSPL Files", '*' + ACSPL_EXTENSION)
 IMPORT_FILE_TYPES_LIST = [CREO_FILE_TYPE, ("All files", "*.*")]
 EXPORT_FILE_TYPES_LIST = [("All files", "*.*")]
 
@@ -134,6 +137,18 @@ class GuiRoot(tk.Tk):
         self.statusTextArea.delete("1.0", tk.END)
         self.statusTextArea.configure(state="disabled")
 
+    def setImportFilepathDisplay(self, filepath):
+        self.importFilepathEntry.configure(state="normal")
+        self.importFilepathEntry.delete(0, tk.END)
+        self.importFilepathEntry.insert(tk.END, filepath)
+        self.importFilepathEntry.configure(state="readonly")
+
+    def setExportFilepathDisplay(self, filepath):
+        self.exportFilepathEntry.configure(state="normal")
+        self.exportFilepathEntry.delete(0, tk.END)
+        self.exportFilepathEntry.insert(tk.END, filepath)
+        self.exportFilepathEntry.configure(state="readonly")
+
     '''
     Function that is called when the "Select Import File" button is clicked
     '''
@@ -166,11 +181,7 @@ class GuiRoot(tk.Tk):
 
                 self.import_path = filepath # Store import filepath
                 self.importFilename = filepath #used for params subsystem
-                
-                self.importFilepathEntry.configure(state="normal")
-                self.importFilepathEntry.delete(0, tk.END)
-                self.importFilepathEntry.insert(tk.END, filepath)
-                self.importFilepathEntry.configure(state="readonly")
+                self.setImportFilepathDisplay(filepath)
 
                 self.writeStatus("Select Import File Successful")
 
@@ -235,10 +246,7 @@ class GuiRoot(tk.Tk):
         else:
             self.export_path = filepath # Store export filepath
 
-            self.exportFilepathEntry.configure(state="normal")
-            self.exportFilepathEntry.delete(0, tk.END)
-            self.exportFilepathEntry.insert(tk.END, filepath)
-            self.exportFilepathEntry.configure(state="readonly")
+            self.setExportFilepathDisplay(filepath)
 
             self.writeStatus("Set Export Destination Successful")
 
@@ -265,15 +273,31 @@ class GuiRoot(tk.Tk):
 
         self.printParams.configure(state="normal") #enable the params menu, eve if it was only clicked but not saved
         if(convSettingsFrame.saveSuccess): # Check if the save button was actually pressed
+            convSettingsFrame.saveSuccess = False # Reset save flag
+
             #save/set which parameter type after window is closed
             #only do this if they intentionally press the button rather than close out after seeing warning
-            if globals.printerTypeSelected == 0:
-                self.params = NscryptParameters()
-            elif globals.printerTypeSelected == 1:
-                self.params = OptomecParameters()
-            
-            #TODO - if export_path != None, "change" extension of filepath
-            convSettingsFrame.saveSuccess = False # Reset save flag
+            # "change" extension of filepath if it already exists
+            extensionIndex = -1
+            newExtension = ""
+            if (self.export_path != None):
+                extensionIndex = self.export_path.rfind(".")
+
+            match globals.printerTypeSelected:
+                case globals.PrinterType.NSCRYPT:
+                    self.params = NscryptParameters()
+                    newExtension = NSCRYPT_EXTENSION
+
+                case globals.PrinterType.OPTOMEC:
+                    self.params = OptomecParameters()
+                    newExtension = ACSPL_EXTENSION
+
+                case _:
+                    raise ValueError("Invalid Printer Type Selected")
+                
+            if(extensionIndex > 0):
+                self.export_path = self.export_path[0:extensionIndex] + newExtension
+                self.setExportFilepathDisplay(self.export_path)
 
     '''
     Function that is called when the "Printer Parameter" button is clicked
