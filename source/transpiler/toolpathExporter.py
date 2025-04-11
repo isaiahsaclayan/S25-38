@@ -54,8 +54,6 @@ class ToolpathExporter:
             with open(self.export_path, "w", encoding="utf-8") as file:
                 for line in toolpath:
                     file.write(line + "\n")
-            writeStatusQueue(f"Export successful: {self.export_path}")
             return f"Export successful: {self.export_path}"
         except Exception as e:
-            writeStatusQueue(f"Error: {str(e)}")
             return f"Error: {str(e)}"
