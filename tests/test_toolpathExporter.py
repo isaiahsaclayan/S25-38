@@ -1,7 +1,5 @@
 import unittest
 import os
-import tempfile
-
 import sys
 
 # Get absolute path to the source/transpiler directory
@@ -11,42 +9,44 @@ from toolpathExporter import ToolpathExporter
 
 class TestToolpathExporter(unittest.TestCase):
     def setUp(self):
-        self.export_path = "test_exports"
-        self.exporter = ToolpathExporter(self.export_path, "nScrypt")
-        os.makedirs(self.export_path, exist_ok=True)
+        self.tempDir = "tempDir"
+        os.makedirs(self.tempDir, exist_ok=True)
 
     def tearDown(self):
         # Cleanup exported files after each test
-        for file in os.listdir(self.export_path):
-            os.remove(os.path.join(self.export_path, file))
-        os.rmdir(self.export_path)
+        for file in os.listdir(self.tempDir):
+            os.remove(os.path.join(self.tempDir, file))
+        os.rmdir(self.tempDir)
 
     def test_export_success(self):
         """Test exporting a valid toolpath for nScrypt"""
+        filepath = self.tempDir + "/exported_toolpath.nff"
+        exporter = ToolpathExporter(filepath, "nScrypt")
         toolpath_data = ["MOVE X10 Y10 Z5 F300", "SET SPEED 100", ""]  # Includes empty line
-        result = self.exporter.export(toolpath_data)
+        result = exporter.export(toolpath_data)
         self.assertIn("Export successful", result)
 
-        file_path = os.path.join(self.export_path, "exported_toolpath.nff")
-        with open(file_path, "r", encoding="utf-8") as file:
+        with open(filepath, "r", encoding="utf-8") as file:
             content = file.read().splitlines()
         self.assertEqual(content, toolpath_data)  # Ensure file contents match exactly
 
     def test_export_acspl_success(self):
         """Test exporting a valid ACSPL toolpath for Optomec"""
-        exporter = ToolpathExporter(self.export_path, "Optomec")
+        filepath = self.tempDir + "/exported_toolpath.prg"
+        exporter = ToolpathExporter(filepath, "Optomec")
         toolpath_data = ["!Machine Type - Optomec 5-axis Aerosol Jet", "XSEG/A (10,11,12,14,15)", ""]
         result = exporter.export(toolpath_data)
         self.assertIn("Export successful", result)
 
-        file_path = os.path.join(self.export_path, "exported_toolpath.prg")
-        with open(file_path, "r", encoding="utf-8") as file:
+        with open(filepath, "r", encoding="utf-8") as file:
             content = file.read().splitlines()
         self.assertEqual(content, toolpath_data)
 
     def test_export_empty_toolpath(self):
         """Test exporting an empty toolpath, which should fail"""
-        result = self.exporter.export([])
+        filepath = self.tempDir + "/test_empty.nff"
+        exporter = ToolpathExporter(filepath, "nScrypt")
+        result = exporter.export([])
         self.assertIn("Error", result)
 
     def test_export_no_export_path(self):

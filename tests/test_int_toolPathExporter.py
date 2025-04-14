@@ -12,17 +12,16 @@ from acsplConverter import AcsplConverter
 
 class TestIntegrationToolpathExporter(unittest.TestCase):
     def setUp(self):
-        self.export_path = "test_exports"
-        self.gui = GuiRoot()
+        self.tempDir = "tempDir"
         self.nscrypt_converter = NscryptConverter()
         self.acspl_converter = AcsplConverter()
-        os.makedirs(self.export_path, exist_ok=True)
+        os.makedirs(self.tempDir, exist_ok=True)
 
     def tearDown(self):
-        if os.path.exists(self.export_path):
-            for file in os.listdir(self.export_path):
-                os.remove(os.path.join(self.export_path, file))
-            os.rmdir(self.export_path)
+        if os.path.exists(self.tempDir):
+            for file in os.listdir(self.tempDir):
+                os.remove(os.path.join(self.tempDir, file))
+            os.rmdir(self.tempDir)
 
     # def test_export_includes_machine_parameters(self):
     #     """Test if ToolpathExporter integrates machine parameters correctly."""
@@ -55,14 +54,15 @@ class TestIntegrationToolpathExporter(unittest.TestCase):
         toolpath_data = [{"move": {"x": 10, "y": 10, "z": 5}}]
         converted_data = self.nscrypt_converter.translate(toolpath_data)
         
-        exporter = ToolpathExporter(self.export_path, "nScrypt")
+        filepath = self.tempDir + "/exported_toolpath.nff"
+        exporter = ToolpathExporter(filepath, "nScrypt")
         result = exporter.export(converted_data)
         self.assertIn("Export successful", result)
 
-        output_files = os.listdir(self.export_path)
+        output_files = os.listdir(self.tempDir)
         self.assertGreater(len(output_files), 0)
         
-        with open(os.path.join(self.export_path, output_files[0]), "r") as f:
+        with open(os.path.join(self.tempDir, output_files[0]), "r") as f:
             content = f.read()
             self.assertIn("10.0 10.0 5.0 0.0 0.0", content)
 
@@ -87,14 +87,15 @@ class TestIntegrationToolpathExporter(unittest.TestCase):
         toolpath_data = [{"move": {"x": 20, "y": 30, "z": 10}}]
         converted_data = self.nscrypt_converter.translate(toolpath_data)
         
-        exporter = ToolpathExporter(self.export_path, "nScrypt")
+        filepath = self.tempDir + "/exported_toolpath.nff"
+        exporter = ToolpathExporter(filepath, "nScrypt")
         result = exporter.export(converted_data)
         self.assertIn("Export successful", result)
 
-        output_files = os.listdir(self.export_path)
+        output_files = os.listdir(self.tempDir)
         self.assertGreater(len(output_files), 0)
         
-        with open(os.path.join(self.export_path, output_files[0]), "r") as f:
+        with open(os.path.join(self.tempDir, output_files[0]), "r") as f:
             content = f.read()
             self.assertIn("20.0 30.0 10.0 0.0 0.0", content)
 

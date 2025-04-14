@@ -20,15 +20,26 @@ from toolpathExporter import ToolpathExporter  # Import ToolpathExporter
 import json
 
 WINDOW_TITLE = "S25-38"  # TODO - Provide suitable titles
-MENU_TITLE = "S25-38 Machine Instruction Converter"
-GUI_WINDOW_SIZE = "800x400"
+MENU_TITLE = "S25-38 Toolpath Converter"
 
+GUI_WINDOW_SIZE = "800x400"
+GUI_MIN_WIDTH = 400
+GUI_MIN_HEIGHT = 300
+
+TOOLPATH_PREVIEW_WINDOW_SIZE = "900x800"
+TOOLPATH_PREVIEW_WINDOW_MIN_WIDTH = 400
+TOOLPATH_PREVIEW_WINDOW_MIN_HEIGHT = 400
+
+# Controls how often the status queue is checked in milliseconds
 QUEUE_LOOP_RATE = 100
 
 # File Types
+NSCRYPT_EXTENSION = ".nff"
+ACSPL_EXTENSION = ".prg"
+
 CREO_FILE_TYPE = ("Creo Toolpath Files", '*.ncl.1')
-NSCRYPT_FILE_TYPE = ("nScrypt GCODE Files", '*.nff')
-ACSPL_FILE_TYPE = ("ACSPL Files", '*.prg')
+NSCRYPT_FILE_TYPE = ("nScrypt GCODE Files", '*' + NSCRYPT_EXTENSION)
+ACSPL_FILE_TYPE = ("ACSPL Files", '*' + ACSPL_EXTENSION)
 IMPORT_FILE_TYPES_LIST = [CREO_FILE_TYPE, ("All files", "*.*")]
 EXPORT_FILE_TYPES_LIST = [("All files", "*.*")]
 
@@ -50,10 +61,14 @@ class GuiRoot(tk.Tk):
         # Title of the window
         self.title(WINDOW_TITLE)
         self.geometry(GUI_WINDOW_SIZE)
+        self.minsize(GUI_MIN_WIDTH, GUI_MIN_HEIGHT)
 
         # Title of Menu
         self.menuTitleLabel = tk.Label(self, text=MENU_TITLE)
         self.menuTitleLabel.pack(anchor="center")
+
+        self.exitProgramButton = tk.Button(self, text="Exit Program", command=self.exitProgramButtonCallback)
+        self.exitProgramButton.pack(anchor="e", padx=10, pady=5, )
 
         # Import button + import filepath
         self.importFrame = tk.Frame(self)
@@ -94,6 +109,11 @@ class GuiRoot(tk.Tk):
 
         self.exportFrame.pack(anchor="w", padx=5, pady=5, fill="x")
 
+        # Preview Toolpath Option
+        self.previewCheckValue = tk.IntVar()
+        self.previewCheck = tk.Checkbutton(self, text="Preview Toolpath Data", variable=self.previewCheckValue)
+        self.previewCheck.pack()
+
         # Start Conversion Button
         self.startConvButton = tk.Button(self, text="Start Conversion", command=self.startConversionButtonCallback)
         self.startConvButton.pack(anchor="center", padx=5, pady=5)
@@ -106,9 +126,9 @@ class GuiRoot(tk.Tk):
 
         # Status Text Area
         self.statusTextArea = tk.Text(self.statusFrame, wrap=tk.WORD)
-        self.statusTextArea.pack(anchor="w", fill="both", expand=True)
+        self.statusTextArea.pack(side="left", anchor="w", fill="both", expand=True)
 
-        self.statusTextAreaScrollbar = tk.Scrollbar(self.statusTextArea, command=self.statusTextArea.yview)
+        self.statusTextAreaScrollbar = tk.Scrollbar(self.statusFrame, command=self.statusTextArea.yview)
         self.statusTextAreaScrollbar.pack(side="right", fill="y")
 
         self.statusTextArea['yscrollcommand'] = self.statusTextAreaScrollbar.set
@@ -133,6 +153,24 @@ class GuiRoot(tk.Tk):
         self.statusTextArea.configure(state="normal")
         self.statusTextArea.delete("1.0", tk.END)
         self.statusTextArea.configure(state="disabled")
+
+    def setImportFilepathDisplay(self, filepath):
+        self.importFilepathEntry.configure(state="normal")
+        self.importFilepathEntry.delete(0, tk.END)
+        self.importFilepathEntry.insert(tk.END, filepath)
+        self.importFilepathEntry.configure(state="readonly")
+
+    def setExportFilepathDisplay(self, filepath):
+        self.exportFilepathEntry.configure(state="normal")
+        self.exportFilepathEntry.delete(0, tk.END)
+        self.exportFilepathEntry.insert(tk.END, filepath)
+        self.exportFilepathEntry.configure(state="readonly")
+
+    '''
+    Function that is called when the "Close Program" button is clicked
+    '''
+    def exitProgramButtonCallback(self):
+        self.destroy()
 
     '''
     Function that is called when the "Select Import File" button is clicked
@@ -166,11 +204,7 @@ class GuiRoot(tk.Tk):
 
                 self.import_path = filepath # Store import filepath
                 self.importFilename = filepath #used for params subsystem
-                
-                self.importFilepathEntry.configure(state="normal")
-                self.importFilepathEntry.delete(0, tk.END)
-                self.importFilepathEntry.insert(tk.END, filepath)
-                self.importFilepathEntry.configure(state="readonly")
+                self.setImportFilepathDisplay(filepath)
 
                 self.writeStatus("Select Import File Successful")
 
@@ -195,6 +229,10 @@ class GuiRoot(tk.Tk):
                     self.params = OptomecParameters()
                 self.params.params = jdata[1]
                 self.hasProfile = True
+
+                self.printParams.configure(state="normal")
+                self.exportFileButton.configure(state="normal")
+
             except (KeyError, json.decoder.JSONDecodeError):
                 self.writeStatus("No existing parameter profile")
                 print("No existing parameter profile")
@@ -207,7 +245,6 @@ class GuiRoot(tk.Tk):
             self.hasProfile = False
 
         self.conversionSettings.configure(state="normal")
-        self.exportFileButton.configure(state="normal")
 
     '''
     Function that is called when the "Set Export Destination" button is clicked
@@ -224,8 +261,7 @@ class GuiRoot(tk.Tk):
                 EXPORT_FILE_TYPES_LIST.insert(0, ACSPL_FILE_TYPE)
 
         # Opens a dialog for user to set a filename and path for export
-        # filepath = filedialog.asksaveasfilename(filetypes = EXPORT_FILE_TYPES_LIST, defaultextension = EXPORT_FILE_TYPES_LIST[0])
-        filepath = filedialog.askdirectory()
+        filepath = filedialog.asksaveasfilename(filetypes = EXPORT_FILE_TYPES_LIST, defaultextension = EXPORT_FILE_TYPES_LIST[0])
         
         # User cancels setting export destination
         # If the user clicks the cancel button, an empty string is returned
@@ -236,10 +272,7 @@ class GuiRoot(tk.Tk):
         else:
             self.export_path = filepath # Store export filepath
 
-            self.exportFilepathEntry.configure(state="normal")
-            self.exportFilepathEntry.delete(0, tk.END)
-            self.exportFilepathEntry.insert(tk.END, filepath)
-            self.exportFilepathEntry.configure(state="readonly")
+            self.setExportFilepathDisplay(filepath)
 
             self.writeStatus("Set Export Destination Successful")
 
@@ -255,7 +288,6 @@ class GuiRoot(tk.Tk):
         self.eval("tk::PlaceWindow {} center".format(str(convSettingsWindow)))
 
         convSettingsWindow.title("Conversion Settings")
-    
         convSettingsWindow.resizable(False, False)
 
         convSettingsFrame = ConversionSettingsFrame(convSettingsWindow)
@@ -264,23 +296,42 @@ class GuiRoot(tk.Tk):
         convSettingsWindow.wait_window()
         convSettingsWindow.grab_release() # Re-enables inputs into main menu while this window is open
 
-        self.printParams.configure(state="normal") #enable the params menu, eve if it was only clicked but not saved
         if(convSettingsFrame.saveSuccess): # Check if the save button was actually pressed
+            self.printParams.configure(state="normal")
+            self.exportFileButton.configure(state="normal")
+
+            convSettingsFrame.saveSuccess = False # Reset save flag
             #save/set which parameter type after window is closed
             #only do this if they intentionally press the button rather than close out after seeing warning
-            if globals.printerTypeSelected == 0:
-                self.params = NscryptParameters()
-            elif globals.printerTypeSelected == 1:
-                self.params = OptomecParameters()
-            
-            convSettingsFrame.saveSuccess = False # Reset
+            # "change" extension of filepath if it already exists
+            extensionIndex = -1
+            newExtension = ""
+            if (self.export_path != None):
+                extensionIndex = self.export_path.rfind(".")
+
+            match globals.printerTypeSelected:
+                case globals.PrinterType.NSCRYPT:
+                    self.params = NscryptParameters()
+                    newExtension = NSCRYPT_EXTENSION
+
+                case globals.PrinterType.OPTOMEC:
+                    self.params = OptomecParameters()
+                    newExtension = ACSPL_EXTENSION
+
+                case _:
+                    raise ValueError("Invalid Printer Type Selected")
+                
+            if(extensionIndex > 0):
+                self.export_path = self.export_path[0:extensionIndex] + newExtension
+                self.setExportFilepathDisplay(self.export_path)
+        
+        else:
+            self.writeStatus("Conversion Settings Not Saved (Cancelled)")
 
     '''
     Function that is called when the "Printer Parameter" button is clicked
     '''
     def printParamsButtonCallback(self):
-        self.writeStatus("Printer Parameters Click")
-        print("Printer Parameters Click")
         paramWindow = tk.Toplevel()
         self.eval("tk::PlaceWindow {} center".format(str(paramWindow)))
         paramWindow.grab_set()
@@ -339,7 +390,6 @@ class GuiRoot(tk.Tk):
     '''
     def startConversionButtonCallback(self):
     
-        #TODO - Add checks if needed
         conversionAllowed = True
 
         if(self.import_path == None):
@@ -358,7 +408,28 @@ class GuiRoot(tk.Tk):
             
             # Obtained converted data
             converted_paths = conversionProcess(self.import_path, self.params, printer_type)
-            
+
+            # Check if preview option selected
+
+            if(self.previewCheckValue.get()):
+                toolpathPreviewWindow = tk.Toplevel()
+                toolpathPreviewWindow.grab_set()
+                self.eval("tk::PlaceWindow {} center".format(str(toolpathPreviewWindow)))
+                
+                toolpathPreviewWindow.title("Toolpath Preview")
+                toolpathPreviewWindow.minsize(TOOLPATH_PREVIEW_WINDOW_MIN_WIDTH, TOOLPATH_PREVIEW_WINDOW_MIN_HEIGHT)
+                toolpathPreviewWindow.geometry(TOOLPATH_PREVIEW_WINDOW_SIZE)
+
+                previewFrame = ToolpathPreviewFrame(toolpathPreviewWindow, converted_paths)
+                previewFrame.pack(padx=5, pady=5, fill="both", expand=True)
+
+                toolpathPreviewWindow.wait_window()
+                toolpathPreviewWindow.grab_release()
+
+                if(previewFrame.cancelExport):
+                    self.writeStatus("Export Cancelled")
+                    return
+                
             if converted_paths == -1:
                 self.writeStatus("Conversion Failed")
             else:
@@ -392,17 +463,25 @@ class ConversionSettingsFrame(tk.Frame):
         self.printerTypeCombobox = ttk.Combobox(self.printerTypeSelectFrame, values=globals.PRINTER_TYPES, state="readonly")
         self.printerTypeCombobox.current(globals.printerTypeSelected)
         self.printerTypeCombobox.pack(side="left")
+        
+        self.printerTypeSelectFrame.pack(padx=10, pady=10)
 
-        self.printerTypeSelectFrame.pack(padx=50, pady=50)
+        self.menuButtonsFrame = tk.Frame(self)
+
+        self.saveButton = tk.Button(self.menuButtonsFrame, text="Save & Exit", command=self.saveButtonCallback)
+        self.cancelButton = tk.Button(self.menuButtonsFrame, text="Cancel", command=self.cancelButtonCallback)
+
+        self.saveButton.pack(padx=5, pady=5, side="left")
+        self.cancelButton.pack(padx=5, pady=5, side="left")
 
         #relates to if there are previously saved params or not
-        if parent.master.hasProfile == False:
-            self.savedSettingsStatusLabel = tk.Label(self.printerTypeSelectFrame, text="No previously saved settings, safe to choose")
-        else:
-            self.savedSettingsStatusLabel = tk.Label(self.printerTypeSelectFrame, text="There are pre-existing saved settings for the imported file, saving will override and clear current settings.")
-        self.savedSettingsStatusLabel.pack(side="left")
-        self.saveButton = tk.Button(self, text="Save", command=self.saveButtonCallback)
-        self.saveButton.pack(padx=10, pady=10)
+        self.savedSettingsStatusLabel = tk.Label(self, text="No previously saved settings, safe to choose")
+        if parent.master.hasProfile:
+            self.savedSettingsStatusLabel.configure(text="There are pre-existing saved settings for the imported file, saving will override and clear current settings/printer parameters.")
+            self.saveButton.configure(text="Overwrite Save & Exit")
+
+        self.savedSettingsStatusLabel.pack(padx=10, pady=10)
+        self.menuButtonsFrame.pack(padx=10, pady=10)
 
     def saveButtonCallback(self):
         globals.printerTypeSelected = self.printerTypeCombobox.current() #Set printer type global value
@@ -411,11 +490,56 @@ class ConversionSettingsFrame(tk.Frame):
         globals.writeStatusQueue("Conversion Settings Saved")
         globals.writeStatusQueue("Set Printer Type: " + selectedPrinter)
         
-        #TODO - Add more checks if needed
         self.saveSuccess = True
+        
+        # Close window after saving
+        self.master.destroy()
 
-        #TODO - Close window after saving? - Change to "Save and Exit"
+    def cancelButtonCallback(self):
+        # Close window without saving
+        self.master.destroy()
 
+class ToolpathPreviewFrame(tk.Frame):
+    def __init__(self, parent, toolpath):
+        super().__init__(parent)
+
+        self.cancelExport = True
+
+        self.titleLabel = tk.Label(self, text="Toolpath Preview")
+        self.titleLabel.pack(padx=10, pady=10, anchor="w")
+
+        self.buttonsFrame = tk.Frame(self)
+
+        self.continueButton = tk.Button(self.buttonsFrame, text="Continue Export", command=self.continueButtonCallback)
+        self.continueButton.pack(padx=5, pady=5, side="left")
+
+        self.cancelButton = tk.Button(self.buttonsFrame, text="Cancel Export", command=self.cancelButtonCallback)
+        self.cancelButton.pack(padx=5, pady=5, side="left")
+
+        self.buttonsFrame.pack(anchor="w")
+
+        self.textFrame = tk.Frame(self)
+
+        self.textArea = tk.Text(self.textFrame, wrap="none")
+        self.textArea.pack(side="left", anchor="w", fill="both", expand=True)
+        
+        self.textAreaScrollbar = tk.Scrollbar(self.textFrame, command=self.textArea.yview)
+        self.textAreaScrollbar.pack(side="right", fill="y")
+        self.textFrame.pack(padx=5, pady=5, fill="both", expand=True)
+
+        self.textArea['yscrollcommand'] = self.textAreaScrollbar.set
+
+        for line in toolpath:
+            self.textArea.insert(tk.END, line + "\n")
+
+        self.textArea.configure(state="disabled")
+
+    def continueButtonCallback(self):
+        self.cancelExport = False
+        self.master.destroy()
+
+    def cancelButtonCallback(self):
+        self.master.destroy()
 
 def queueLoop(rootObject):
     while True:
@@ -426,7 +550,6 @@ def queueLoop(rootObject):
             break
     rootObject.after(QUEUE_LOOP_RATE, queueLoop, rootObject)
 
-#TODO - Fill out for conversion process, to be called when pressing start conversion button
 def conversionProcess(file_path, parameters, printer_type):
     parser = GenericParser(file_path)
     parsed_commands = parser.parse_commands()
