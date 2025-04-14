@@ -59,6 +59,9 @@ class GuiRoot(tk.Tk):
         self.menuTitleLabel = tk.Label(self, text=MENU_TITLE)
         self.menuTitleLabel.pack(anchor="center")
 
+        self.exitProgramButton = tk.Button(self, text="Exit Program", command=self.exitProgramButtonCallback)
+        self.exitProgramButton.pack(anchor="e", padx=10, pady=5, )
+
         # Import button + import filepath
         self.importFrame = tk.Frame(self)
 
@@ -154,6 +157,12 @@ class GuiRoot(tk.Tk):
         self.exportFilepathEntry.delete(0, tk.END)
         self.exportFilepathEntry.insert(tk.END, filepath)
         self.exportFilepathEntry.configure(state="readonly")
+
+    '''
+    Function that is called when the "Close Program" button is clicked
+    '''
+    def exitProgramButtonCallback(self):
+        self.destroy()
 
     '''
     Function that is called when the "Select Import File" button is clicked
