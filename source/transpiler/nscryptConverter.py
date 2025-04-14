@@ -35,6 +35,7 @@ class NscryptConverter(ToolpathConverter):
     def __init__(self, params=None):
         super().__init__(SUPPORTED_COMMANDS, params)
         self._units = SUPPORTED_UNITS[0] # Millimeters
+        self._toolStatus = None
         logger.info("nScrypt Converter Instantiated")
         if self._parameters is None:
             self.type = TYPE
@@ -111,10 +112,16 @@ class NscryptConverter(ToolpathConverter):
         Translate tool on/off command to nScrypt format
         :param params: dictionary of tool on/off command parameters
         """
-        if params["control"][:3] == "OFF":
+        if params["control"][:3] == "OFF" and self._toolStatus == "ON":
+            self._toolStatus = "OFF"
+            
             return "TOOL OFF"
         else:
-            return "TOOL ON"
+            if self._toolStatus == "OFF" or self._toolStatus is None:
+                self._toolStatus = "ON"
+                return "TOOL ON"
+            else:
+                return DO_NOT_SHOW
         
 
     def translate(self, parsed_commands: List[dict[str, dict[str, str]]]) -> List[str]:
