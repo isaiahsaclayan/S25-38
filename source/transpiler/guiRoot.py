@@ -414,9 +414,9 @@ class GuiRoot(tk.Tk):
                 toolpathPreviewWindow.grab_set()
                 self.eval("tk::PlaceWindow {} center".format(str(toolpathPreviewWindow)))
                 
-                toolpathPreviewWindow.geometry(TOOLPATH_PREVIEW_WINDOW_SIZE)
                 toolpathPreviewWindow.title("Toolpath Preview")
                 toolpathPreviewWindow.minsize(TOOLPATH_PREVIEW_WINDOW_MIN_WIDTH, TOOLPATH_PREVIEW_WINDOW_MIN_HEIGHT)
+                toolpathPreviewWindow.geometry(TOOLPATH_PREVIEW_WINDOW_SIZE)
 
                 previewFrame = ToolpathPreviewFrame(toolpathPreviewWindow, converted_paths)
                 previewFrame.pack(padx=5, pady=5, fill="both", expand=True)
