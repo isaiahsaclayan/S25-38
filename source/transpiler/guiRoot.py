@@ -324,7 +324,9 @@ class GuiRoot(tk.Tk):
             if(extensionIndex > 0):
                 self.export_path = self.export_path[0:extensionIndex] + newExtension
                 self.setExportFilepathDisplay(self.export_path)
-            
+        
+        else:
+            self.writeStatus("Conversion Settings Not Saved (Cancelled)")
 
     '''
     Function that is called when the "Printer Parameter" button is clicked
@@ -495,7 +497,6 @@ class ConversionSettingsFrame(tk.Frame):
 
     def cancelButtonCallback(self):
         # Close window without saving
-        globals.writeStatusQueue("Conversion Settings Not Saved (Cancelled)")
         self.master.destroy()
 
 class ToolpathPreviewFrame(tk.Frame):
