@@ -20,7 +20,7 @@ from toolpathExporter import ToolpathExporter  # Import ToolpathExporter
 import json
 
 WINDOW_TITLE = "S25-38"  # TODO - Provide suitable titles
-MENU_TITLE = "S25-38 Machine Instruction Converter"
+MENU_TITLE = "S25-38 Toolpath Converter"
 
 GUI_WINDOW_SIZE = "800x400"
 GUI_MIN_WIDTH = 400
@@ -111,7 +111,7 @@ class GuiRoot(tk.Tk):
 
         # Preview Toolpath Option
         self.previewCheckValue = tk.IntVar()
-        self.previewCheck = tk.Checkbutton(self, text="Preview Toolpath", variable=self.previewCheckValue)
+        self.previewCheck = tk.Checkbutton(self, text="Preview Toolpath Data", variable=self.previewCheckValue)
         self.previewCheck.pack()
 
         # Start Conversion Button
