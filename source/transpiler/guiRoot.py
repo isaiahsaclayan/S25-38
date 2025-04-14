@@ -484,7 +484,7 @@ class ToolpathPreviewFrame(tk.Frame):
     def __init__(self, parent, toolpath):
         super().__init__(parent)
 
-        self.cancelExport = False
+        self.cancelExport = True
 
         self.titleLabel = tk.Label(self, text="Toolpath Preview")
         self.titleLabel.pack(padx=10, pady=10, anchor="w")
@@ -516,10 +516,10 @@ class ToolpathPreviewFrame(tk.Frame):
         self.textArea.configure(state="disabled")
 
     def continueButtonCallback(self):
+        self.cancelExport = False
         self.master.destroy()
 
     def cancelButtonCallback(self):
-        self.cancelExport = True
         self.master.destroy()
 
 def queueLoop(rootObject):
