@@ -21,9 +21,16 @@ import json
 
 WINDOW_TITLE = "S25-38"  # TODO - Provide suitable titles
 MENU_TITLE = "S25-38 Machine Instruction Converter"
-GUI_WINDOW_SIZE = "800x400"
-TOOLPATH_PREVIEW_WINDOW_SIZE = "800x800"
 
+GUI_WINDOW_SIZE = "800x400"
+GUI_MIN_WIDTH = 400
+GUI_MIN_HEIGHT = 300
+
+TOOLPATH_PREVIEW_WINDOW_SIZE = "900x800"
+TOOLPATH_PREVIEW_WINDOW_MIN_WIDTH = 400
+TOOLPATH_PREVIEW_WINDOW_MIN_HEIGHT = 400
+
+# Controls how often the status queue is checked in milliseconds
 QUEUE_LOOP_RATE = 100
 
 # File Types
@@ -54,6 +61,7 @@ class GuiRoot(tk.Tk):
         # Title of the window
         self.title(WINDOW_TITLE)
         self.geometry(GUI_WINDOW_SIZE)
+        self.minsize(GUI_MIN_WIDTH, GUI_MIN_HEIGHT)
 
         # Title of Menu
         self.menuTitleLabel = tk.Label(self, text=MENU_TITLE)
@@ -405,9 +413,10 @@ class GuiRoot(tk.Tk):
                 toolpathPreviewWindow = tk.Toplevel()
                 toolpathPreviewWindow.grab_set()
                 self.eval("tk::PlaceWindow {} center".format(str(toolpathPreviewWindow)))
+                
                 toolpathPreviewWindow.geometry(TOOLPATH_PREVIEW_WINDOW_SIZE)
-
                 toolpathPreviewWindow.title("Toolpath Preview")
+                toolpathPreviewWindow.minsize(TOOLPATH_PREVIEW_WINDOW_MIN_WIDTH, TOOLPATH_PREVIEW_WINDOW_MIN_HEIGHT)
 
                 previewFrame = ToolpathPreviewFrame(toolpathPreviewWindow, converted_paths)
                 previewFrame.pack(padx=5, pady=5, fill="both", expand=True)
