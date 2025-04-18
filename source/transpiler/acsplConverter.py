@@ -204,11 +204,22 @@ class Machine:
         :param b: desired location for b-axis
         :return: none
         """
-        self._X = float(x)
-        self._Y = float(y)
-        self._Z = float(z)
-        self._A = float(a)
-        self._B = float(b)
+        # If the units are inches, convert to mm with
+        if self._units == "inches":
+            self._X = x * 25.4
+            self._Y = y * 25.4
+            self._Z = z * 25.4
+            self._A = a * 25.4
+            self._B = b * 25.4
+
+        # If the units are mm, set the axis registers to the desired location
+        elif self._units == "mm":
+            self._X = x
+            self._Y = y
+            self._Z = z
+            self._A = a
+            self._B = b
+
 
     def get_axis_registers(self) -> tuple[float, float, float, float, float]:
         """
