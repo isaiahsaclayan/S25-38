@@ -510,13 +510,13 @@ class AcsplConverter(ToolpathConverter):
         # Notify user of start of transpiling
         notify_and_log("Transpiling to ACSPL...")
 
-        # Set the units for the machine
-        self._set_units(parsed_commands)
-
         # Check if the provided parsed commands is valid
         if not self._validate_translate_arg(parsed_commands):
             notify_and_log("Invalid argument provided to ACSPL translate function")
             return []
+
+        # Set the units for the machine
+        self._set_units(parsed_commands)
 
         # Append the machine setup code block
         self._translated_commands.append(self._get_header())
