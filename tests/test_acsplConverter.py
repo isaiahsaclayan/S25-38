@@ -224,6 +224,33 @@ class TestAcsplConverter(unittest.TestCase):
         # Assert
         self.assertTrue(all(res == [] for res in [res_int, res_float, res_str, res_none, res_dict]))
 
+    def test_units_inches_parsing(self):
+        # Arrange
+        INCHES_COMMAND = [
+            {"units": {"units": "INCHES"}},
+            {"move": {"x": "1.0", "y": "2.0", "z": "3.0"}}
+        ]
+
+        # Act
+        result = self.acsplConverter.translate(INCHES_COMMAND)
+
+        # Assert
+        self.assertEqual(self.acsplConverter.machine.units, "inches")
+        self.assertIn("PTP/EV (10,11,12,14,15), 25.4, 50.8, 76.2, 0.0, 0.0, gDblRapidSpeed",result)
+
+    def test_units_default_parsing(self):
+        # Arrange
+        INCHES_COMMAND = [
+            {"move": {"x": "1.0", "y": "2.0", "z": "3.0"}}
+        ]
+
+        # Act
+        result = self.acsplConverter.translate(INCHES_COMMAND)
+
+        # Assert
+        self.assertEqual(self.acsplConverter.machine.units, "mm")
+        self.assertIn("PTP/EV (10,11,12,14,15), 1.0, 2.0, 3.0, 0.0, 0.0, gDblRapidSpeed",result)
+
     def test_print_parsed_commands(self):
         results = self.acsplConverter.translate(PARSED_COMMANDS)
         #_print(results)
