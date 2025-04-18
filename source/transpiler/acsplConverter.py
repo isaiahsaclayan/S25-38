@@ -204,21 +204,25 @@ class Machine:
         :param b: desired location for b-axis
         :return: none
         """
-        # If the units are inches, convert to mm with nanometer accuracy
-        if self._units == "inches":
-            self._X = round(float(x) * 25.4, 9)
-            self._Y = round(float(y) * 25.4, 9)
-            self._Z = round(float(z) * 25.4, 9)
-            self._A = round(float(a) * 25.4, 9)
-            self._B = round(float(b) * 25.4, 9)
 
-        # If the units are mm, set the axis registers to the desired location with nanometer accuracy
+        # Number of decimal places to round to
+        decimals = 4
+
+        # If the units are inches, convert to mm
+        if self._units == "inches":
+            self._X = round(float(x) * 25.4, decimals)
+            self._Y = round(float(y) * 25.4, decimals)
+            self._Z = round(float(z) * 25.4, decimals)
+            self._A = round(float(a) * 25.4, decimals)
+            self._B = round(float(b) * 25.4, decimals)
+
+        # If the units are mm, set the axis registers to the desired location
         elif self._units == "mm":
-            self._X = round(float(x), 9)
-            self._Y = round(float(y), 9)
-            self._Z = round(float(z), 9)
-            self._A = round(float(a), 9)
-            self._B = round(float(b), 9)
+            self._X = round(float(x), decimals)
+            self._Y = round(float(y), decimals)
+            self._Z = round(float(z), decimals)
+            self._A = round(float(a), decimals)
+            self._B = round(float(b), decimals)
 
 
     def get_axis_registers(self) -> tuple[float, float, float, float, float]:
