@@ -8,7 +8,7 @@ This initializes the nScrypt Converter with the parent class along with a units 
 This function translates a parsed move command into the nScrypt format. nScrypt machines require toolpaths to be written in the following format:
 
 For vectors:
-- XYZ X'Y'Z
+- XYZ X'Y'Z'
 
 For spherical coordinates:
 - XYZ 0W
@@ -19,7 +19,7 @@ Current implementation only supports the spherical coordinates, which indicates 
 Sets the private unit member to the specified unit if supported by the parser.
 
 ## _tool_on_off(self, params: dict[str, str])
-Takes a control command from the parser and will output "TOLL OFF" or "TOOL ON" dependent on status
+Takes a control command from the parser and will output "TOOL OFF" or "TOOL ON" dependent on status
 
 ## _process_command(self, command: str, params: dict[str, str])
 Takes the parsed command and will place it the correct function as necessary. Will output an invalid command status if any invalid command is found.
