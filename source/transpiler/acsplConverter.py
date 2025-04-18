@@ -100,6 +100,9 @@ class Machine:
         # Flag if done with processing toolpath
         self._done: bool = False
 
+        # Units
+        self._units = "mm"
+
         # Axis Registers
         self._X: any = None
         self._Y: any = None
@@ -174,6 +177,23 @@ class Machine:
         """
         self._done = done
 
+    @property
+    def units(self):
+        """
+        Getter for units
+        :return: units
+        """
+        return self._units
+
+    @units.setter
+    def units(self, units: str):
+        """
+        Setter for units
+        :param units: units to be set
+        :return: none
+        """
+        self._units = units
+
     def set_axis_registers(self, x: any, y: any, z: any, a: any, b: any) -> None:
         """
         Set the axis registers for the machine
@@ -184,11 +204,22 @@ class Machine:
         :param b: desired location for b-axis
         :return: none
         """
-        self._X = float(x)
-        self._Y = float(y)
-        self._Z = float(z)
-        self._A = float(a)
-        self._B = float(b)
+        # If the units are inches, convert to mm with nanometer accuracy
+        if self._units == "inches":
+            self._X = round(float(x) * 25.4, 9)
+            self._Y = round(float(y) * 25.4, 9)
+            self._Z = round(float(z) * 25.4, 9)
+            self._A = round(float(a) * 25.4, 9)
+            self._B = round(float(b) * 25.4, 9)
+
+        # If the units are mm, set the axis registers to the desired location with nanometer accuracy
+        elif self._units == "mm":
+            self._X = round(float(x), 9)
+            self._Y = round(float(y), 9)
+            self._Z = round(float(z), 9)
+            self._A = round(float(a), 9)
+            self._B = round(float(b), 9)
+
 
     def get_axis_registers(self) -> tuple[float, float, float, float, float]:
         """
@@ -314,6 +345,36 @@ class AcsplConverter(ToolpathConverter):
 
         # If all checks pass
         return True
+
+    def _set_units(self, commands) -> None:
+        """
+        Set the units for the machine
+        :param commands: list of commands to be processed
+        :return: None
+        """
+
+        # Iterate through the commands
+        for command in commands:
+            # If the command is a units command
+            if "units" in command:
+                # If the units are inches
+                if command["units"]["units"] == "INCHES":
+                    # Set the units for the machine
+                    self.machine.units = "inches"
+                    # Notify user of the units
+                    notify_and_log(f"Units found in input file = '{command["units"]["units"]}', will convert to mm.")
+                    return
+                # If the units are mm
+                elif command["units"]["units"] == "MILLIMETERS":
+                    # Set the units for the machine
+                    self.machine.units = "mm"
+                    # Notify user of the units
+                    notify_and_log(f"Units found in input file = '{command["units"]["units"]}', will convert to mm.")
+                    return
+
+        # If no units command is found, set the default units to mm
+        self.machine.units = "mm"
+        notify_and_log("Units not provided, defaulting to mm")
 
     def _process_command(self, command: str, params: dict[str, str]) -> None:
         """
@@ -453,6 +514,9 @@ class AcsplConverter(ToolpathConverter):
         if not self._validate_translate_arg(parsed_commands):
             notify_and_log("Invalid argument provided to ACSPL translate function")
             return []
+
+        # Set the units for the machine
+        self._set_units(parsed_commands)
 
         # Append the machine setup code block
         self._translated_commands.append(self._get_header())
