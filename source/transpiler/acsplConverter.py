@@ -101,7 +101,7 @@ class Machine:
         self._done: bool = False
 
         # Units
-        self.units = "mm"
+        self._units = "mm"
 
         # Axis Registers
         self._X: any = None
@@ -183,7 +183,7 @@ class Machine:
         Getter for units
         :return: units
         """
-        return self.units
+        return self._units
 
     @units.setter
     def units(self, units: str):
@@ -192,7 +192,7 @@ class Machine:
         :param units: units to be set
         :return: none
         """
-        self.units = units
+        self._units = units
 
     def set_axis_registers(self, x: any, y: any, z: any, a: any, b: any) -> None:
         """
@@ -335,6 +335,36 @@ class AcsplConverter(ToolpathConverter):
         # If all checks pass
         return True
 
+    def _set_units(self, commands) -> None:
+        """
+        Set the units for the machine
+        :param commands: list of commands to be processed
+        :return: None
+        """
+
+        # Iterate through the commands
+        for command in commands:
+            # If the command is a units command
+            if "units" in command:
+                # If the units are inches
+                if command["units"]["units"] == "INCHES":
+                    # Set the units for the machine
+                    self.machine.units = "inches"
+                    # Notify user of the units
+                    notify_and_log(f"Units found in input file = '{command["units"]["units"]}', will convert to mm.")
+                    return
+                # If the units are mm
+                elif command["units"]["units"] == "MILLIMETERS":
+                    # Set the units for the machine
+                    self.machine.units = "mm"
+                    # Notify user of the units
+                    notify_and_log(f"Units found in input file = '{command["units"]["units"]}', will convert to mm.")
+                    return
+
+        # If no units command is found, set the default units to mm
+        self.machine.units = "mm"
+        notify_and_log("Units not provided, defaulting to mm")
+
     def _process_command(self, command: str, params: dict[str, str]) -> None:
         """
         Processes a single command
@@ -468,6 +498,9 @@ class AcsplConverter(ToolpathConverter):
 
         # Notify user of start of transpiling
         notify_and_log("Transpiling to ACSPL...")
+
+        # Set the units for the machine
+        self._set_units(parsed_commands)
 
         # Check if the provided parsed commands is valid
         if not self._validate_translate_arg(parsed_commands):
