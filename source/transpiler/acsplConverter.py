@@ -101,7 +101,7 @@ class Machine:
         self._done: bool = False
 
         # Units
-        self.units = None
+        self.units = "mm"
 
         # Axis Registers
         self._X: any = None
