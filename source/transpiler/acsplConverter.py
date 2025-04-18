@@ -100,6 +100,9 @@ class Machine:
         # Flag if done with processing toolpath
         self._done: bool = False
 
+        # Units
+        self.units = None
+
         # Axis Registers
         self._X: any = None
         self._Y: any = None
@@ -173,6 +176,23 @@ class Machine:
         :return: none
         """
         self._done = done
+
+    @property
+    def units(self):
+        """
+        Getter for units
+        :return: units
+        """
+        return self.units
+
+    @units.setter
+    def units(self, units: str):
+        """
+        Setter for units
+        :param units: units to be set
+        :return: none
+        """
+        self.units = units
 
     def set_axis_registers(self, x: any, y: any, z: any, a: any, b: any) -> None:
         """
