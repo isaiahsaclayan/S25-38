@@ -53,3 +53,46 @@ Returns the appropriate ACSPL switch value depending on the current machine stat
 `gDblProcessSpeed` if moving while dispensing,
 
 `CRangle` if beginning a printing segment.
+
+## ACSPL Converter
+Main derived class that translates parsed toolpath commands into formatted ACSPL output by managing the machine's internal state.
+
+### init(self, params=None)
+Initializes the AcsplConverter by calling the parent ToolpathConverter constructor.
+Creates a Machine instance, parses open and close delays (if provided), and logs initialization information.
+
+### _get_header(self) -> str
+Generates the ACSPL file header, which includes:
+- Machine information comment
+- Date and time of generation
+- Open and close delay settings
+- Motion configuration block
+
+### _format_and_append_command(self, command: str, switch: str = "")
+Formats a command and appends it to the list of translated commands.
+Includes the machine's current position registers and an optional switch value when formatting.
+
+### _validate_translate_arg(self, args: any) -> bool
+Validates the input to the translate function, ensuring it is a properly structured list of dictionaries.
+Logs an error and returns False if the structure is invalid.
+
+### _set_units(self, commands)
+Iterates through the parsed commands to determine whether the units are set to "inches" or "millimeters".
+Defaults to "millimeters" if no unit is specified.
+
+### _process_command(self, command: str, params: dict[str, str])
+Processes a single command and updates the translation list or the machine state accordingly:
+- Handles speed changes (open/close inkjet)
+- Movement commands (PTP, LINE, XSEG)
+- Metadata comments (feature number, manufacturer number, part number)
+- Ending commands (closing inkjet, marking processing as done)
+
+### translate(self, parsed_commands: List[dict[str, dict[str, str]]]) -> List[str]
+Main translation function that processes a full list of parsed commands:
+- Validates the input
+- Sets the units
+- Adds the header
+- Processes all commands
+- Handles closing inkjet tool if necessary
+- Appends the STOP block to end the program.
+- Returns a full list of formatted ACSPL instructions.
