@@ -48,7 +48,7 @@ Navigate to sources directory.
 # Developer Notes
 
 # System Documentation
-1. [GUI](docs)
+1. [GUI](docs/gui.md)
 2. [Printer Parameters](docs/parameters.md)
 3. [Generic Toolpath Parser](docs/genericparser.md)
 4. [nScrypt Converter](docs/nscrypt.md)
