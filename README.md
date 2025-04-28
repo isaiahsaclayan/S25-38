@@ -1,4 +1,4 @@
-# S25-38, Transpiler
+# S25-38, 3D Printing Toolpath Converter for Multi-Axis Printers
 **Developers:** Isaiah Amir Saclayan, Alvin Chung, Andrew Viola, Theo Barrett-Johnson, John Otooni, Bozhidar Dimov
 
 # User Manual
