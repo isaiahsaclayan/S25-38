@@ -44,7 +44,14 @@ Navigate to sources directory.
 ---
 # Developer Notes
 
-
+# System Documentation
+1. [GUI](docs)
+2. [Printer Parameters](docs)
+3. [Generic Toolpath Parser](docs)
+4. [nScrypt Converter](docs/nscrypt.md)
+5. [ACSPL Converter](docs/acspl/acspl.md)
+6. [Toolpath Export](docs)
+   
 ## Structure Notes
 `/source/transpiler/__main__.py` is the main entry point of the program.  
 `/source/transpiler` contains all the source code for our system.  
