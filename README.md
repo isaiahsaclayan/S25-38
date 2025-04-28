@@ -15,9 +15,12 @@ Ensure you have the neccessary requirements installed. Navigate to the project r
 3. Click `Conversion Settings` to select the desired printer.
 4. Click `Printer Parameters` to set any desired parameters to be included in the output.
 5. Click `Set Export Destination` to select the directory and name of the generated transpiled file.
-6. Click `Start Conversion`.
-7. Observe the status window for any errors and feedback during the conversion process.
-8. If successful, view obtained transpiled file in the previously selected directory in step 5.    
+6. If desired, click checkbox to enable `Preview Toolpath Data` to preview the toolpath data before export.
+7. Click `Start Conversion`.
+8. Observe the status window for any errors and feedback during the conversion process.
+9. If `Preview Toolpath Data` was checked, select `Continue Export` or `Cancel Export` to continue or stop export process, respectively. If continuing export process or `Preview Toolpath Data` was not enabled, continue to next step.
+
+10. If successful, view obtained transpiled file in the previously selected directory in step 5.    
 
 ## How to Run the Transpiler via Command Line
 

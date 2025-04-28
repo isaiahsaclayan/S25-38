@@ -1,3 +1,16 @@
+## GUI General Sequence of Operations
+The GUI is expected to be operated in a specific sequence for the first start of the program. The underlying processes depend on this order for proper function.
+
+1. Setting Import File
+2. Setting Conversion Settings 
+3. Setting Printer Parameters
+4. Setting Export Destination
+5. Start Conversion Process.
+
+So, all the buttons except the Select Import File button are disabled until the proper preceding action is completed. After an action is completed, the button for the next action will be made available.
+
+After a full sequence is completed, the program has checks to account for actions that would be considered out of order.
+
 # guiRoot.py
 Contains the definition of a GuiRoot() object which defines a root TKinter object along with other TKinter frame objects that encapsulate sub menus
 <br><br>
@@ -61,7 +74,7 @@ The conversion process will be halted. A file will not be exported from the syst
 
 <br><br>
 ## queueLoop(rootObject)
-Pass in a root TKinter GUI object to have that GUI periodically check a queue for status messages. 
+Pass in a root TKinter GUI object to have that GUI periodically check a queue for status messages. Checks a loop located in applicationGlobals.py.
 
 <br><br>
 ## conversionProcess(file_path, parameters, printer_type)
