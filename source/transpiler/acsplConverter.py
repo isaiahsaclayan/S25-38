@@ -359,21 +359,21 @@ class AcsplConverter(ToolpathConverter):
 
         # Iterate through the commands
         for command in commands:
-            # If the command is a units command
-            if "units" in command:
-                # If the units are inches
-                if command["units"]["units"] == "INCHES":
-                    # Set the units for the machine
+            # Parse the command
+            units_info = command.get("units")
+            # If the command contains units information
+            if units_info:
+                # Parse the units information
+                units = units_info.get("units", "").upper()
+                # If the units are inches, set the units to inches
+                if units == "INCHES":
                     self.machine.units = "inches"
-                    # Notify user of the units
-                    notify_and_log(f"Units found in input file = '{command["units"]["units"]}', will convert to mm.")
+                    notify_and_log("Units found in input file = 'INCHES', will convert to mm.")
                     return
-                # If the units are mm
-                elif command["units"]["units"] == "MILLIMETERS":
-                    # Set the units for the machine
+                # If the units are millimeters, set the units to mm
+                elif units == "MILLIMETERS":
                     self.machine.units = "mm"
-                    # Notify user of the units
-                    notify_and_log(f"Units found in input file = '{command["units"]["units"]}', will convert to mm.")
+                    notify_and_log("Units found in input file = 'MILLIMETERS', will convert to mm.")
                     return
 
         # If no units command is found, set the default units to mm
