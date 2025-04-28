@@ -39,7 +39,7 @@ If Preview Toolpath is set (checked), then a Toolpath Preview Window will open b
 <br><br>
 ## ConversionSettingsFrame(tk.Frame)
 ### __init__(parent)
-Called when the ConversionSettingsFrame() object is constructed. Initializes all of the interfaces. This is where changes to the Conversion Settings window should be made. 
+Called when the ConversionSettingsFrame() object is constructed. Initializes all of the interfaces. This is where changes to the Conversion Settings window should be made. Contains a flag that can be access externally, designed to be used for checking if settings were actually saved or not.
 
 ### saveButtonCallback(self)
 Saves the settings from the Conversion Settings menu and closes the window.
@@ -51,7 +51,7 @@ Closes the Conversion Settings menu without saving any settings.
 <br><br>
 ## ToolpathPreviewFrame(tk.Frame)
 ### __init__(self, parent, toolpath)
-Called when the ToolpathPreviewFrame() object is constructed. Initializes all of the interfaces. This is where changes to the Toolpath Preview Window should be made. Primary function is to display the converted toolpath before export.
+Called when the ToolpathPreviewFrame() object is constructed. Initializes all of the interfaces. This is where changes to the Toolpath Preview Window should be made. Primary function is to display the converted toolpath before export. Contains a flag that can be access externally, designed to be used for checking if the export process should continue or not.
 
 ### continueButtonCallback(self)
 The conversion process is allowed to continue. A file will be exported from the system.
@@ -59,8 +59,10 @@ The conversion process is allowed to continue. A file will be exported from the 
 ### cancelButtonCallback(self)
 The conversion process will be halted. A file will not be exported from the system.
 
+<br><br>
 ## queueLoop(rootObject)
 Pass in a root TKinter GUI object to have that GUI periodically check a queue for status messages. 
 
+<br><br>
 ## conversionProcess(file_path, parameters, printer_type)
 Contains the operations for toolpath conversion.
