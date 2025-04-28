@@ -1,5 +1,5 @@
 '''
-Author: Alvin Chung
+Author: Alvin Chung and Theo Barrett-Johnson
 Created: 01/17/25
 File: guiRoot.py
 Description: The root tkinter object for the GUI application
