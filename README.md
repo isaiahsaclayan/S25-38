@@ -46,11 +46,11 @@ Navigate to sources directory.
 
 # System Documentation
 1. [GUI](docs)
-2. [Printer Parameters](docs)
-3. [Generic Toolpath Parser](docs)
+2. [Printer Parameters](docs/parameters.md)
+3. [Generic Toolpath Parser](docs/genericparser.md)
 4. [nScrypt Converter](docs/nscrypt.md)
 5. [ACSPL Converter](docs/acspl/acspl.md)
-6. [Toolpath Export](docs)
+6. [Toolpath Export](docs/exporter.md)
    
 ## Structure Notes
 `/source/transpiler/__main__.py` is the main entry point of the program.  
