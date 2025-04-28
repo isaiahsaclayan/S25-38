@@ -29,8 +29,8 @@ Parses spindle speed commands. This function supports either
 
 ## _coolantCommand(self, command)
 Parses coolant commands and converts them into Boolean
-`"ON"` - `True`
-`"OFF"` - `False`
+- `"ON"` - `True`
+- `"OFF"` - `False`
 
 ## _speedCommand(self, command)
 Parses the feed rate commands. This function assumes that feed rates are in inches per minute (IPM). There is a placeholder for unit conversion if there are other possible formats.
@@ -47,7 +47,7 @@ Handles comments and information blocks marked with `$$->`. It parses other data
 
 ## _checkOrientationLine(self, command)
 Used with the coordinate system detection. Checks orientation lines and sets the correct axis labels based on binary markers.
-Normal Orientation -  (`x`, `y`, `z`, `a`, `b`)
+- Orientation -  (`x`, `y`, `z`, `a`, `b`)
 
 
 ## __str__(self)
