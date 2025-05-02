@@ -48,12 +48,12 @@ Navigate to sources directory.
 # Developer Notes
 
 # System Documentation
-1. [GUI](docs/gui.md)
-2. [Printer Parameters](docs/parameters.md)
-3. [Generic Toolpath Parser](docs/genericparser.md)
-4. [nScrypt Converter](docs/nscrypt.md)
-5. [ACSPL Converter](docs/acspl/acspl.md)
-6. [Toolpath Export](docs/exporter.md)
+1. [GUI](https://github.com/isaiahsaclayan/S25-38/blob/dev/docs/gui.md)
+2. [Printer Parameters](https://github.com/isaiahsaclayan/S25-38/blob/dev/docs/parameters.md)
+3. [Generic Toolpath Parser](https://github.com/isaiahsaclayan/S25-38/blob/dev/docs/genericparser.md)
+4. [nScrypt Converter](https://github.com/isaiahsaclayan/S25-38/blob/dev/docs/nscrypt.md)
+5. [ACSPL Converter](https://github.com/isaiahsaclayan/S25-38/blob/dev/docs/acspl/acspl.md)
+6. [Toolpath Export](https://github.com/isaiahsaclayan/S25-38/blob/dev/docs/exporter.md)
    
 ## Structure Notes
 `/source/transpiler/__main__.py` is the main entry point of the program.  
